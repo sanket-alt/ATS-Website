@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATS — Aerospace Technical Society, PEC</title>
+<meta name="description" content="Aerospace Technical Society, Punjab Engineering College — current projects, open competitions, and a mission log of past builds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --bg:#0a0c11;
+    --bg-panel:#12151c;
+    --bg-panel-2:#171b24;
+    --bg-raised:#1c202b;
+    --text:#f2efe6;
+    --text-dim:#93998f9c;
+    --text-dim2:#8890a0;
+    --gold:#f2a93b;
+    --gold-2:#ffd37a;
+    --gold-dim:#c98a30;
+    --ink:#0a0c11;
+    --line:rgba(242,169,59,0.16);
+    --line-soft:rgba(255,255,255,0.08);
+    --ok:#7fd68a;
+    --warn:#f2a93b;
+    --new:#7aa8ff;
+    --danger:#e8654f;
+    --max-w:1180px;
+    --radius:14px;
+    --ff-display:'Space Grotesk', sans-serif;
+    --ff-mono:'JetBrains Mono', monospace;
+    --ff-body:'Inter', sans-serif;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth; scroll-padding-top:84px;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *,*::before,*::after{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--ff-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img,svg{display:block; max-width:100%;}
+  a{color:inherit; text-decoration:none;}
+  ul{margin:0; padding:0; list-style:none;}
+  button{font-family:inherit; cursor:pointer;}
+  ::selection{background:var(--gold); color:var(--ink);}
+
+  .wrap{max-width:var(--max-w); margin:0 auto; padding:0 28px;}
+  @media (max-width:640px){.wrap{padding:0 20px;}}
+
+  .eyebrow{
+    font-family:var(--ff-mono);
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:16px; height:1px;
+    background:var(--gold);
+    display:inline-block;
+  }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--ff-mono);
+    font-size:13px; font-weight:500;
+    letter-spacing:0.02em;
+    padding:12px 20px;
+    border-radius:100px;
+    border:1px solid var(--line-soft);
+    background:transparent;
+    color:var(--text);
+    transition:border-color .2s ease, background .2s ease, transform .2s ease;
+    white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--gold); transform:translateY(-1px);}
+  .btn-solid{
+    background:var(--gold);
+    color:var(--ink);
+    border-color:var(--gold);
+    font-weight:600;
+  }
+  .btn-solid:hover{background:var(--gold-2); border-color:var(--gold-2);}
+
+  /* ============ REVEAL ============ */
+  .reveal{opacity:0; transform:translateY(22px); transition:opacity .7s cubic-bezier(.2,.7,.3,1), transform .7s cubic-bezier(.2,.7,.3,1);}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  .reveal-stagger > *{opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal-stagger.in > *{opacity:1; transform:translateY(0);}
+  .reveal-stagger.in > *:nth-child(1){transition-delay:.02s;}
+  .reveal-stagger.in > *:nth-child(2){transition-delay:.08s;}
+  .reveal-stagger.in > *:nth-child(3){transition-delay:.14s;}
+  .reveal-stagger.in > *:nth-child(4){transition-delay:.20s;}
+  .reveal-stagger.in > *:nth-child(5){transition-delay:.26s;}
+  .reveal-stagger.in > *:nth-child(6){transition-delay:.32s;}
+
+  /* ============ NAV ============ */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:22px 0;
+    transition:padding .3s ease, background .3s ease, border-color .3s ease;
+    border-bottom:1px solid transparent;
+  }
+  header.scrolled{
+    padding:13px 0;
+    background:rgba(10,12,17,0.86);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  nav.wrap{display:flex; align-items:center; justify-content:space-between; gap:20px;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand svg{width:30px; height:30px; flex-shrink:0;}
+  .brand-word{font-family:var(--ff-display); font-weight:700; font-size:17px; letter-spacing:0.01em;}
+  .brand-word span{color:var(--gold);}
+  .nav-links{display:flex; align-items:center; gap:30px;}
+  .nav-links a{
+    font-family:var(--ff-mono); font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--text-dim2); position:relative; padding:4px 0;
+    transition:color .2s ease;
+  }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:-3px; width:0; height:1px; background:var(--gold);
+    transition:width .25s ease;
+  }
+  .nav-links a:hover, .nav-links a.active{color:var(--text);}
+  .nav-links a:hover::after, .nav-links a.active::after{width:100%;}
+  .nav-cta{display:flex; align-items:center; gap:14px;}
+  .burger{display:none; flex-direction:column; gap:5px; background:none; border:none; padding:6px;}
+  .burger span{width:22px; height:2px; background:var(--text); display:block; transition:transform .25s ease, opacity .25s ease;}
+  .mobile-menu{
+    position:fixed; inset:0; background:var(--bg); z-index:99;
+    display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:26px;
+    padding:0 32px;
+    opacity:0; pointer-events:none; transition:opacity .3s ease;
+  }
+  .mobile-menu.open{opacity:1; pointer-events:auto;}
+  .mobile-menu a{font-family:var(--ff-display); font-size:32px; font-weight:600;}
+
+  @media (max-width:860px){
+    .nav-links{display:none;}
+    .burger{display:flex;}
+    .nav-cta .btn-solid{display:none;}
+  }
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:140px 0 80px;
+    overflow:hidden;
+  }
+  .hero-grid{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 90% 60% at 50% 30%, black 10%, transparent 75%);
+    -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 30%, black 10%, transparent 75%);
+    opacity:0.5;
+  }
+  .hero-glow{
+    position:absolute; top:-10%; right:-10%; width:60vw; height:60vw; max-width:800px; max-height:800px;
+    background:radial-gradient(circle, rgba(242,169,59,0.16) 0%, transparent 68%);
+    pointer-events:none;
+  }
+  .hero .wrap{position:relative; z-index:2;}
+  .hero-eyebrow{margin-bottom:26px;}
+  .hero-headline{
+    font-family:var(--ff-display);
+    font-weight:700;
+    font-size:clamp(42px, 8.4vw, 104px);
+    line-height:0.98;
+    letter-spacing:-0.01em;
+    max-width:920px;
+  }
+  .hero-headline .gold{color:var(--gold);}
+  .hero-sub{
+    margin-top:28px;
+    max-width:540px;
+    font-size:17px;
+    color:var(--text-dim2);
+    font-style:italic;
+    font-family:var(--ff-body);
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:40px; flex-wrap:wrap;}
+
+  .plane-scene{
+    position:absolute;
+    top:12%; right:6%;
+    width:min(46vw, 560px);
+    height:min(46vw, 560px);
+    z-index:1;
+    pointer-events:none;
+  }
+  @media (max-width:900px){ .plane-scene{opacity:0.35; right:-8%; top:6%;} }
+  .plane-path{
+    fill:none; stroke:var(--gold); stroke-width:1.6; opacity:0.85;
+    stroke-dasharray:900; stroke-dashoffset:900;
+    animation:draw 2.6s cubic-bezier(.3,.6,.2,1) 0.4s forwards;
+  }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .plane-glyph{
+    offset-path:path('M40,430 C160,380 230,300 290,220 C330,168 360,120 470,60');
+    offset-rotate:auto;
+    animation:fly 2.6s cubic-bezier(.3,.6,.2,1) 0.4s forwards, bob 3.4s ease-in-out 3.2s infinite;
+    opacity:0;
+  }
+  @keyframes fly{
+    0%{ offset-distance:0%; opacity:0; }
+    4%{ opacity:1; }
+    100%{ offset-distance:100%; opacity:1; }
+  }
+  @keyframes bob{
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%{ transform:translateY(-8px) rotate(-2deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .plane-path{animation:none; stroke-dashoffset:0;}
+    .plane-glyph{animation:none; opacity:1; offset-distance:100%;}
+  }
+
+  .scroll-cue{
+    margin-top:60px; display:flex; align-items:center; gap:10px;
+    font-family:var(--ff-mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--text-dim2);
+  }
+  .scroll-cue .line{width:1px; height:34px; background:linear-gradient(var(--gold), transparent); animation:pulse-line 2s ease-in-out infinite;}
+  @keyframes pulse-line{ 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+
+  /* ============ ABOUT STRIP (kept short) ============ */
+  .about-strip{
+    border-top:1px solid var(--line-soft);
+    border-bottom:1px solid var(--line-soft);
+    padding:34px 0;
+  }
+  .about-strip .wrap{display:flex; gap:40px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
+  .about-strip p{
+    font-size:15.5px; color:var(--text-dim2); max-width:640px; margin:0;
+  }
+  .about-strip p strong{color:var(--text); font-weight:600;}
+  .about-strip .stat-row{display:flex; gap:34px; flex-wrap:wrap;}
+  .stat{font-family:var(--ff-mono);}
+  .stat b{display:block; font-size:26px; color:var(--gold); font-weight:600;}
+  .stat span{font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim2);}
+
+  /* ============ TICKER ============ */
+  .ticker{
+    background:var(--gold);
+    color:var(--ink);
+    overflow:hidden;
+    white-space:nowrap;
+    padding:11px 0;
+  }
+  .ticker-track{
+    display:inline-flex;
+    animation:marquee 26s linear infinite;
+  }
+  .ticker-track span{
+    font-family:var(--ff-mono); font-size:12.5px; font-weight:600; letter-spacing:0.04em;
+    padding:0 22px; text-transform:uppercase;
+  }
+  .ticker-track span::after{content:'✦'; margin-left:22px; opacity:0.5;}
+  @keyframes marquee{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  @media (prefers-reduced-motion: reduce){ .ticker-track{animation:none;} }
+
+  /* ============ SECTION SHELL ============ */
+  section{padding:110px 0;}
+  @media (max-width:640px){ section{padding:76px 0;} }
+  .sec-head{display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:52px; flex-wrap:wrap;}
+  .sec-title{
+    font-family:var(--ff-display); font-weight:700;
+    font-size:clamp(30px, 4.4vw, 52px);
+    line-height:1.02; letter-spacing:-0.01em;
+    margin:14px 0 0;
+  }
+  .sec-title .gold{color:var(--gold);}
+  .sec-note{max-width:360px; font-size:14.5px; color:var(--text-dim2);}
+
+  /* ============ PROJECT BOARD ============ */
+  .board-filters{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:34px;}
+  .chip{
+    font-family:var(--ff-mono); font-size:12px; letter-spacing:0.04em; text-transform:uppercase;
+    padding:8px 15px; border-radius:100px; border:1px solid var(--line-soft);
+    color:var(--text-dim2); background:transparent; transition:all .2s ease;
+  }
+  .chip.active, .chip:hover{color:var(--ink); background:var(--gold); border-color:var(--gold);}
+
+  .board-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;}
+  @media (max-width:980px){ .board-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:660px){ .board-grid{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--bg-panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:26px;
+    display:flex; flex-direction:column; gap:16px;
+    transition:border-color .25s ease, transform .25s ease, background .25s ease;
+    position:relative;
+  }
+  .card:hover{border-color:var(--line); background:var(--bg-panel-2); transform:translateY(-3px);}
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px;}
+  .status{
+    font-family:var(--ff-mono); font-size:10.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+    padding:4px 10px; border-radius:100px; display:inline-flex; align-items:center; gap:6px;
+  }
+  .status::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .status.active{color:var(--ok); background:rgba(127,214,138,0.12);}
+  .status.recruiting{color:var(--gold); background:rgba(242,169,59,0.14);}
+  .status.upcoming{color:var(--new); background:rgba(122,168,255,0.12);}
+  .card-type{font-family:var(--ff-mono); font-size:11px; color:var(--text-dim2); text-transform:uppercase; letter-spacing:0.06em;}
+  .card h3{font-family:var(--ff-display); font-size:21px; font-weight:600; margin:0; line-height:1.15;}
+  .card p{font-size:14px; color:var(--text-dim2); margin:0; flex-grow:1;}
+  .tag-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .tag{font-family:var(--ff-mono); font-size:10.5px; color:var(--text-dim2); border:1px solid var(--line-soft); padding:3px 9px; border-radius:6px;}
+  .card-foot{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px; padding-top:16px; border-top:1px solid var(--line-soft);}
+  .deadline{font-family:var(--ff-mono); font-size:12px; color:var(--text-dim2);}
+  .deadline b{color:var(--gold); font-weight:600;}
+  .interest-btn{
+    font-family:var(--ff-mono); font-size:11.5px; font-weight:600; letter-spacing:0.03em;
+    color:var(--text); background:transparent; border:1px solid var(--line-soft);
+    padding:8px 14px; border-radius:100px; transition:all .2s ease;
+  }
+  .interest-btn:hover{background:var(--gold); border-color:var(--gold); color:var(--ink);}
+
+  /* ============ PROPOSE ============ */
+  .propose-panel{
+    background:var(--bg-panel);
+    border:1px solid var(--line-soft);
+    border-radius:20px;
+    padding:44px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:44px;
+  }
+  @media (max-width:900px){ .propose-panel{grid-template-columns:1fr; padding:28px;} }
+
+  .field{display:flex; flex-direction:column; gap:8px; margin-bottom:18px;}
+  .field label{font-family:var(--ff-mono); font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-dim2);}
+  .field input, .field textarea, .field select{
+    background:var(--bg-raised);
+    border:1px solid var(--line-soft);
+    border-radius:9px;
+    padding:12px 14px;
+    color:var(--text);
+    font-family:var(--ff-body);
+    font-size:14.5px;
+    resize:vertical;
+    transition:border-color .2s ease;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{
+    outline:none; border-color:var(--gold);
+  }
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:520px){ .field-row{grid-template-columns:1fr;} }
+  .form-note{font-size:12.5px; color:var(--text-dim2); margin-top:2px;}
+  #proposeForm button[type=submit]{width:100%; justify-content:center; margin-top:6px;}
+  .form-status{font-family:var(--ff-mono); font-size:12.5px; margin-top:12px; min-height:16px;}
+  .form-status.ok{color:var(--ok);}
+  .form-status.err{color:var(--danger);}
+
+  .recent-box h4{
+    font-family:var(--ff-mono); font-size:12px; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--text-dim2); margin:0 0 18px;
+  }
+  .recent-list{display:flex; flex-direction:column; gap:0; max-height:420px; overflow-y:auto; padding-right:6px;}
+  .recent-list::-webkit-scrollbar{width:5px;}
+  .recent-list::-webkit-scrollbar-thumb{background:var(--line); border-radius:10px;}
+  .recent-item{
+    padding:16px 0; border-bottom:1px solid var(--line-soft);
+  }
+  .recent-item:last-child{border-bottom:none;}
+  .recent-item-top{display:flex; justify-content:space-between; gap:10px; align-items:baseline;}
+  .recent-item-top strong{font-family:var(--ff-display); font-size:15px; font-weight:600;}
+  .recent-item-top span{font-family:var(--ff-mono); font-size:10.5px; color:var(--text-dim2); white-space:nowrap;}
+  .recent-item p{margin:6px 0 0; font-size:13px; color:var(--text-dim2);}
+  .recent-item .by{font-family:var(--ff-mono); font-size:11px; color:var(--gold); margin-top:6px; display:block;}
+  .recent-empty{font-size:13.5px; color:var(--text-dim2); padding:20px 0;}
+
+  /* ============ GALLERY ============ */
+  .gallery-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:18px;}
+  @media (max-width:980px){ .gallery-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:640px){ .gallery-grid{grid-template-columns:1fr;} }
+  .g-tile{
+    position:relative;
+    border-radius:var(--radius);
+    overflow:hidden;
+    aspect-ratio:4/3.1;
+    border:1px solid var(--line-soft);
+    cursor:default;
+  }
+  .g-art{position:absolute; inset:0;}
+  .g-tile .g-overlay{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 40%, rgba(10,12,17,0.92) 100%);
+  }
+  .g-tile .g-info{
+    position:absolute; left:0; right:0; bottom:0; padding:18px;
+    transform:translateY(8px); opacity:0.92; transition:transform .3s ease;
+  }
+  .g-tile:hover .g-info{transform:translateY(0);}
+  .g-year{font-family:var(--ff-mono); font-size:11px; color:var(--gold); letter-spacing:0.06em;}
+  .g-tile h4{font-family:var(--ff-display); font-size:17px; font-weight:600; margin:5px 0 3px;}
+  .g-tile p{font-size:12.5px; color:var(--text-dim2); margin:0;}
+
+  /* ============ HELP ============ */
+  .help-layout{display:grid; grid-template-columns:1.3fr 1fr; gap:48px;}
+  @media (max-width:900px){ .help-layout{grid-template-columns:1fr;} }
+  .faq-item{border-bottom:1px solid var(--line-soft);}
+  .faq-q{
+    width:100%; text-align:left; background:none; border:none; color:var(--text);
+    padding:20px 0; display:flex; justify-content:space-between; align-items:center; gap:16px;
+    font-family:var(--ff-display); font-size:16.5px; font-weight:500;
+  }
+  .faq-q .plus{
+    font-family:var(--ff-mono); font-size:18px; color:var(--gold); flex-shrink:0;
+    transition:transform .25s ease;
+  }
+  .faq-item.open .plus{transform:rotate(45deg);}
+  .faq-a{
+    max-height:0; overflow:hidden; transition:max-height .35s ease, padding .35s ease;
+    font-size:14.5px; color:var(--text-dim2); padding:0;
+  }
+  .faq-item.open .faq-a{max-height:200px; padding-bottom:20px;}
+
+  .contact-card{
+    background:var(--bg-panel); border:1px solid var(--line-soft); border-radius:var(--radius);
+    padding:30px;
+  }
+  .contact-card h4{font-family:var(--ff-display); font-size:19px; margin:0 0 6px;}
+  .contact-card > p{font-size:14px; color:var(--text-dim2); margin:0 0 24px;}
+  .contact-row{display:flex; gap:14px; align-items:flex-start; padding:14px 0; border-top:1px solid var(--line-soft);}
+  .contact-row:first-of-type{border-top:none;}
+  .contact-row svg{flex-shrink:0; margin-top:2px; color:var(--gold);}
+  .contact-row .label{font-family:var(--ff-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-dim2); margin-bottom:3px;}
+  .contact-row .value{font-size:14px; color:var(--text);}
+  .contact-row a.value:hover{color:var(--gold);}
+
+  /* ============ FOOTER ============ */
+  footer{border-top:1px solid var(--line-soft); padding:56px 0 34px;}
+  .footer-top{display:flex; justify-content:space-between; align-items:flex-start; gap:30px; flex-wrap:wrap; padding-bottom:40px;}
+  .footer-brand{display:flex; align-items:center; gap:10px;}
+  .footer-brand svg{width:26px; height:26px;}
+  .footer-brand span{font-family:var(--ff-display); font-weight:700; font-size:16px;}
+  .footer-tag{font-size:13.5px; color:var(--text-dim2); margin-top:10px; max-width:280px;}
+  .footer-cols{display:flex; gap:56px; flex-wrap:wrap;}
+  .footer-col h5{font-family:var(--ff-mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim2); margin:0 0 14px;}
+  .footer-col a, .footer-col span{display:block; font-size:14px; color:var(--text); margin-bottom:10px;}
+  .footer-col a:hover{color:var(--gold);}
+  .footer-bottom{display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; padding-top:24px; border-top:1px solid var(--line-soft);}
+  .footer-bottom p{font-family:var(--ff-mono); font-size:11.5px; color:var(--text-dim2); margin:0;}
+
+  .divider-swoop{display:flex; justify-content:center; margin:0; opacity:0.5;}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header id="siteHeader">
+  <nav class="wrap">
+    <a href="#top" class="brand">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 30C14 22 20 14 24 6L34 12L24 22L16 20L6 30Z" fill="#F2A93B"/></svg>
+      <span class="brand-word">AT<span>S</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#projects">Board</a></li>
+      <li><a href="#propose">Propose</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#help">Help</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="#propose" class="btn btn-solid">Propose an idea</a>
+      <button class="burger" id="burgerBtn" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#projects">Board</a>
+  <a href="#propose">Propose</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#help">Help</a>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+
+  <svg class="plane-scene" viewBox="0 0 520 480" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path class="plane-path" d="M40,430 C160,380 230,300 290,220 C330,168 360,120 470,60"/>
+    <g class="plane-glyph">
+      <path d="M0,26 L52,0 L38,20 L52,32 L28,28 L0,26Z" fill="#F2A93B"/>
+    </g>
+  </svg>
+
+  <div class="wrap">
+    <div class="hero-eyebrow eyebrow reveal in">PUNJAB ENGINEERING COLLEGE · CHANDIGARH</div>
+    <h1 class="hero-headline">FOLD IT.<br>LAUNCH IT.<br><span class="gold">TEST IT FOR REAL.</span></h1>
+    <p class="hero-sub">The Aerospace Technical Society is where PEC's aero, avionics and propulsion builds move off paper — this page tracks what's active, what's open, and what needs a hand.</p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn btn-solid">See the board</a>
+      <a href="#propose" class="btn">Propose a project →</a>
+    </div>
+    <div class="scroll-cue"><span class="line"></span>SCROLL</div>
+  </div>
+</section>
+
+<!-- ============ ABOUT (kept short, per request) ============ -->
+<section class="about-strip" style="padding:34px 0;">
+  <div class="wrap">
+    <p><strong>ATS</strong> is PEC's student aerospace society — flight, propulsion and orbital mechanics, built by undergrads, outside class hours.</p>
+    <div class="stat-row">
+      <div class="stat"><b id="statActive">–</b><span>Active builds</span></div>
+      <div class="stat"><b id="statOpen">–</b><span>Open competitions</span></div>
+      <div class="stat"><b>6</b><span>Past missions logged</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TICKER ============ -->
+<div class="ticker">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<!-- ============ PROJECT / COMPETITION BOARD ============ -->
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="eyebrow">ON THE BOARD</div>
+        <h2 class="sec-title">Current & upcoming <span class="gold">missions</span></h2>
+      </div>
+      <p class="sec-note">Every build and competition ATS is running right now, plus what's opening next. Tap a card to say you're interested.</p>
+    </div>
+
+    <div class="board-filters reveal">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="project">Projects</button>
+      <button class="chip" data-filter="competition">Competitions</button>
+      <button class="chip" data-filter="active">Active</button>
+      <button class="chip" data-filter="recruiting">Recruiting</button>
+      <button class="chip" data-filter="upcoming">Upcoming</button>
+    </div>
+
+    <div class="board-grid reveal-stagger" id="boardGrid"></div>
+  </div>
+</section>
+
+<!-- ============ PROPOSE ============ -->
+<section id="propose">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="eyebrow">GOT AN IDEA?</div>
+        <h2 class="sec-title">Pitch a <span class="gold">project or competition</span></h2>
+      </div>
+      <p class="sec-note">Anyone in PEC can drop an idea here — a competition worth entering, a build worth starting. The core team reviews these to shape next semester's board.</p>
+    </div>
+
+    <div class="propose-panel reveal">
+      <div>
+        <form id="proposeForm">
+          <div class="field-row">
+            <div class="field">
+              <label for="pName">Your name</label>
+              <input type="text" id="pName" required placeholder="Full name">
+            </div>
+            <div class="field">
+              <label for="pBranch">Branch & year</label>
+              <input type="text" id="pBranch" placeholder="e.g. Aerospace, 3rd yr">
+            </div>
+          </div>
+          <div class="field">
+            <label for="pType">Type</label>
+            <select id="pType">
+              <option value="Project">Project</option>
+              <option value="Competition">Competition</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pTitle">Project / competition name</label>
+            <input type="text" id="pTitle" required placeholder="e.g. Robotics India National Championship">
+          </div>
+          <div class="field">
+            <label for="pNote">Why it's worth doing (one or two lines)</label>
+            <textarea id="pNote" rows="3" placeholder="What it involves, and why ATS should take it on"></textarea>
+          </div>
+          <button type="submit" class="btn btn-solid">Submit idea</button>
+          <div class="form-status" id="formStatus"></div>
+          <p class="form-note">Submissions post to a shared board other visitors can see — skip identifying details you'd rather keep private.</p>
+        </form>
+      </div>
+
+      <div class="recent-box">
+        <h4>Recently proposed</h4>
+        <div class="recent-list" id="recentList">
+          <p class="recent-empty">Loading proposals…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GALLERY ============ -->
+<section id="gallery">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="eyebrow">MISSION LOG</div>
+        <h2 class="sec-title">Past <span class="gold">builds</span></h2>
+      </div>
+      <p class="sec-note">Closed-out projects and competitions — swap these tiles for real build photos whenever you've got them.</p>
+    </div>
+    <div class="gallery-grid reveal-stagger" id="galleryGrid"></div>
+  </div>
+</section>
+
+<!-- ============ HELP ============ -->
+<section id="help">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="eyebrow">NEED A HAND?</div>
+        <h2 class="sec-title">Help & <span class="gold">how to join</span></h2>
+      </div>
+    </div>
+
+    <div class="help-layout">
+      <div class="reveal" id="faqList"></div>
+
+      <div class="contact-card reveal">
+        <h4>Talk to the core team</h4>
+        <p>For build help, sponsorship, or anything the FAQ doesn't cover.</p>
+
+        <div class="contact-row">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z" opacity="0"/><path d="M4 6l8 7 8-7M4 6v12h16V6"/></svg>
+          <div><div class="label">Email</div><a class="value" href="mailto:ats@pec.edu.in">ats@pec.edu.in</a></div>
+        </div>
+        <div class="contact-row">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+          <div><div class="label">Instagram</div><a class="value" href="#">@ats.pec</a></div>
+        </div>
+        <div class="contact-row">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <div><div class="label">Workshop</div><span class="value">Aerospace Dept., PEC — check board for open hours</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 30C14 22 20 14 24 6L34 12L24 22L16 20L6 30Z" fill="#F2A93B"/></svg>
+          <span>AEROSPACE TECHNICAL SOCIETY</span>
+        </div>
+        <p class="footer-tag">Punjab Engineering College, Chandigarh. Undergrad-run, hardware-first.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h5>Site</h5>
+          <a href="#projects">Board</a>
+          <a href="#propose">Propose</a>
+          <a href="#gallery">Gallery</a>
+          <a href="#help">Help</a>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <a href="mailto:ats@pec.edu.in">ats@pec.edu.in</a>
+          <a href="#">@ats.pec</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span id="year"></span> Aerospace Technical Society, PEC. Built by the society, for the society.</p>
+      <p>Sample content — swap in real projects, dates & contacts.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ---------- NAV: scroll state + mobile menu + active link ---------- */
+  var header = document.getElementById('siteHeader');
+  var burger = document.getElementById('burgerBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  var ticking = false;
+
+  function onScroll(){
+    if(!ticking){
+      requestAnimationFrame(function(){
+        header.classList.toggle('scrolled', window.scrollY > 30);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  burger.addEventListener('click', function(){
+    mobileMenu.classList.toggle('open');
+  });
+  mobileMenu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ mobileMenu.classList.remove('open'); });
+  });
+
+  var navLinks = document.querySelectorAll('.nav-links a');
+  var sectionsForNav = ['projects','propose','gallery','help'].map(function(id){ return document.getElementById(id); });
+  var navObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        var id = entry.target.id;
+        navLinks.forEach(function(l){
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px'});
+  sectionsForNav.forEach(function(s){ if(s) navObserver.observe(s); });
+
+  /* ---------- SCROLL REVEAL ---------- */
+  var revealTargets = document.querySelectorAll('.reveal, .reveal-stagger');
+  var revealObserver = new IntersectionObserver(function(entries, obs){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.12});
+  revealTargets.forEach(function(t){ revealObserver.observe(t); });
+
+  /* ---------- DATA: projects & competitions ---------- */
+  var items = [
+    {
+      id:'uav-nav', type:'project', status:'active',
+      title:'Autonomous UAV Navigation Rig',
+      desc:'Building a GPS-denied indoor navigation stack for a quadrotor — visual-inertial odometry feeding a live occupancy map.',
+      tags:['Avionics','Drones'], deadline:'Ongoing · builds Tue/Thu'
+    },
+    {
+      id:'nanosat', type:'project', status:'active',
+      title:'Nano-Satellite Simulator Bench',
+      desc:'A frictionless air-bearing puck for testing relative-navigation and attitude-control algorithms on the ground.',
+      tags:['Astronautics','Controls'], deadline:'Ongoing · lab access weekly'
+    },
+    {
+      id:'ppt', type:'project', status:'recruiting',
+      title:'Pulsed Plasma Thruster Test Stand',
+      desc:'Designing and instrumenting a thrust stand for a lab-scale pulsed plasma thruster — vacuum, electronics and diagnostics all needed.',
+      tags:['Propulsion','Electronics'], deadline:'Recruiting through September'
+    },
+    {
+      id:'gokart', type:'project', status:'active',
+      title:'Campus Go-Kart Build',
+      desc:'Chassis geometry, suspension tuning and drivetrain layout for a kart aimed at Kari Motor Speedway.',
+      tags:['Vehicle Design','Structures'], deadline:'Ongoing · workshop Sat'
+    },
+    {
+      id:'sae-aero', type:'competition', status:'upcoming',
+      title:'SAE Aero Design Challenge',
+      desc:'Regular-class fixed-wing competition — payload-optimised airframe, built and flight-tested as a team.',
+      tags:['Fixed-Wing','Competition'], deadline:'Registration closes', deadlineDate:'2026-10-15'
+    },
+    {
+      id:'dbf', type:'competition', status:'upcoming',
+      title:'AIAA Design-Build-Fly',
+      desc:'A full design-build-fly cycle against a fresh mission spec — structures, aero and manufacturing in one team.',
+      tags:['Fixed-Wing','Competition'], deadline:'Team formation closes', deadlineDate:'2026-11-02'
+    }
+  ];
+
+  function daysLeft(dateStr){
+    var target = new Date(dateStr + 'T23:59:59');
+    var diff = Math.ceil((target - new Date()) / 86400000);
+    if(diff < 0) return 'closed';
+    if(diff === 0) return 'today';
+    return diff + ' day' + (diff === 1 ? '' : 's') + ' left';
+  }
+
+  var statusLabel = {active:'Active', recruiting:'Recruiting', upcoming:'Upcoming'};
+
+  var boardGrid = document.getElementById('boardGrid');
+  function renderBoard(list){
+    boardGrid.innerHTML = list.map(function(it){
+      var deadlineText = it.deadlineDate ? (it.deadline + ' — <b>' + daysLeft(it.deadlineDate) + '</b>') : it.deadline;
+      return (
+        '<div class="card" data-type="'+it.type+'" data-status="'+it.status+'">' +
+          '<div class="card-top">' +
+            '<span class="status '+it.status+'">'+statusLabel[it.status]+'</span>' +
+            '<span class="card-type">'+it.type+'</span>' +
+          '</div>' +
+          '<h3>'+it.title+'</h3>' +
+          '<p>'+it.desc+'</p>' +
+          '<div class="tag-row">'+it.tags.map(function(t){return '<span class="tag">'+t+'</span>';}).join('')+'</div>' +
+          '<div class="card-foot">' +
+            '<span class="deadline">'+deadlineText+'</span>' +
+            '<button class="interest-btn" data-title="'+it.title.replace(/"/g,'&quot;')+'">I\'m interested</button>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+
+    boardGrid.querySelectorAll('.interest-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var titleField = document.getElementById('pTitle');
+        titleField.value = btn.getAttribute('data-title');
+        document.getElementById('propose').scrollIntoView({behavior:'smooth'});
+        setTimeout(function(){ document.getElementById('pName').focus(); }, 500);
+      });
+    });
+  }
+  renderBoard(items);
+  boardGrid.classList.add('in'); // stagger handled on first paint via observer too; ensure fallback
+
+  document.getElementById('statActive').textContent = items.filter(function(i){return i.status==='active';}).length;
+  document.getElementById('statOpen').textContent = items.filter(function(i){return i.type==='competition' && i.status!=='closed';}).length;
+
+  var tickerBits = items.map(function(it){
+    var suffix = it.deadlineDate ? ' — ' + daysLeft(it.deadlineDate) : ' — ' + statusLabel[it.status];
+    return it.title + suffix;
+  });
+  var tickerHTML = tickerBits.map(function(t){ return '<span>'+t+'</span>'; }).join('');
+  document.getElementById('tickerTrack').innerHTML = tickerHTML + tickerHTML;
+
+  /* ---------- FILTERS ---------- */
+  var chips = document.querySelectorAll('.chip');
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      var f = chip.getAttribute('data-filter');
+      var filtered = items.filter(function(it){
+        if(f === 'all') return true;
+        if(f === 'project' || f === 'competition') return it.type === f;
+        return it.status === f;
+      });
+      renderBoard(filtered);
+    });
+  });
+
+  /* ---------- GALLERY (past projects) ---------- */
+  var pastProjects = [
+    {title:'Mini Jet Engine Build', year:'2024', cat:'Propulsion', note:'A working small-scale turbojet, built and bench-tested end to end.', c1:'#f2a93b', c2:'#1c202b'},
+    {title:'Autonomous Ground Rover', year:'2024', cat:'Robotics', note:'ESP32-based rover for autonomous sample collection.', c1:'#7aa8ff', c2:'#12151c'},
+    {title:'Campus Drone Fleet', year:'2023', cat:'UAV', note:'A self-built multirotor platform for aerial mapping runs.', c1:'#f2a93b', c2:'#0a0c11'},
+    {title:'Kinematic Sculpture', year:'2023', cat:'Structures', note:'A wind-driven kinetic installation exploring mechanism design.', c1:'#7fd68a', c2:'#171b24'},
+    {title:'Shock Tube Demonstrator', year:'2023', cat:'Fluids', note:'A benchtop shock tube built to visualise compressible flow.', c1:'#e8654f', c2:'#12151c'},
+    {title:'Weather Balloon Payload', year:'2022', cat:'Astronautics', note:'Instrumented near-space payload recovered after ascent.', c1:'#ffd37a', c2:'#0a0c11'}
+  ];
+
+  var galleryGrid = document.getElementById('galleryGrid');
+  galleryGrid.innerHTML = pastProjects.map(function(p){
+    return (
+      '<div class="g-tile">' +
+        '<div class="g-art" style="background:'+
+          'radial-gradient(circle at 25% 20%, '+p.c1+'55, transparent 55%), '+
+          'linear-gradient(155deg, '+p.c2+', #0a0c11 80%)'+
+        ';"></div>' +
+        '<div class="g-overlay"></div>' +
+        '<div class="g-info">' +
+          '<div class="g-year">'+p.year+' · '+p.cat+'</div>' +
+          '<h4>'+p.title+'</h4>' +
+          '<p>'+p.note+'</p>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+
+  /* ---------- FAQ ---------- */
+  var faqs = [
+    {q:'Who can join ATS?', a:'Any PEC undergrad, any branch, any year. Aerospace helps but isn\'t required — most builds need electronics, mechanical and software hands too.'},
+    {q:'Do I need prior project experience?', a:'No. First-years join builds every semester and pick things up alongside the team. Show up to a workshop session and you\'ll be paired with something to work on.'},
+    {q:'How do I propose a project or competition?', a:'Use the "Propose" section above — it goes straight to the core team\'s review list for the next planning cycle.'},
+    {q:'Where and when does the society meet?', a:'Workshop sessions run out of the Aerospace Department — check the mission board above for which builds are meeting this week.'},
+    {q:'I\'m stuck on a build — who do I ask?', a:'Email the core team or drop by a workshop slot — most active projects have someone around during their listed hours.'}
+  ];
+  var faqList = document.getElementById('faqList');
+  faqList.innerHTML = faqs.map(function(f, i){
+    return (
+      '<div class="faq-item" data-i="'+i+'">' +
+        '<button class="faq-q"><span>'+f.q+'</span><span class="plus">+</span></button>' +
+        '<div class="faq-a"><p style="margin:0;">'+f.a+'</p></div>' +
+      '</div>'
+    );
+  }).join('');
+  faqList.querySelectorAll('.faq-q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btn.parentElement.classList.toggle('open');
+    });
+  });
+
+  /* ---------- PROPOSE FORM + PERSISTENT STORAGE ---------- */
+  var STORAGE_KEY = 'ats:proposals';
+  var recentList = document.getElementById('recentList');
+  var formStatus = document.getElementById('formStatus');
+
+  function escapeHtml(str){
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function renderProposals(list){
+    if(!list || list.length === 0){
+      recentList.innerHTML = '<p class="recent-empty">No proposals yet — be the first to pitch something.</p>';
+      return;
+    }
+    recentList.innerHTML = list.slice().reverse().map(function(p){
+      var when = '';
+      try{ when = new Date(p.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'}); }catch(e){ when=''; }
+      return (
+        '<div class="recent-item">' +
+          '<div class="recent-item-top"><strong>'+escapeHtml(p.title)+'</strong><span>'+escapeHtml(p.type||'Project')+' · '+when+'</span></div>' +
+          (p.note ? '<p>'+escapeHtml(p.note)+'</p>' : '') +
+          '<span class="by">— '+escapeHtml(p.name)+(p.branch ? ', '+escapeHtml(p.branch) : '')+'</span>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  async function loadProposals(){
+    try{
+      var result = await window.storage.get(STORAGE_KEY, true);
+      var list = result && result.value ? JSON.parse(result.value) : [];
+      renderProposals(list);
+      return list;
+    }catch(err){
+      renderProposals([]);
+      return [];
+    }
+  }
+
+  var proposalsCache = [];
+  loadProposals().then(function(list){ proposalsCache = list; });
+
+  document.getElementById('proposeForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var name = document.getElementById('pName').value.trim();
+    var branch = document.getElementById('pBranch').value.trim();
+    var type = document.getElementById('pType').value;
+    var title = document.getElementById('pTitle').value.trim();
+    var note = document.getElementById('pNote').value.trim();
+
+    if(!name || !title){
+      formStatus.textContent = 'Please add your name and a project/competition name.';
+      formStatus.className = 'form-status err';
+      return;
+    }
+
+    var entry = {name:name, branch:branch, type:type, title:title, note:note, ts:Date.now()};
+    formStatus.textContent = 'Submitting…';
+    formStatus.className = 'form-status';
+
+    try{
+      var current = await window.storage.get(STORAGE_KEY, true).catch(function(){ return null; });
+      var list = current && current.value ? JSON.parse(current.value) : [];
+      list.push(entry);
+      var res = await window.storage.set(STORAGE_KEY, JSON.stringify(list), true);
+      if(!res){ throw new Error('save failed'); }
+      proposalsCache = list;
+      renderProposals(list);
+      formStatus.textContent = 'Thanks — your idea is on the board.';
+      formStatus.className = 'form-status ok';
+      this.reset();
+    }catch(err){
+      formStatus.textContent = 'Couldn\'t save that just now — try again in a moment.';
+      formStatus.className = 'form-status err';
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
