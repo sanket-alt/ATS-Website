@@ -244,7 +244,7 @@
   .scroll-cue .line{width:1px; height:34px; background:linear-gradient(var(--gold), transparent); animation:pulse-line 2s ease-in-out infinite;}
   @keyframes pulse-line{ 0%,100%{opacity:0.4;} 50%{opacity:1;} }
 
-  /* ============ ABOUT STRIP (kept short) ============ */
+  /* ============ ABOUT STRIP ============ */
   .about-strip{
     border-top:1px solid var(--line-soft);
     border-bottom:1px solid var(--line-soft);
@@ -394,7 +394,7 @@
   .recent-item .by{font-family:var(--ff-mono); font-size:11px; color:var(--gold); margin-top:6px; display:block;}
   .recent-empty{font-size:13.5px; color:var(--text-dim2); padding:20px 0;}
 
-  /* ============ GALLERY ============ */
+  /* ============ PAST PROJECTS ============ */
   .gallery-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:18px;}
   @media (max-width:980px){ .gallery-grid{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:640px){ .gallery-grid{grid-template-columns:1fr;} }
@@ -419,6 +419,89 @@
   .g-year{font-family:var(--ff-mono); font-size:11px; color:var(--gold); letter-spacing:0.06em;}
   .g-tile h4{font-family:var(--ff-display); font-size:17px; font-weight:600; margin:5px 0 3px;}
   .g-tile p{font-size:12.5px; color:var(--text-dim2); margin:0;}
+
+  /* ============ HORIZONTAL GALLERY (NEW) ============ */
+  .hz-gallery-section {
+    position: relative;
+    padding: 110px 0;
+    overflow: hidden; 
+  }
+
+  .hz-bg-lines {
+    position: absolute;
+    top: 0; left: 0; width: 200%; height: 100%;
+    background-image: radial-gradient(ellipse at center, transparent 40%, var(--bg) 80%), 
+                      repeating-radial-gradient(ellipse at 50% 50%, transparent, transparent 40px, rgba(242,169,59,0.03) 41px, rgba(242,169,59,0.03) 42px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hz-track {
+    display: flex;
+    gap: 8vw; 
+    padding: 40px 10vw 80px; 
+    overflow-x: auto;
+    scroll-snap-type: x mandatory; 
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    z-index: 1;
+    align-items: center; 
+    min-height: 70vh; 
+  }
+
+  .hz-track::-webkit-scrollbar { display: none; }
+  .hz-track { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .hz-item {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hz-item.large { width: 55vw; max-width: 700px; }
+  .hz-item.medium { width: 35vw; max-width: 450px; }
+  .hz-item.small { width: 22vw; max-width: 300px; }
+
+  .hz-item.align-top { align-self: flex-start; margin-top: 5vh; }
+  .hz-item.align-center { align-self: center; }
+  .hz-item.align-bottom { align-self: flex-end; margin-bottom: 5vh; }
+
+  .hz-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    filter: grayscale(20%); 
+    transition: filter 0.4s ease;
+  }
+
+  .hz-item:hover img {
+    filter: grayscale(0%);
+  }
+
+  .hz-caption {
+    font-family: var(--ff-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-dim2);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .hz-track {
+      gap: 15vw;
+      min-height: 50vh;
+      padding: 20px 5vw 40px;
+    }
+    .hz-item.large { width: 85vw; }
+    .hz-item.medium { width: 70vw; }
+    .hz-item.small { width: 55vw; }
+    
+    .hz-item.align-top { margin-top: 0; }
+    .hz-item.align-bottom { margin-bottom: 0; }
+  }
 
   /* ============ HELP ============ */
   .help-layout{display:grid; grid-template-columns:1.3fr 1fr; gap:48px;}
@@ -482,6 +565,7 @@
     <ul class="nav-links">
       <li><a href="#projects">Board</a></li>
       <li><a href="#propose">Propose</a></li>
+      <li><a href="#past-projects">Past Projects</a></li>
       <li><a href="#gallery">Gallery</a></li>
       <li><a href="#help">Help</a></li>
     </ul>
@@ -497,6 +581,7 @@
 <div class="mobile-menu" id="mobileMenu">
   <a href="#projects">Board</a>
   <a href="#propose">Propose</a>
+  <a href="#past-projects">Past Projects</a>
   <a href="#gallery">Gallery</a>
   <a href="#help">Help</a>
 </div>
@@ -525,7 +610,7 @@
   </div>
 </section>
 
-<!-- ============ ABOUT (kept short, per request) ============ -->
+<!-- ============ ABOUT ============ -->
 <section class="about-strip" style="padding:34px 0;">
   <div class="wrap">
     <p><strong>ATS</strong> is PEC's student aerospace society — flight, propulsion and orbital mechanics, built by undergrads, outside class hours.</p>
@@ -621,8 +706,8 @@
   </div>
 </section>
 
-<!-- ============ GALLERY ============ -->
-<section id="gallery">
+<!-- ============ PAST PROJECTS ============ -->
+<section id="past-projects">
   <div class="wrap">
     <div class="sec-head reveal">
       <div>
@@ -632,6 +717,42 @@
       <p class="sec-note">Closed-out projects and competitions — swap these tiles for real build photos whenever you've got them.</p>
     </div>
     <div class="gallery-grid reveal-stagger" id="galleryGrid"></div>
+  </div>
+</section>
+
+<!-- ============ HORIZONTAL GALLERY ============ -->
+<section id="gallery" class="hz-gallery-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="eyebrow">IN THE FIELD</div>
+        <h2 class="sec-title">Visual <span class="gold">archives</span></h2>
+      </div>
+    </div>
+  </div>
+  
+  <div class="hz-bg-lines"></div>
+
+  <div class="hz-track reveal">
+    <div class="hz-item medium align-top">
+      <span class="hz-caption">HIGH PERFORMANCE GALA, 2024</span>
+      <img src="https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=800&q=80" alt="Gala" loading="lazy">
+    </div>
+
+    <div class="hz-item large align-center">
+      <span class="hz-caption">BARCELONA, 2024</span>
+      <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80" alt="Barcelona" loading="lazy">
+    </div>
+
+    <div class="hz-item small align-bottom">
+      <span class="hz-caption">BATTERSEA, 2024</span>
+      <img src="https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&w=600&q=80" alt="Battersea" loading="lazy">
+    </div>
+
+    <div class="hz-item medium align-top">
+      <span class="hz-caption">AUSTRIA, 2024</span>
+      <img src="https://images.unsplash.com/photo-1506869640319-a1a1200843db?auto=format&fit=crop&w=800&q=80" alt="Austria" loading="lazy">
+    </div>
   </div>
 </section>
 
@@ -685,6 +806,7 @@
           <h5>Site</h5>
           <a href="#projects">Board</a>
           <a href="#propose">Propose</a>
+          <a href="#past-projects">Past Projects</a>
           <a href="#gallery">Gallery</a>
           <a href="#help">Help</a>
         </div>
@@ -733,7 +855,7 @@
   });
 
   var navLinks = document.querySelectorAll('.nav-links a');
-  var sectionsForNav = ['projects','propose','gallery','help'].map(function(id){ return document.getElementById(id); });
+  var sectionsForNav = ['projects','propose','past-projects','gallery','help'].map(function(id){ return document.getElementById(id); });
   var navObserver = new IntersectionObserver(function(entries){
     entries.forEach(function(entry){
       if(entry.isIntersecting){
@@ -839,7 +961,7 @@
     });
   }
   renderBoard(items);
-  boardGrid.classList.add('in'); // stagger handled on first paint via observer too; ensure fallback
+  boardGrid.classList.add('in'); 
 
   document.getElementById('statActive').textContent = items.filter(function(i){return i.status==='active';}).length;
   document.getElementById('statOpen').textContent = items.filter(function(i){return i.type==='competition' && i.status!=='closed';}).length;
@@ -867,7 +989,7 @@
     });
   });
 
-  /* ---------- GALLERY (past projects) ---------- */
+  /* ---------- PAST PROJECTS ---------- */
   var pastProjects = [
     {title:'Mini Jet Engine Build', year:'2024', cat:'Propulsion', note:'A working small-scale turbojet, built and bench-tested end to end.', c1:'#f2a93b', c2:'#1c202b'},
     {title:'Autonomous Ground Rover', year:'2024', cat:'Robotics', note:'ESP32-based rover for autonomous sample collection.', c1:'#7aa8ff', c2:'#12151c'},
