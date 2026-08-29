@@ -49,6 +49,13 @@
     line-height:1.5;
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+  @media (max-width:480px){
+    .hero{padding:120px 0 60px;}
+    .board-grid{gap:16px;}
+    .propose-panel{padding:22px;}
+    .contact-card{padding:22px;}
   }
   img,svg{display:block; max-width:100%;}
   a{color:inherit; text-decoration:none;}
@@ -244,7 +251,7 @@
   .scroll-cue .line{width:1px; height:34px; background:linear-gradient(var(--gold), transparent); animation:pulse-line 2s ease-in-out infinite;}
   @keyframes pulse-line{ 0%,100%{opacity:0.4;} 50%{opacity:1;} }
 
-  /* ============ ABOUT STRIP ============ */
+  /* ============ ABOUT STRIP (kept short) ============ */
   .about-strip{
     border-top:1px solid var(--line-soft);
     border-bottom:1px solid var(--line-soft);
@@ -394,11 +401,78 @@
   .recent-item .by{font-family:var(--ff-mono); font-size:11px; color:var(--gold); margin-top:6px; display:block;}
   .recent-empty{font-size:13.5px; color:var(--text-dim2); padding:20px 0;}
 
-  /* ============ PAST PROJECTS ============ */
-  .gallery-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:18px;}
-  @media (max-width:980px){ .gallery-grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:640px){ .gallery-grid{grid-template-columns:1fr;} }
-  .g-tile{
+  /* ============ GALLERY — horizontal scroll strip, scattered like landonorris.com ============ */
+  .hgallery-hint{font-family:var(--ff-mono); font-size:12.5px; font-style:normal;}
+
+  /* Base / mobile: a plain native horizontal scroller — fast, touch-native, no scroll-jacking */
+  .hgallery-pin{ position:relative; }
+  .hgallery-viewport{
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding:6px 28px 40px;
+  }
+  .hgallery-viewport::-webkit-scrollbar{display:none;}
+  @media (max-width:640px){ .hgallery-viewport{ padding:4px 20px 32px; } }
+  .hgallery-track{
+    display:flex;
+    align-items:flex-start;
+    gap:36px;
+    width:max-content;
+    will-change:transform;
+  }
+
+  /* Desktop pinned mode: JS adds .pin-mode when viewport is wide + hover-capable */
+  .hgallery-pin.pin-mode .hgallery-viewport{
+    position:sticky;
+    top:78px;
+    height:var(--hg-h, 720px);
+    overflow:hidden;
+    padding:6px 0 0 48px;
+  }
+  .hgallery-pin.pin-mode .hgallery-track{ gap:52px; }
+
+  /* Each tile: caption sits ABOVE the image, as its own text block — not overlaid on the photo */
+  .htile{
+    flex:0 0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    scroll-snap-align:start;
+    margin-top:calc(var(--off, 0) * 1px);
+  }
+  @media (max-width:640px){ .htile{ margin-top:calc(var(--off, 0) * 0.4px); } }
+
+  .htile-cap .yr{font-family:var(--ff-mono); font-size:11px; color:var(--gold); letter-spacing:0.1em; text-transform:uppercase;}
+  .htile-cap .lbl{font-family:var(--ff-display); font-size:16.5px; font-weight:500; margin-top:4px; line-height:1.2; color:var(--text);}
+
+  .htile-art{
+    border-radius:var(--radius);
+    overflow:hidden;
+    border:1px solid var(--line-soft);
+  }
+  .htile-lg .htile-art{ width:64vw; height:52vh; }
+  .htile-md .htile-art{ width:50vw; height:40vh; }
+  .htile-sm .htile-art{ width:38vw; height:30vh; }
+  .htile-lg{ width:64vw; }
+  .htile-md{ width:50vw; }
+  .htile-sm{ width:38vw; }
+  @media (min-width:640px){
+    .htile-lg .htile-art{ width:390px; height:460px; }
+    .htile-md .htile-art{ width:290px; height:360px; }
+    .htile-sm .htile-art{ width:210px; height:260px; }
+    .htile-lg{ width:390px; }
+    .htile-md{ width:290px; }
+    .htile-sm{ width:210px; }
+  }
+
+  /* ============ ARCHIVE ============ */
+  .archive-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:18px;}
+  @media (max-width:980px){ .archive-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:640px){ .archive-grid{grid-template-columns:1fr;} }
+  .a-tile{
     position:relative;
     border-radius:var(--radius);
     overflow:hidden;
@@ -406,102 +480,19 @@
     border:1px solid var(--line-soft);
     cursor:default;
   }
-  .g-art{position:absolute; inset:0;}
-  .g-tile .g-overlay{
+  .a-art{position:absolute; inset:0;}
+  .a-tile .a-overlay{
     position:absolute; inset:0;
     background:linear-gradient(180deg, transparent 40%, rgba(10,12,17,0.92) 100%);
   }
-  .g-tile .g-info{
+  .a-tile .a-info{
     position:absolute; left:0; right:0; bottom:0; padding:18px;
     transform:translateY(8px); opacity:0.92; transition:transform .3s ease;
   }
-  .g-tile:hover .g-info{transform:translateY(0);}
-  .g-year{font-family:var(--ff-mono); font-size:11px; color:var(--gold); letter-spacing:0.06em;}
-  .g-tile h4{font-family:var(--ff-display); font-size:17px; font-weight:600; margin:5px 0 3px;}
-  .g-tile p{font-size:12.5px; color:var(--text-dim2); margin:0;}
-
-  /* ============ HORIZONTAL GALLERY (NEW) ============ */
-  .hz-gallery-section {
-    position: relative;
-    padding: 110px 0;
-    overflow: hidden; 
-  }
-
-  .hz-bg-lines {
-    position: absolute;
-    top: 0; left: 0; width: 200%; height: 100%;
-    background-image: radial-gradient(ellipse at center, transparent 40%, var(--bg) 80%), 
-                      repeating-radial-gradient(ellipse at 50% 50%, transparent, transparent 40px, rgba(242,169,59,0.03) 41px, rgba(242,169,59,0.03) 42px);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .hz-track {
-    display: flex;
-    gap: 8vw; 
-    padding: 40px 10vw 80px; 
-    overflow-x: auto;
-    scroll-snap-type: x mandatory; 
-    -webkit-overflow-scrolling: touch;
-    position: relative;
-    z-index: 1;
-    align-items: center; 
-    min-height: 70vh; 
-  }
-
-  .hz-track::-webkit-scrollbar { display: none; }
-  .hz-track { -ms-overflow-style: none; scrollbar-width: none; }
-
-  .hz-item {
-    flex: 0 0 auto;
-    scroll-snap-align: center;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .hz-item.large { width: 55vw; max-width: 700px; }
-  .hz-item.medium { width: 35vw; max-width: 450px; }
-  .hz-item.small { width: 22vw; max-width: 300px; }
-
-  .hz-item.align-top { align-self: flex-start; margin-top: 5vh; }
-  .hz-item.align-center { align-self: center; }
-  .hz-item.align-bottom { align-self: flex-end; margin-bottom: 5vh; }
-
-  .hz-item img {
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
-    filter: grayscale(20%); 
-    transition: filter 0.4s ease;
-  }
-
-  .hz-item:hover img {
-    filter: grayscale(0%);
-  }
-
-  .hz-caption {
-    font-family: var(--ff-mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    color: var(--text-dim2);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    display: block;
-  }
-
-  @media (max-width: 768px) {
-    .hz-track {
-      gap: 15vw;
-      min-height: 50vh;
-      padding: 20px 5vw 40px;
-    }
-    .hz-item.large { width: 85vw; }
-    .hz-item.medium { width: 70vw; }
-    .hz-item.small { width: 55vw; }
-    
-    .hz-item.align-top { margin-top: 0; }
-    .hz-item.align-bottom { margin-bottom: 0; }
-  }
+  .a-tile:hover .a-info{transform:translateY(0);}
+  .a-year{font-family:var(--ff-mono); font-size:11px; color:var(--gold); letter-spacing:0.06em;}
+  .a-tile h4{font-family:var(--ff-display); font-size:17px; font-weight:600; margin:5px 0 3px;}
+  .a-tile p{font-size:12.5px; color:var(--text-dim2); margin:0;}
 
   /* ============ HELP ============ */
   .help-layout{display:grid; grid-template-columns:1.3fr 1fr; gap:48px;}
@@ -565,8 +556,8 @@
     <ul class="nav-links">
       <li><a href="#projects">Board</a></li>
       <li><a href="#propose">Propose</a></li>
-      <li><a href="#past-projects">Past Projects</a></li>
       <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#archive">Archive</a></li>
       <li><a href="#help">Help</a></li>
     </ul>
     <div class="nav-cta">
@@ -581,8 +572,8 @@
 <div class="mobile-menu" id="mobileMenu">
   <a href="#projects">Board</a>
   <a href="#propose">Propose</a>
-  <a href="#past-projects">Past Projects</a>
   <a href="#gallery">Gallery</a>
+  <a href="#archive">Archive</a>
   <a href="#help">Help</a>
 </div>
 
@@ -610,7 +601,7 @@
   </div>
 </section>
 
-<!-- ============ ABOUT ============ -->
+<!-- ============ ABOUT (kept short, per request) ============ -->
 <section class="about-strip" style="padding:34px 0;">
   <div class="wrap">
     <p><strong>ATS</strong> is PEC's student aerospace society — flight, propulsion and orbital mechanics, built by undergrads, outside class hours.</p>
@@ -706,53 +697,36 @@
   </div>
 </section>
 
-<!-- ============ PAST PROJECTS ============ -->
-<section id="past-projects">
+<!-- ============ GALLERY (horizontal scroll) ============ -->
+<section id="gallery" class="hgallery-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="eyebrow">FROM THE FLOOR</div>
+        <h2 class="sec-title">Gallery</h2>
+      </div>
+      <p class="sec-note hgallery-hint">Keep scrolling — this strip moves sideways. Swap these tiles for real shots whenever you've got them.</p>
+    </div>
+  </div>
+
+  <div class="hgallery-pin" id="hgalleryPin">
+    <div class="hgallery-viewport" id="hgalleryViewport">
+      <div class="hgallery-track" id="hgalleryTrack"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARCHIVE (past projects, informational) ============ -->
+<section id="archive">
   <div class="wrap">
     <div class="sec-head reveal">
       <div>
         <div class="eyebrow">MISSION LOG</div>
-        <h2 class="sec-title">Past <span class="gold">builds</span></h2>
+        <h2 class="sec-title">Past <span class="gold">projects</span></h2>
       </div>
-      <p class="sec-note">Closed-out projects and competitions — swap these tiles for real build photos whenever you've got them.</p>
+      <p class="sec-note">Closed-out builds and competitions, with what they were and when they wrapped.</p>
     </div>
-    <div class="gallery-grid reveal-stagger" id="galleryGrid"></div>
-  </div>
-</section>
-
-<!-- ============ HORIZONTAL GALLERY ============ -->
-<section id="gallery" class="hz-gallery-section">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div>
-        <div class="eyebrow">IN THE FIELD</div>
-        <h2 class="sec-title">Visual <span class="gold">archives</span></h2>
-      </div>
-    </div>
-  </div>
-  
-  <div class="hz-bg-lines"></div>
-
-  <div class="hz-track reveal">
-    <div class="hz-item medium align-top">
-      <span class="hz-caption">HIGH PERFORMANCE GALA, 2024</span>
-      <img src="https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=800&q=80" alt="Gala" loading="lazy">
-    </div>
-
-    <div class="hz-item large align-center">
-      <span class="hz-caption">BARCELONA, 2024</span>
-      <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80" alt="Barcelona" loading="lazy">
-    </div>
-
-    <div class="hz-item small align-bottom">
-      <span class="hz-caption">BATTERSEA, 2024</span>
-      <img src="https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&w=600&q=80" alt="Battersea" loading="lazy">
-    </div>
-
-    <div class="hz-item medium align-top">
-      <span class="hz-caption">AUSTRIA, 2024</span>
-      <img src="https://images.unsplash.com/photo-1506869640319-a1a1200843db?auto=format&fit=crop&w=800&q=80" alt="Austria" loading="lazy">
-    </div>
+    <div class="archive-grid reveal-stagger" id="archiveGrid"></div>
   </div>
 </section>
 
@@ -806,7 +780,6 @@
           <h5>Site</h5>
           <a href="#projects">Board</a>
           <a href="#propose">Propose</a>
-          <a href="#past-projects">Past Projects</a>
           <a href="#gallery">Gallery</a>
           <a href="#help">Help</a>
         </div>
@@ -855,7 +828,7 @@
   });
 
   var navLinks = document.querySelectorAll('.nav-links a');
-  var sectionsForNav = ['projects','propose','past-projects','gallery','help'].map(function(id){ return document.getElementById(id); });
+  var sectionsForNav = ['projects','propose','gallery','archive','help'].map(function(id){ return document.getElementById(id); });
   var navObserver = new IntersectionObserver(function(entries){
     entries.forEach(function(entry){
       if(entry.isIntersecting){
@@ -961,7 +934,7 @@
     });
   }
   renderBoard(items);
-  boardGrid.classList.add('in'); 
+  boardGrid.classList.add('in'); // stagger handled on first paint via observer too; ensure fallback
 
   document.getElementById('statActive').textContent = items.filter(function(i){return i.status==='active';}).length;
   document.getElementById('statOpen').textContent = items.filter(function(i){return i.type==='competition' && i.status!=='closed';}).length;
@@ -989,7 +962,7 @@
     });
   });
 
-  /* ---------- PAST PROJECTS ---------- */
+  /* ---------- ARCHIVE (past projects, informational grid) ---------- */
   var pastProjects = [
     {title:'Mini Jet Engine Build', year:'2024', cat:'Propulsion', note:'A working small-scale turbojet, built and bench-tested end to end.', c1:'#f2a93b', c2:'#1c202b'},
     {title:'Autonomous Ground Rover', year:'2024', cat:'Robotics', note:'ESP32-based rover for autonomous sample collection.', c1:'#7aa8ff', c2:'#12151c'},
@@ -999,23 +972,111 @@
     {title:'Weather Balloon Payload', year:'2022', cat:'Astronautics', note:'Instrumented near-space payload recovered after ascent.', c1:'#ffd37a', c2:'#0a0c11'}
   ];
 
-  var galleryGrid = document.getElementById('galleryGrid');
-  galleryGrid.innerHTML = pastProjects.map(function(p){
+  var archiveGrid = document.getElementById('archiveGrid');
+  archiveGrid.innerHTML = pastProjects.map(function(p){
     return (
-      '<div class="g-tile">' +
-        '<div class="g-art" style="background:'+
+      '<div class="a-tile">' +
+        '<div class="a-art" style="background:'+
           'radial-gradient(circle at 25% 20%, '+p.c1+'55, transparent 55%), '+
           'linear-gradient(155deg, '+p.c2+', #0a0c11 80%)'+
         ';"></div>' +
-        '<div class="g-overlay"></div>' +
-        '<div class="g-info">' +
-          '<div class="g-year">'+p.year+' · '+p.cat+'</div>' +
+        '<div class="a-overlay"></div>' +
+        '<div class="a-info">' +
+          '<div class="a-year">'+p.year+' · '+p.cat+'</div>' +
           '<h4>'+p.title+'</h4>' +
           '<p>'+p.note+'</p>' +
         '</div>' +
       '</div>'
     );
   }).join('');
+
+  /* ---------- GALLERY (horizontal scroll strip, big & small tiles, scattered like landonorris.com) ---------- */
+  var moments = [
+    {size:'lg', cap:'SAE Aero, Fabrication Bay', yr:'2025', c1:'#f2a93b', c2:'#1c202b', off:10},
+    {size:'sm', cap:'First Static Fire',         yr:'2024', c1:'#e8654f', c2:'#12151c', off:190},
+    {size:'md', cap:'Kari Speedway Trials',      yr:'2025', c1:'#7aa8ff', c2:'#0a0c11', off:60},
+    {size:'sm', cap:'Wind Tunnel Session',       yr:'2024', c1:'#7fd68a', c2:'#171b24', off:220},
+    {size:'lg', cap:'Night Before Nationals',    yr:'2025', c1:'#ffd37a', c2:'#0a0c11', off:0},
+    {size:'md', cap:'Payload Integration',       yr:'2024', c1:'#f2a93b', c2:'#12151c', off:150},
+    {size:'sm', cap:'Team Debrief',              yr:'2025', c1:'#7aa8ff', c2:'#1c202b', off:70},
+    {size:'md', cap:'Workshop Floor',            yr:'2023', c1:'#e8654f', c2:'#0a0c11', off:200}
+  ];
+
+  var hgTrack = document.getElementById('hgalleryTrack');
+  hgTrack.innerHTML = moments.map(function(m){
+    return (
+      '<figure class="htile htile-'+m.size+'" style="--off:'+m.off+'">' +
+        '<figcaption class="htile-cap"><span class="yr">'+m.yr+'</span><div class="lbl">'+m.cap+'</div></figcaption>' +
+        '<div class="htile-art" style="background:'+
+          'radial-gradient(circle at 30% 25%, '+m.c1+'40, transparent 60%), '+
+          'linear-gradient(155deg, '+m.c2+', #0a0c11 80%)'+
+        ';"></div>' +
+      '</figure>'
+    );
+  }).join('');
+
+  /* Scroll-jacked horizontal reveal on wide, hover-capable screens only.
+     Phones/tablets keep the native touch-scroll strip — smoother and avoids scroll-jank. */
+  var hgPin = document.getElementById('hgalleryPin');
+  var hgViewport = document.getElementById('hgalleryViewport');
+  var pinQuery = window.matchMedia('(min-width: 900px) and (hover: hover) and (pointer: fine)');
+  var hgActive = false;
+  var hgTicking = false;
+
+  function layoutPinnedGallery(){
+    var viewportH = hgViewport.clientHeight;
+    var scrollDistance = Math.max(hgTrack.scrollWidth - hgViewport.clientWidth, 0);
+    hgPin.style.height = (viewportH + scrollDistance) + 'px';
+  }
+
+  function updatePinnedGallery(){
+    var rect = hgPin.getBoundingClientRect();
+    var viewportH = hgViewport.clientHeight;
+    var scrollable = hgPin.offsetHeight - viewportH;
+    var progress = scrollable > 0 ? (-rect.top) / scrollable : 0;
+    progress = Math.min(1, Math.max(0, progress));
+    var maxTranslate = Math.max(hgTrack.scrollWidth - hgViewport.clientWidth, 0);
+    hgTrack.style.transform = 'translateX(' + (-progress * maxTranslate) + 'px)';
+  }
+
+  function onHgScroll(){
+    if(!hgActive) return;
+    if(!hgTicking){
+      requestAnimationFrame(function(){ updatePinnedGallery(); hgTicking = false; });
+      hgTicking = true;
+    }
+  }
+
+  function enablePinMode(){
+    if(hgActive) return;
+    hgActive = true;
+    hgPin.classList.add('pin-mode');
+    hgTrack.style.transform = 'translateX(0px)';
+    layoutPinnedGallery();
+    updatePinnedGallery();
+  }
+  function disablePinMode(){
+    if(!hgActive) return;
+    hgActive = false;
+    hgPin.classList.remove('pin-mode');
+    hgPin.style.height = '';
+    hgTrack.style.transform = '';
+  }
+
+  function syncPinMode(){
+    if(pinQuery.matches){ enablePinMode(); } else { disablePinMode(); }
+  }
+
+  window.addEventListener('scroll', onHgScroll, {passive:true});
+  window.addEventListener('resize', function(){
+    if(hgActive) layoutPinnedGallery();
+  });
+  if(pinQuery.addEventListener){ pinQuery.addEventListener('change', syncPinMode); }
+  else if(pinQuery.addListener){ pinQuery.addListener(syncPinMode); }
+
+  // Wait for the track to actually have width (fonts/layout settle) before measuring
+  window.addEventListener('load', syncPinMode);
+  setTimeout(syncPinMode, 50);
 
   /* ---------- FAQ ---------- */
   var faqs = [
