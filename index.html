@@ -240,39 +240,101 @@
   @keyframes fadeUp{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
   @media (prefers-reduced-motion: reduce){ .hero-sub, .hero-actions{animation:none; opacity:1;} }
 
-  .plane-scene{
-    position:absolute;
-    top:10%; right:4%;
-    width:min(44vw, 540px);
-    height:min(44vw, 540px);
-    z-index:1;
-    pointer-events:none;
+  /* ============ HERO TELEMETRY PANEL ============ */
+  .hero-telemetry-panel {
+    position: absolute;
+    top: 12%;
+    right: 2%;
+    width: min(42vw, 560px);
+    z-index: 1;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
   }
-  @media (max-width:900px){ .plane-scene{opacity:0.4; right:-10%; top:4%;} }
-  .plane-path{
-    fill:none; stroke:var(--accent); stroke-width:1.4; opacity:0.7;
-    stroke-dasharray:900; stroke-dashoffset:900;
-    animation:draw 2.4s cubic-bezier(.3,.6,.2,1) 0.8s forwards;
+  @media (max-width: 900px) { 
+    .hero-telemetry-panel { opacity: 0.35; right: -8%; top: 6%; } 
   }
-  @keyframes draw{ to{ stroke-dashoffset:0; } }
-  .plane-glyph{
-    offset-path:path('M40,430 C160,380 230,300 290,220 C330,168 360,120 470,60');
-    offset-rotate:auto;
-    animation:fly 2.4s cubic-bezier(.3,.6,.2,1) 0.8s forwards, bob 3.4s ease-in-out 3.4s infinite;
-    opacity:0;
+
+  .telemetry-grid {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3.2;
+    border: 1px solid var(--line-soft);
+    background-image: 
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: center center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  @keyframes fly{
-    0%{ offset-distance:0%; opacity:0; }
-    4%{ opacity:1; }
-    100%{ offset-distance:100%; opacity:1; }
+
+  .telemetry-header {
+    position: absolute;
+    top: 16px;
+    left: 18px;
+    font-family: var(--ff-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim2);
   }
-  @keyframes bob{
-    0%,100%{ transform:translateY(0) rotate(0deg); }
-    50%{ transform:translateY(-8px) rotate(-2deg); }
+
+  .uav-schematic {
+    width: 75%;
+    height: 75%;
+    overflow: visible;
+    animation: schematicFloat 5s ease-in-out infinite;
   }
-  @media (prefers-reduced-motion: reduce){
-    .plane-path{animation:none; stroke-dashoffset:0;}
-    .plane-glyph{animation:none; opacity:1; offset-distance:100%;}
+  
+  @keyframes schematicFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(-0.5deg); }
+  }
+
+  .telemetry-caption {
+    padding-left: 18px;
+    border-left: 2px solid var(--accent);
+    max-width: 440px;
+  }
+
+  .caption-title {
+    font-family: var(--ff-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .caption-title .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    animation: beaconBlink 1.5s infinite;
+  }
+  
+  @keyframes beaconBlink { 
+    0%, 100% { opacity: 1; } 
+    50% { opacity: 0.25; } 
+  }
+
+  .caption-text {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .uav-schematic, .caption-title .dot { animation: none; opacity: 1; transform: none; }
   }
 
   .scroll-cue{
@@ -706,12 +768,47 @@
 <section class="hero" id="top">
   <div class="hero-glow"></div>
 
-  <svg class="plane-scene" viewBox="0 0 520 480" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path class="plane-path" d="M40,430 C160,380 230,300 290,220 C330,168 360,120 470,60"/>
-    <g class="plane-glyph">
-      <path d="M0,26 L52,0 L38,20 L52,32 L28,28 L0,26Z" fill="#E2531C"/>
-    </g>
-  </svg>
+  <div class="hero-telemetry-panel" aria-hidden="true">
+    <div class="telemetry-grid">
+      <div class="telemetry-header">TELEMETRY // AUTONOMOUS UAV NAVIGATION RIG</div>
+      
+      <!-- Isometric Quadrotor & Odometry Map Layers -->
+      <svg class="uav-schematic" viewBox="0 0 300 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        
+        <!-- Base Odometry/Occupancy Grid Layers -->
+        <polygon points="90,160 210,160 250,195 130,195" stroke="var(--accent)" stroke-width="0.8" opacity="0.3"/>
+        <polygon points="90,185 210,185 250,220 130,220" stroke="var(--accent)" stroke-width="0.8" opacity="0.15"/>
+        
+        <!-- Z-axis projection line -->
+        <line x1="170" y1="126" x2="170" y2="160" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3"/>
+        <!-- FOV Sensor Cone -->
+        <path d="M170 126 L130 195 L210 195 Z" stroke="var(--accent)" stroke-width="0.5" stroke-dasharray="2 4" opacity="0.4"/>
+
+        <!-- Quadrotor Central Hub -->
+        <polygon points="170,110 185,118 170,126 155,118" stroke="var(--accent)" stroke-width="1.5" fill="var(--bg)"/>
+        
+        <!-- Carbon Fiber Arms (Isometric X-Configuration) -->
+        <!-- Front Right & Back Left -->
+        <line x1="155" y1="118" x2="110" y2="100" stroke="var(--accent)" stroke-width="1.2"/>
+        <line x1="185" y1="118" x2="230" y2="136" stroke="var(--accent)" stroke-width="1.2"/>
+        <!-- Front Left & Back Right -->
+        <line x1="155" y1="118" x2="125" y2="145" stroke="var(--accent)" stroke-width="1.2"/>
+        <line x1="185" y1="118" x2="215" y2="91" stroke="var(--accent)" stroke-width="1.2"/>
+        
+        <!-- 5-inch Propellers (Projected as ellipses) -->
+        <ellipse cx="110" cy="100" rx="30" ry="10" stroke="var(--accent)" stroke-width="1" opacity="0.85"/>
+        <ellipse cx="230" cy="136" rx="30" ry="10" stroke="var(--accent)" stroke-width="1" opacity="0.85"/>
+        <ellipse cx="125" cy="145" rx="30" ry="10" stroke="var(--accent)" stroke-width="1" opacity="0.85"/>
+        <ellipse cx="215" cy="91" rx="30" ry="10" stroke="var(--accent)" stroke-width="1" opacity="0.85"/>
+        
+      </svg>
+    </div>
+    
+    <div class="telemetry-caption">
+      <div class="caption-title"><span class="dot"></span> LIVE PARSING</div>
+      <div class="caption-text">GPS-denied visual-inertial odometry loop active. Computing spatial layers for live 3D occupancy mapping and indoor obstacle avoidance.</div>
+    </div>
+  </div>
 
   <div class="wrap">
     <div class="eyebrow reveal in">PUNJAB ENGINEERING COLLEGE · CHANDIGARH</div>
