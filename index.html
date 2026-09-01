@@ -10,9 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&family=Fraunces:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
 <style>
   /* ============================================================
-     TOKENS — warm paper cabin, one signal-orange accent. This is
-     the light, editorial register: cream ground, near-black ink,
-     muted duotone photography, orange used sparingly as a stamp.
+     TOKENS — warm paper cabin, one signal-orange accent.
   ============================================================ */
   :root{
     --bg:#efece2;
@@ -67,9 +65,7 @@
   @media (max-width:640px){.wrap{padding:0 20px;}}
 
   /* ============================================================
-     CONTOUR LINES — a fixed, slowly drifting field of topographic
-     isolines behind the whole page, the way landonorris.com keeps
-     faint map contours moving under the content at all times.
+     CONTOUR LINES — drifting field of topographic isolines
   ============================================================ */
   .contour-bg{
     position:fixed; inset:0; z-index:0; pointer-events:none;
@@ -85,9 +81,6 @@
     0%{ transform:translate(-53%,-51%) scale(1); }
     50%{ transform:translate(-49%,-49%) scale(1.035); }
     100%{ transform:translate(-51%,-52%) scale(1.01); }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .contour-bg svg{animation:none;}
   }
 
   .eyebrow{
@@ -189,162 +182,153 @@
     .nav-cta .btn-solid{display:none;}
   }
 
-  /* ============ HERO ============ */
-  .hero{
-    position:relative;
-    min-height:100vh;
-    display:flex; flex-direction:column; justify-content:center;
-    padding:150px 0 70px;
-    overflow:hidden;
-  }
-  .hero-glow{
-    position:absolute; top:-14%; right:-14%; width:62vw; height:62vw; max-width:820px; max-height:820px;
-    background:radial-gradient(circle, rgba(226,83,28,0.14) 0%, transparent 68%);
-    pointer-events:none; z-index:0;
-  }
-  .hero .wrap{position:relative; z-index:2;}
-
-  .hero-kinetic{overflow:hidden;}
-  .hero-kinetic .line{overflow:hidden;}
-  .hero-headline{
-    font-family:var(--ff-display);
-    font-weight:400;
-    font-size:clamp(46px, 10.6vw, 128px);
-    line-height:0.92;
-    letter-spacing:-0.01em;
-    text-transform:uppercase;
-    margin:0;
-  }
-  .hero-headline .line span{
-    display:block;
-    transform:translateY(105%);
-    animation:riseUp .9s cubic-bezier(.16,.8,.2,1) forwards;
-  }
-  .hero-headline .line:nth-child(1) span{animation-delay:.05s;}
-  .hero-headline .line:nth-child(2) span{animation-delay:.16s;}
-  .hero-headline .line:nth-child(3) span{animation-delay:.27s; color:var(--accent);}
-  @keyframes riseUp{ to{ transform:translateY(0); } }
-  @media (prefers-reduced-motion: reduce){
-    .hero-headline .line span{animation:none; transform:translateY(0);}
-  }
-
-  .hero-sub{
-    margin-top:30px;
-    max-width:560px;
-    font-size:17px;
-    color:var(--text-dim);
-    font-family:var(--ff-body);
-    opacity:0; animation:fadeUp .8s ease .55s forwards;
-  }
-  .hero-actions{display:flex; gap:14px; margin-top:38px; flex-wrap:wrap; opacity:0; animation:fadeUp .8s ease .68s forwards;}
-  @keyframes fadeUp{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
-  @media (prefers-reduced-motion: reduce){ .hero-sub, .hero-actions{animation:none; opacity:1;} }
-
-  /* ============ HERO TELEMETRY PANEL ============ */
-  .hero-telemetry-panel {
-    position: absolute;
-    top: 12%;
-    right: 2%;
-    width: min(42vw, 560px);
-    z-index: 1;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-  }
-  @media (max-width: 900px) { 
-    .hero-telemetry-panel { opacity: 0.35; right: -8%; top: 6%; } 
-  }
-
-  .telemetry-grid {
+  /* ============ HERO GRID & CSS 3D VIEWPORT ============ */
+  .hero {
     position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 140px 0 70px;
+    overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute; top: -14%; right: -14%; width: 62vw; height: 62vw; max-width: 820px; max-height: 820px;
+    background: radial-gradient(circle, rgba(226,83,28,0.12) 0%, transparent 68%);
+    pointer-events: none; z-index: 0;
+  }
+  
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
     width: 100%;
-    aspect-ratio: 4 / 3.2;
-    border: 1px solid var(--line-soft);
-    background-image: 
-      linear-gradient(var(--line-soft) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-    background-size: 24px 24px;
-    background-position: center center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  }
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero { padding: 120px 0 50px; }
   }
 
-  .telemetry-header {
-    position: absolute;
-    top: 16px;
-    left: 18px;
-    font-family: var(--ff-mono);
-    font-size: 9.5px;
-    letter-spacing: 0.12em;
+  .hero-kinetic { overflow: hidden; }
+  .hero-kinetic .line { overflow: hidden; }
+  .hero-headline {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: clamp(46px, 10.6vw, 110px);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
     text-transform: uppercase;
-    color: var(--text-dim2);
+    margin: 0;
   }
+  .hero-headline .line span {
+    display: block;
+    transform: translateY(105%);
+    animation: riseUp .9s cubic-bezier(.16,.8,.2,1) forwards;
+  }
+  .hero-headline .line:nth-child(1) span { animation-delay: .05s; }
+  .hero-headline .line:nth-child(2) span { animation-delay: .16s; }
+  .hero-headline .line:nth-child(3) span { animation-delay: .27s; color: var(--accent); }
+  @keyframes riseUp { to { transform: translateY(0); } }
 
-  .uav-schematic {
-    width: 75%;
-    height: 75%;
-    overflow: visible;
-    animation: schematicFloat 5s ease-in-out infinite;
-  }
-  
-  @keyframes schematicFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-8px) rotate(-0.5deg); }
-  }
-
-  .telemetry-caption {
-    padding-left: 18px;
-    border-left: 2px solid var(--accent);
-    max-width: 440px;
-  }
-
-  .caption-title {
-    font-family: var(--ff-mono);
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-
-  .caption-title .dot {
-    width: 6px;
-    height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    display: inline-block;
-    animation: beaconBlink 1.5s infinite;
-  }
-  
-  @keyframes beaconBlink { 
-    0%, 100% { opacity: 1; } 
-    50% { opacity: 0.25; } 
-  }
-
-  .caption-text {
-    font-size: 13.5px;
+  .hero-sub {
+    margin-top: 30px;
+    max-width: 520px;
+    font-size: 16px;
     color: var(--text-dim);
-    line-height: 1.55;
+    opacity: 0; animation: fadeUp .8s ease .55s forwards;
+  }
+  .hero-actions { display: flex; gap: 14px; margin-top: 38px; flex-wrap: wrap; opacity: 0; animation: fadeUp .8s ease .68s forwards; }
+  
+  /* Telemetry Window */
+  .hero-viewport {
+    display: flex; flex-direction: column; gap: 16px;
+    opacity: 0; animation: fadeUp .8s ease .8s forwards;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+  .viewport-chrome {
+    position: relative;
+    border: 1px solid var(--line);
+    background: rgba(246, 244, 234, 0.4);
+    height: clamp(280px, 40vw, 420px);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .viewport-chrome::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: 
+      linear-gradient(rgba(24,21,15,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(24,21,15,0.04) 1px, transparent 1px);
+    background-size: 20px 20px;
+    z-index: 0;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .uav-schematic, .caption-title .dot { animation: none; opacity: 1; transform: none; }
+  .crosshair {
+    position: absolute; width: 15px; height: 15px; border: 1px solid var(--accent); pointer-events: none; z-index: 10;
+  }
+  .top-left { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .top-right { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+  .bottom-left { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+  .bottom-right { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+  .viewport-label {
+    position: absolute; top: 12px; left: 14px; z-index: 10;
+    font-family: var(--ff-mono); font-size: 10px; color: var(--text-dim2); letter-spacing: 0.1em; text-transform: uppercase;
   }
 
-  .scroll-cue{
-    margin-top:58px; display:flex; align-items:center; gap:10px;
-    font-family:var(--ff-mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
-    color:var(--text-dim2);
-    opacity:0; animation:fadeUp .8s ease .8s forwards;
+  /* --- PURE CSS 3D SCENE --- */
+  .css-3d-scene {
+    position: absolute; inset: 0; z-index: 5;
+    perspective: 1200px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
   }
-  .scroll-cue .line-v{width:1px; height:34px; background:linear-gradient(var(--accent), transparent); animation:pulse-line 2s ease-in-out infinite;}
-  @keyframes pulse-line{ 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+  .virtual-assembly {
+    position: relative;
+    width: 0; height: 0;
+    transform-style: preserve-3d;
+    animation: holo-spin 16s infinite linear;
+  }
+  @keyframes holo-spin {
+    0% { transform: rotateX(60deg) rotateZ(0deg); }
+    100% { transform: rotateX(60deg) rotateZ(360deg); }
+  }
+
+  .holo-part {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform-style: preserve-3d;
+    border: 1px solid var(--accent);
+    background: rgba(226, 83, 28, 0.03);
+    box-shadow: inset 0 0 10px rgba(226, 83, 28, 0.1);
+    transition: all 1.2s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+
+  /* Configuration 1: Tubular Chassis Node */
+  .state-chassis .part-1 { width: 140px; height: 140px; margin: -70px 0 0 -70px; border-radius: 50%; transform: rotateX(90deg); }
+  .state-chassis .part-2 { width: 100px; height: 100px; margin: -50px 0 0 -50px; border-radius: 50%; transform: rotateY(90deg); }
+  .state-chassis .part-3 { width: 80px; height: 160px; margin: -80px 0 0 -40px; border-radius: 40px; transform: translateZ(-40px) rotateX(15deg); }
+
+  /* Configuration 2: Sounding Balloon Payload */
+  .state-balloon .part-1 { width: 60px; height: 60px; margin: -30px 0 0 -30px; transform: translateZ(0); }
+  .state-balloon .part-2 { width: 180px; height: 40px; margin: -20px 0 0 -90px; transform: translateZ(40px) rotateZ(45deg); }
+  .state-balloon .part-3 { width: 180px; height: 40px; margin: -20px 0 0 -90px; transform: translateZ(-40px) rotateZ(-45deg); }
+
+  /* Configuration 3: Aero CFD Layers */
+  .state-aero .part-1 { width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 4px; transform: translateZ(-60px); }
+  .state-aero .part-2 { width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 4px; transform: translateZ(0px); }
+  .state-aero .part-3 { width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 4px; transform: translateZ(60px); }
+
+  /* Readout Block */
+  .viewport-readout { border-left: 2px solid var(--accent); padding-left: 14px; }
+  .readout-header {
+    font-family: var(--ff-mono); font-size: 10.5px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  }
+  .status-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: blink 2s infinite; }
+  @keyframes blink { 0%, 100% {opacity: 1;} 50% {opacity: 0.3;} }
+  .viewport-readout p { margin: 0; font-size: 13.5px; color: var(--text-dim); line-height: 1.5; max-width: 480px; transition: opacity 0.4s ease; }
 
   /* ============ ABOUT STRIP ============ */
   .about-strip{
@@ -539,14 +523,8 @@
   .recent-item .by{font-family:var(--ff-mono); font-size:11px; color:var(--accent-dim); margin-top:6px; display:block;}
   .recent-empty{font-size:13.5px; color:var(--text-dim2); padding:20px 0;}
 
-  /* ============================================================
-     GALLERY — a scattered board, not a tidy row: tiles sit at
-     different heights and small rotations, muted duotone photo
-     treatment, with serif-italic note cards breaking the strip
-     the way landonorris intersperses quotes among the photos.
-  ============================================================ */
+  /* ============ GALLERY ============ */
   .hgallery-hint{font-family:var(--ff-mono); font-size:12.5px; font-style:normal;}
-
   .hgallery-pin{ position:relative; }
   .hgallery-viewport{
     overflow-x:auto;
@@ -565,7 +543,6 @@
     width:max-content;
     will-change:transform;
   }
-
   .hgallery-pin.pin-mode .hgallery-viewport{
     position:sticky;
     top:78px;
@@ -574,7 +551,6 @@
     padding:30px 0 0 48px;
   }
   .hgallery-pin.pin-mode .hgallery-track{ gap:60px; align-items:flex-end; }
-
   .htile{
     flex:0 0 auto;
     display:flex;
@@ -585,10 +561,8 @@
     transform:rotate(calc(var(--rot, 0) * 1deg));
   }
   @media (max-width:640px){ .htile{ margin-top:calc(var(--off, 0) * 0.4px); transform:none; } }
-
   .htile-cap .yr{font-family:var(--ff-mono); font-size:11px; color:var(--accent-dim); letter-spacing:0.1em; text-transform:uppercase;}
   .htile-cap .lbl{font-family:var(--ff-head); font-size:16.5px; font-weight:500; margin-top:4px; line-height:1.2; color:var(--text);}
-
   .htile-art{
     border-radius:var(--radius);
     overflow:hidden;
@@ -609,8 +583,6 @@
     .htile-md{ width:270px; }
     .htile-sm{ width:196px; }
   }
-
-  /* note tile — serif italic line standing in for the photos */
   .htile-note{
     flex:0 0 auto;
     display:flex; align-items:center;
@@ -625,7 +597,7 @@
   }
   .htile-note cite{display:block; margin-top:16px; font-family:var(--ff-mono); font-style:normal; font-size:11px; color:var(--accent-dim); text-transform:uppercase; letter-spacing:0.06em;}
 
-  /* ============ ARCHIVE — hover-swap cards ============ */
+  /* ============ ARCHIVE ============ */
   .archive-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:18px;}
   @media (max-width:980px){ .archive-grid{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:640px){ .archive-grid{grid-template-columns:1fr;} }
@@ -718,7 +690,7 @@
 </head>
 <body>
 
-<!-- Fixed, slowly drifting contour-line background -->
+<!-- Contour Background -->
 <div class="contour-bg" aria-hidden="true">
   <svg viewBox="0 0 1600 1600" xmlns="http://www.w3.org/2000/svg" fill="none">
     <g stroke="#18150f" stroke-width="1">
@@ -726,9 +698,6 @@
       <path d="M-80,420 C220,340 380,560 620,500 C880,440 980,270 1320,340 C1520,380 1600,300 1750,360" />
       <path d="M-60,560 C240,470 420,700 680,640 C930,580 1030,400 1360,470 C1560,510 1650,430 1780,500" />
       <path d="M-40,760 C260,660 460,900 720,830 C980,760 1080,580 1400,650 C1600,700 1690,610 1800,680" />
-      <path d="M-90,980 C210,880 430,1120 700,1040 C960,970 1060,800 1380,870 C1580,910 1670,830 1800,900" />
-      <path d="M-70,1180 C230,1080 440,1320 710,1240 C970,1160 1080,1000 1390,1070 C1590,1110 1680,1030 1800,1100" />
-      <path d="M-50,1360 C250,1260 450,1500 720,1420 C980,1340 1080,1180 1400,1250 C1600,1290 1690,1210 1800,1280" />
     </g>
   </svg>
 </div>
@@ -767,62 +736,50 @@
 <!-- ============ HERO ============ -->
 <section class="hero" id="top">
   <div class="hero-glow"></div>
+  
+  <div class="wrap hero-grid">
+    <!-- Left: Typography -->
+    <div class="hero-content">
+      <div class="eyebrow reveal in">PUNJAB ENGINEERING COLLEGE · CHANDIGARH</div>
+      <h1 class="hero-headline hero-kinetic">
+        <div class="line"><span>BUILD. FLY.</span></div>
+        <div class="line"><span>BREAK.</span></div>
+        <div class="line"><span>REBUILD.</span></div>
+      </h1>
+      <p class="hero-sub">The Aerospace Technical Society is where PEC's aero, avionics and propulsion builds move off paper — this page tracks what's active, what's open, and what needs a hand.</p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-solid">See the board</a>
+        <a href="#propose" class="btn">Propose a project →</a>
+      </div>
+    </div>
 
-  <div class="hero-telemetry-panel" aria-hidden="true">
-    <div class="telemetry-grid">
-      <div class="telemetry-header">TELEMETRY // AUTONOMOUS UAV NAVIGATION RIG</div>
+    <!-- Right: CSS 3D Viewport -->
+    <div class="hero-viewport">
+      <div class="viewport-chrome">
+        <span class="crosshair top-left"></span>
+        <span class="crosshair top-right"></span>
+        <span class="crosshair bottom-left"></span>
+        <span class="crosshair bottom-right"></span>
+        <div class="viewport-label">TELEMETRY // <span id="holoTargetName">CHASSIS NODE</span></div>
+        
+        <!-- Pure CSS 3D Engine -->
+        <div class="css-3d-scene">
+          <div id="virtualModel" class="virtual-assembly state-chassis">
+            <div class="holo-part part-1"></div>
+            <div class="holo-part part-2"></div>
+            <div class="holo-part part-3"></div>
+          </div>
+        </div>
+      </div>
       
-      <!-- Isometric Quadrotor & Odometry Map Layers -->
-      <svg class="uav-schematic" viewBox="0 0 300 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-        
-        <!-- Base Odometry/Occupancy Grid Layers -->
-        <polygon points="90,160 210,160 250,195 130,195" stroke="var(--accent)" stroke-width="0.8" opacity="0.3"/>
-        <polygon points="90,185 210,185 250,220 130,220" stroke="var(--accent)" stroke-width="0.8" opacity="0.15"/>
-        
-        <!-- Z-axis projection line -->
-        <line x1="170" y1="126" x2="170" y2="160" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3"/>
-        <!-- FOV Sensor Cone -->
-        <path d="M170 126 L130 195 L210 195 Z" stroke="var(--accent)" stroke-width="0.5" stroke-dasharray="2 4" opacity="0.4"/>
-
-        <!-- Quadrotor Central Hub -->
-        <polygon points="170,110 185,118 170,126 155,118" stroke="var(--accent)" stroke-width="1.5" fill="var(--bg)"/>
-        
-        <!-- Carbon Fiber Arms (Isometric X-Configuration) -->
-        <!-- Front Right & Back Left -->
-        <line x1="155" y1="118" x2="110" y2="100" stroke="var(--accent)" stroke-width="1.2"/>
-        <line x1="185" y1="118" x2="230" y2="136" stroke="var(--accent)" stroke-width="1.2"/>
-        <!-- Front Left & Back Right -->
-        <line x1="155" y1="118" x2="125" y2="145" stroke="var(--accent)" stroke-width="1.2"/>
-        <line x1="185" y1="118" x2="215" y2="91" stroke="var(--accent)" stroke-width="1.2"/>
-        
-        <!-- 5-inch Propellers (Projected as ellipses) -->
-        <ellipse cx="110" cy="100" rx="30" ry="10" stroke="var(--accent)" stroke-width="1" opacity="0.85"/>
-        <ellipse cx="230" cy="136" rx="30" ry="10" stroke="var(--accent)" stroke-width="1" opacity="0.85"/>
-        <ellipse cx="125" cy="145" rx="30" ry="10" stroke="var(--accent)" stroke-width="1" opacity="0.85"/>
-        <ellipse cx="215" cy="91" rx="30" ry="10" stroke="var(--accent)" stroke-width="1" opacity="0.85"/>
-        
-      </svg>
+      <!-- Technical Readout -->
+      <div class="viewport-readout">
+        <div class="readout-header">
+          <span class="status-dot"></span> LIVE PARSING
+        </div>
+        <p id="holoDescription">Initializing structural specifications...</p>
+      </div>
     </div>
-    
-    <div class="telemetry-caption">
-      <div class="caption-title"><span class="dot"></span> LIVE PARSING</div>
-      <div class="caption-text">GPS-denied visual-inertial odometry loop active. Computing spatial layers for live 3D occupancy mapping and indoor obstacle avoidance.</div>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="eyebrow reveal in">PUNJAB ENGINEERING COLLEGE · CHANDIGARH</div>
-    <h1 class="hero-headline hero-kinetic">
-      <div class="line"><span>BUILD. FLY.</span></div>
-      <div class="line"><span>BREAK.</span></div>
-      <div class="line"><span>REBUILD.</span></div>
-    </h1>
-    <p class="hero-sub">The Aerospace Technical Society is where PEC's aero, avionics and propulsion builds move off paper — this page tracks what's active, what's open, and what needs a hand.</p>
-    <div class="hero-actions">
-      <a href="#projects" class="btn btn-solid">See the board</a>
-      <a href="#propose" class="btn">Propose a project →</a>
-    </div>
-    <div class="scroll-cue"><span class="line-v"></span>SCROLL</div>
   </div>
 </section>
 
@@ -1109,6 +1066,46 @@
   }, {threshold:0.12});
   revealTargets.forEach(function(t){ revealObserver.observe(t); });
 
+  /* ---------- HERO CSS 3D ROTATION ENGINE ---------- */
+  const hardwareProjects = [
+    {
+      title: "TUBULAR CHASSIS KINEMATICS",
+      cssClass: "state-chassis",
+      desc: "Structural analysis of bent-pipe chassis geometry. Evaluates torsional stiffness across axles, integrating custom negative caster angles and optimized tracking width ratios for high-grip track environments."
+    },
+    {
+      title: "HIGH-ALTITUDE RECOVERY",
+      cssClass: "state-balloon",
+      desc: "Autonomous telemetry unit engineered for sounding balloon deployment. Simulates structural re-entry loads and glide slope navigation algorithms under severe high-altitude constraints."
+    },
+    {
+      title: "ELECTRIC CARGO PROPULSION",
+      cssClass: "state-aero",
+      desc: "Distributed electric propulsion node targeting regional aviation lift. Computes computational fluid dynamics (CFD) layers to optimize nacelle aerodynamics and thermal shedding across the airframe."
+    }
+  ];
+
+  let currentProjectIndex = 0;
+  const modelElement = document.getElementById('virtualModel');
+  const titleElement = document.getElementById('holoTargetName');
+  const descElement = document.getElementById('holoDescription');
+
+  function updateHoloDisplay() {
+    const project = hardwareProjects[currentProjectIndex];
+    descElement.style.opacity = 0;
+    
+    setTimeout(() => {
+      modelElement.className = `virtual-assembly ${project.cssClass}`;
+      titleElement.textContent = project.title;
+      descElement.textContent = project.desc;
+      descElement.style.opacity = 1;
+      currentProjectIndex = (currentProjectIndex + 1) % hardwareProjects.length;
+    }, 400);
+  }
+
+  updateHoloDisplay();
+  setInterval(updateHoloDisplay, 8000);
+
   /* ---------- DATA: projects & competitions ---------- */
   var items = [
     {
@@ -1218,7 +1215,7 @@
     });
   });
 
-  /* ---------- ARCHIVE (hover-swap tiles, warm duotone) ---------- */
+  /* ---------- ARCHIVE ---------- */
   var pastProjects = [
     {title:'Mini Jet Engine Build', year:'2024', cat:'Propulsion', note:'A working small-scale turbojet, built and bench-tested end to end.', c1:'#e2531c', c2:'#2a2620', h1:'#ff9a5c', h2:'#1c1a15'},
     {title:'Autonomous Ground Rover', year:'2024', cat:'Robotics', note:'ESP32-based rover for autonomous sample collection.', c1:'#3a5f8a', c2:'#20221f', h1:'#7ea3c9', h2:'#1c1a15'},
@@ -1250,7 +1247,7 @@
     );
   }).join('');
 
-  /* ---------- GALLERY (scattered photo tiles + serif note tiles) ---------- */
+  /* ---------- GALLERY ---------- */
   var moments = [
     {kind:'photo', size:'lg', cap:'SAE Aero, Fabrication Bay', yr:'2025', c1:'#e2531c', c2:'#2a2620', off:10, rot:-1.4},
     {kind:'photo', size:'sm', cap:'First Static Fire',         yr:'2024', c1:'#b5502a', c2:'#20221f', off:190, rot:1.2},
