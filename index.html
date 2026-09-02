@@ -88,14 +88,7 @@
         
         <!-- Pure CSS 3D Engine -->
         <div class="css-3d-scene">
-          <div id="virtualModel" class="virtual-assembly state-chassis">
-            <div class="holo-part part-1"></div>
-            <div class="holo-part part-2"></div>
-            <div class="holo-part part-3"></div>
-            <div class="holo-part part-4"></div>
-            <div class="holo-part part-5"></div>
-            <div class="holo-part part-6"></div>
-          </div>
+          <canvas id="holoCanvas"></canvas>
         </div>
       </div>
       
@@ -282,7 +275,7 @@
 
         <div class="contact-row">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z" opacity="0"/><path d="M4 6l8 7 8-7M4 6v12h16V6"/></svg>
-          <div><div class="label">Email</div><a class="value" href="mailto:ats.pec12@gmail.com">ats.pec12@gmail.com</a></div>
+          <div><div class="label">Email</div><a class="value" href="mailto:ats@pec.edu.in">ats@pec.edu.in</a></div>
         </div>
         <div class="contact-row">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
@@ -395,45 +388,243 @@
   }, {threshold:0.12});
   revealTargets.forEach(function(t){ revealObserver.observe(t); });
 
-  /* ---------- HERO CSS 3D ROTATION ENGINE ---------- */
-  const hardwareProjects = [
-    {
-      title: "TUBULAR CHASSIS KINEMATICS",
-      cssClass: "state-chassis",
-      desc: "Structural analysis of bent-pipe chassis geometry. Evaluates torsional stiffness across axles, integrating custom negative caster angles and optimized tracking width ratios for high-grip track environments."
-    },
-    {
-      title: "HIGH-ALTITUDE RECOVERY",
-      cssClass: "state-balloon",
-      desc: "Autonomous telemetry unit engineered for sounding balloon deployment. Simulates structural re-entry loads and glide slope navigation algorithms under severe high-altitude constraints."
-    },
-    {
-      title: "ELECTRIC CARGO PROPULSION",
-      cssClass: "state-aero",
-      desc: "Distributed electric propulsion node targeting regional aviation lift. Computes computational fluid dynamics (CFD) layers to optimize nacelle aerodynamics and thermal shedding across the airframe."
-    }
-  ];
+  /* ---------- HERO 3D WIREFRAME ENGINE (real vertex math, drawn to canvas) ---------- */
+  const HOLO_USEG = 15; // segments along the long axis
+  const HOLO_VSEG = 22; // segments around the circumference
 
-  let currentProjectIndex = 0;
-  const modelElement = document.getElementById('virtualModel');
-  const titleElement = document.getElementById('holoTargetName');
-  const descElement = document.getElementById('holoDescription');
-
-  function updateHoloDisplay() {
-    const project = hardwareProjects[currentProjectIndex];
-    descElement.style.opacity = 0;
-    
-    setTimeout(() => {
-      modelElement.className = `virtual-assembly ${project.cssClass}`;
-      titleElement.textContent = project.title;
-      descElement.textContent = project.desc;
-      descElement.style.opacity = 1;
-      currentProjectIndex = (currentProjectIndex + 1) % hardwareProjects.length;
-    }, 400);
+  // Each returns a 0..1 radius multiplier for u in [0,1] (0 = nose, 1 = tail).
+  function chassisProfile(u){
+    // slender boom, rounded caps, two collar bulges where the axles mount
+    var body = Math.pow(Math.sin(Math.PI * u), 0.28);
+    var collarA = Math.exp(-Math.pow((u - 0.26) / 0.05, 2)) * 0.35;
+    var collarB = Math.exp(-Math.pow((u - 0.74) / 0.05, 2)) * 0.35;
+    return Math.min(1, body + collarA + collarB);
+  }
+  function balloonProfile(u){
+    // blunt rounded nose, long tapering tail — a classic airship envelope
+    return Math.sqrt(Math.max(0, Math.sin(Math.PI * Math.pow(u, 0.62))));
+  }
+  function aeroProfile(u){
+    // converging-diverging duct: wide inlet, narrow throat, wide exit
+    return 0.62 + 0.38 * Math.abs(Math.cos(Math.PI * u));
   }
 
-  updateHoloDisplay();
+  const HOLO_STATES = {
+    chassis: {
+      title: "TUBULAR CHASSIS KINEMATICS",
+      desc: "Structural analysis of bent-pipe chassis geometry. Evaluates torsional stiffness across axles, integrating custom negative caster angles and optimized tracking width ratios for high-grip track environments.",
+      profile: chassisProfile, length: 210, maxR: 20,
+      buildExtras: function(length, maxR){
+        var shaftR = maxR * 2.3;
+        var xa = -length / 2 + length * 0.26;
+        var xb = -length / 2 + length * 0.74;
+        return { lines: [
+          [[xa, -shaftR, 0], [xa, shaftR, 0]],
+          [[xb, -shaftR, 0], [xb, shaftR, 0]]
+        ], fins: [] };
+      }
+    },
+    balloon: {
+      title: "HIGH-ALTITUDE RECOVERY",
+      desc: "Autonomous telemetry unit engineered for sounding balloon deployment. Simulates structural re-entry loads and glide slope navigation algorithms under severe high-altitude constraints.",
+      profile: balloonProfile, length: 240, maxR: 46,
+      buildExtras: function(length, maxR){
+        var fins = [];
+        [0, 120, 240].forEach(function(deg){
+          var a = deg * Math.PI / 180;
+          var xNear = length / 2 - length * 0.14, xTip = length / 2 - length * 0.02;
+          var rBase = maxR * 0.5, rTip = maxR * 0.2, rOuterFar = maxR * 1.85, rOuterNear = maxR * 1.3;
+          fins.push([
+            [xNear, rBase * Math.cos(a), rBase * Math.sin(a)],
+            [xTip,  rTip  * Math.cos(a), rTip  * Math.sin(a)],
+            [xTip,  rOuterFar  * Math.cos(a), rOuterFar  * Math.sin(a)],
+            [xNear, rOuterNear * Math.cos(a), rOuterNear * Math.sin(a)]
+          ]);
+        });
+        return { lines: [], fins: fins };
+      }
+    },
+    aero: {
+      title: "ELECTRIC CARGO PROPULSION",
+      desc: "Distributed electric propulsion node targeting regional aviation lift. Computes computational fluid dynamics (CFD) layers to optimize nacelle aerodynamics and thermal shedding across the airframe.",
+      profile: aeroProfile, length: 190, maxR: 40,
+      buildExtras: function(length, maxR){
+        return { lines: [
+          [[-length / 2, 0, 0], [length / 2, 0, 0]],                              // fan shaft centerline
+          [[-length * 0.12, -maxR * 1.9, 0], [-length * 0.12, -maxR * 0.7, 0]]     // pylon mount strut
+        ], fins: [] };
+      }
+    }
+  };
+
+  function buildBodyMesh(radiusFn, uSeg, vSeg, length, maxR){
+    var rings = [];
+    for (var ui = 0; ui <= uSeg; ui++){
+      var u = ui / uSeg;
+      var r = radiusFn(u) * maxR;
+      var x = (u - 0.5) * length;
+      var ring = [];
+      for (var vi = 0; vi <= vSeg; vi++){
+        var theta = (vi / vSeg) * Math.PI * 2;
+        ring.push([x, r * Math.cos(theta), r * Math.sin(theta)]);
+      }
+      rings.push(ring);
+    }
+    return rings;
+  }
+
+  function rotateProject(p, angleY, angleX, cx, cy, focal, camDist){
+    var x = p[0], y = p[1], z = p[2];
+    var x1 = x * Math.cos(angleY) + z * Math.sin(angleY);
+    var z1 = -x * Math.sin(angleY) + z * Math.cos(angleY);
+    var y2 = y * Math.cos(angleX) - z1 * Math.sin(angleX);
+    var z2 = y * Math.sin(angleX) + z1 * Math.cos(angleX);
+    var zz = z2 + camDist;
+    var scale = focal / zz;
+    return [cx + x1 * scale, cy + y2 * scale];
+  }
+
+  function hexToRgba(hex, alpha){
+    hex = (hex || '#e2531c').trim().replace('#', '');
+    if (hex.length === 3){ hex = hex.split('').map(function(c){ return c + c; }).join(''); }
+    var r = parseInt(hex.substring(0, 2), 16);
+    var g = parseInt(hex.substring(2, 4), 16);
+    var b = parseInt(hex.substring(4, 6), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  }
+
+  const holoCanvas = document.getElementById('holoCanvas');
+  const holoCtx = holoCanvas.getContext('2d');
+  const holoAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#e2531c';
+  var holoW = 0, holoH = 0;
+  var holoDPR = Math.min(window.devicePixelRatio || 1, 2);
+
+  function resizeHoloCanvas(){
+    var rect = holoCanvas.getBoundingClientRect();
+    holoW = rect.width; holoH = rect.height;
+    holoCanvas.width = Math.max(1, Math.round(holoW * holoDPR));
+    holoCanvas.height = Math.max(1, Math.round(holoH * holoDPR));
+    holoCtx.setTransform(holoDPR, 0, 0, holoDPR, 0, 0);
+  }
+  resizeHoloCanvas();
+  window.addEventListener('resize', resizeHoloCanvas);
+
+  var holoStateKeys = ['chassis', 'balloon', 'aero'];
+  var holoIndex = 1; // index 0 is the initial state, already shown
+  var holoTo = HOLO_STATES[holoStateKeys[0]];
+  var holoFrom = null;
+  var holoTransitionStart = 0;
+  var HOLO_TRANSITION_MS = 1100;
+  var holoAngleY = 0.6;
+
+  const titleElement = document.getElementById('holoTargetName');
+  const descElement = document.getElementById('holoDescription');
+  titleElement.textContent = holoTo.title;
+  descElement.textContent = holoTo.desc;
+
+  function updateHoloDisplay(){
+    var next = HOLO_STATES[holoStateKeys[holoIndex % holoStateKeys.length]];
+    holoIndex++;
+    descElement.style.opacity = 0;
+    setTimeout(function(){
+      titleElement.textContent = next.title;
+      descElement.textContent = next.desc;
+      descElement.style.opacity = 1;
+    }, 400);
+    holoFrom = holoTo;
+    holoTo = next;
+    holoTransitionStart = performance.now();
+  }
   setInterval(updateHoloDisplay, 8000);
+
+  function currentGeometry(now){
+    if (!holoFrom){
+      return {
+        length: holoTo.length, maxR: holoTo.maxR,
+        radiusFn: holoTo.profile,
+        extrasA: holoTo.buildExtras(holoTo.length, holoTo.maxR), opacityA: 1,
+        extrasB: null, opacityB: 0
+      };
+    }
+    var t = Math.min(1, (now - holoTransitionStart) / HOLO_TRANSITION_MS);
+    var te = t * t * (3 - 2 * t); // smoothstep
+    return {
+      length: holoFrom.length + (holoTo.length - holoFrom.length) * te,
+      maxR: holoFrom.maxR + (holoTo.maxR - holoFrom.maxR) * te,
+      radiusFn: function(u){ return holoFrom.profile(u) + (holoTo.profile(u) - holoFrom.profile(u)) * te; },
+      extrasA: holoFrom.buildExtras(holoFrom.length, holoFrom.maxR), opacityA: 1 - te,
+      extrasB: holoTo.buildExtras(holoTo.length, holoTo.maxR), opacityB: te
+    };
+  }
+
+  function drawHoloExtras(extras, opacity, angleY, angleX, cx, cy, focal, camDist){
+    if (!extras || opacity <= 0.01) return;
+    holoCtx.strokeStyle = hexToRgba(holoAccent, 0.9 * opacity);
+    (extras.lines || []).forEach(function(line){
+      var a = rotateProject(line[0], angleY, angleX, cx, cy, focal, camDist);
+      var b = rotateProject(line[1], angleY, angleX, cx, cy, focal, camDist);
+      holoCtx.beginPath();
+      holoCtx.moveTo(a[0], a[1]);
+      holoCtx.lineTo(b[0], b[1]);
+      holoCtx.stroke();
+    });
+    (extras.fins || []).forEach(function(fin){
+      var pts = fin.map(function(p){ return rotateProject(p, angleY, angleX, cx, cy, focal, camDist); });
+      holoCtx.beginPath();
+      pts.forEach(function(p, i){ if (i === 0) holoCtx.moveTo(p[0], p[1]); else holoCtx.lineTo(p[0], p[1]); });
+      holoCtx.closePath();
+      holoCtx.fillStyle = hexToRgba(holoAccent, 0.16 * opacity);
+      holoCtx.fill();
+      holoCtx.strokeStyle = hexToRgba(holoAccent, 0.85 * opacity);
+      holoCtx.stroke();
+    });
+  }
+
+  function renderHolo(ts){
+    requestAnimationFrame(renderHolo);
+    if (!holoW || !holoH) return;
+
+    var now = ts || performance.now();
+    holoAngleY += 0.0032;
+    var angleX = -0.52;
+
+    var geo = currentGeometry(now);
+    var cx = holoW / 2, cy = holoH / 2 + Math.min(holoH, holoW) * 0.02;
+    var fit = Math.min(holoW, holoH) / 340;
+    var focal = 480 * fit, camDist = 640 * fit;
+
+    holoCtx.clearRect(0, 0, holoW, holoH);
+
+    var rings = buildBodyMesh(geo.radiusFn, HOLO_USEG, HOLO_VSEG, geo.length, geo.maxR);
+    var projected = rings.map(function(ring){
+      return ring.map(function(p){ return rotateProject(p, holoAngleY, angleX, cx, cy, focal, camDist); });
+    });
+
+    holoCtx.lineWidth = 1;
+    holoCtx.strokeStyle = hexToRgba(holoAccent, 0.82);
+
+    for (var vi = 0; vi <= HOLO_VSEG; vi++){ // meridians
+      holoCtx.beginPath();
+      for (var ui = 0; ui <= HOLO_USEG; ui++){
+        var p = projected[ui][vi];
+        if (ui === 0) holoCtx.moveTo(p[0], p[1]); else holoCtx.lineTo(p[0], p[1]);
+      }
+      holoCtx.stroke();
+    }
+    for (var ui2 = 0; ui2 <= HOLO_USEG; ui2++){ // latitude rings
+      holoCtx.beginPath();
+      for (var vi2 = 0; vi2 <= HOLO_VSEG; vi2++){
+        var p2 = projected[ui2][vi2];
+        if (vi2 === 0) holoCtx.moveTo(p2[0], p2[1]); else holoCtx.lineTo(p2[0], p2[1]);
+      }
+      holoCtx.closePath();
+      holoCtx.stroke();
+    }
+
+    drawHoloExtras(geo.extrasA, geo.opacityA, holoAngleY, angleX, cx, cy, focal, camDist);
+    drawHoloExtras(geo.extrasB, geo.opacityB, holoAngleY, angleX, cx, cy, focal, camDist);
+  }
+  requestAnimationFrame(renderHolo);
 
   /* ---------- DATA: projects & competitions ---------- */
   var items = [
