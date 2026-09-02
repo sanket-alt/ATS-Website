@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposed Ideas — ATS, PEC</title>
+<meta name="description" content="Every idea currently pitched to the Aerospace Technical Society — open for 7 days unless a build starts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&family=Fraunces:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="contour-bg" aria-hidden="true">
+  <svg viewBox="0 0 1600 1600" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <g stroke="#18150f" stroke-width="1">
+      <path d="M-50,300 C250,200 400,420 650,380 C900,340 1000,150 1300,220 C1500,270 1580,180 1700,240" />
+      <path d="M-80,420 C220,340 380,560 620,500 C880,440 980,270 1320,340 C1520,380 1600,300 1750,360" />
+      <path d="M-60,560 C240,470 420,700 680,640 C930,580 1030,400 1360,470 C1560,510 1650,430 1780,500" />
+      <path d="M-40,760 C260,660 460,900 720,830 C980,760 1080,580 1400,650 C1600,700 1690,610 1800,680" />
+    </g>
+  </svg>
+</div>
+
+<header id="siteHeader">
+  <nav class="wrap">
+    <a href="index.html#top" class="brand">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 30C14 22 20 14 24 6L34 12L24 22L16 20L6 30Z" fill="#E2531C"/></svg>
+      <span class="brand-word">AT<span>S</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#projects">Board</a></li>
+      <li><a href="index.html#propose">Propose</a></li>
+      <li><a href="ideas.html" class="active">Ideas</a></li>
+      <li><a href="index.html#gallery">Gallery</a></li>
+      <li><a href="index.html#archive">Archive</a></li>
+      <li><a href="index.html#help">Help</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="index.html#propose" class="btn btn-solid">Propose an idea</a>
+      <button class="burger" id="burgerBtn" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html#projects">Board</a>
+  <a href="index.html#propose">Propose</a>
+  <a href="ideas.html">Ideas</a>
+  <a href="index.html#gallery">Gallery</a>
+  <a href="index.html#archive">Archive</a>
+  <a href="index.html#help">Help</a>
+</div>
+
+<section style="padding-top:140px;">
+  <div class="wrap">
+    <div class="sec-head reveal in">
+      <div>
+        <div class="eyebrow">STUDENT-SUBMITTED</div>
+        <h2 class="sec-title">Proposed <span class="accent">ideas</span></h2>
+      </div>
+      <p class="sec-note">Every idea currently pitched to ATS. Anything sitting here for 7 days without work starting on it drops off automatically — pitch your own from the <a href="index.html#propose" style="color:var(--accent);">Propose</a> section.</p>
+    </div>
+
+    <div class="ideas-grid" id="ideasGrid">
+      <p class="ideas-empty">Loading proposed ideas…</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 30C14 22 20 14 24 6L34 12L24 22L16 20L6 30Z" fill="#E2531C"/></svg>
+          <span>AEROSPACE TECHNICAL SOCIETY</span>
+        </div>
+        <p class="footer-tag">Punjab Engineering College, Chandigarh. Undergrad-run, hardware-first.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h5>Site</h5>
+          <a href="index.html#projects">Board</a>
+          <a href="index.html#propose">Propose</a>
+          <a href="ideas.html">Ideas</a>
+          <a href="index.html#gallery">Gallery</a>
+          <a href="index.html#help">Help</a>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <a href="mailto:ats@pec.edu.in">ats@pec.edu.in</a>
+          <a href="#">@ats.pec</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span id="year"></span> Aerospace Technical Society, PEC. Built by the society, for the society.</p>
+      <p>Ideas listed here are open student submissions, not confirmed projects.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  var header = document.getElementById('siteHeader');
+  var burger = document.getElementById('burgerBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  var ticking = false;
+  function onScroll(){
+    if(!ticking){
+      requestAnimationFrame(function(){
+        header.classList.toggle('scrolled', window.scrollY > 30);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  burger.addEventListener('click', function(){ mobileMenu.classList.toggle('open'); });
+  mobileMenu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ mobileMenu.classList.remove('open'); });
+  });
+
+  var MAX_AGE_DAYS = 7; // keep in sync with MAX_AGE_DAYS in Code.gs
+
+  function escapeHtml(str){
+    var d = document.createElement('div');
+    d.textContent = str == null ? '' : str;
+    return d.innerHTML;
+  }
+
+  function daysRemaining(timestamp){
+    var submitted = new Date(timestamp);
+    var deadline = new Date(submitted.getTime() + MAX_AGE_DAYS * 86400000);
+    var diff = Math.ceil((deadline - new Date()) / 86400000);
+    return diff;
+  }
+
+  function isScriptConfigured(){
+    return typeof ATS_SCRIPT_URL === 'string' && ATS_SCRIPT_URL.indexOf('http') === 0;
+  }
+
+  var ideasGrid = document.getElementById('ideasGrid');
+
+  function renderIdeas(list){
+    if(!list || list.length === 0){
+      ideasGrid.innerHTML = '<p class="ideas-empty">No open proposals right now — be the first to pitch something.</p>';
+      return;
+    }
+    ideasGrid.innerHTML = list.map(function(p){
+      var left = daysRemaining(p.timestamp);
+      var badgeClass = left <= 2 ? 'soon' : 'plenty';
+      var badgeText = left <= 0 ? 'Closing today' : left + ' day' + (left === 1 ? '' : 's') + ' left';
+      return (
+        '<div class="idea-card">' +
+          '<div class="idea-top">' +
+            '<span class="idea-type">'+escapeHtml(p.type || 'Project')+'</span>' +
+            '<span class="idea-countdown '+badgeClass+'">'+badgeText+'</span>' +
+          '</div>' +
+          '<h3>'+escapeHtml(p.title)+'</h3>' +
+          (p.note ? '<p>'+escapeHtml(p.note)+'</p>' : '') +
+          '<span class="idea-by">Pitched by '+escapeHtml(p.name)+(p.branch ? ', '+escapeHtml(p.branch) : '')+'</span>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  async function loadIdeas(){
+    if(!isScriptConfigured()){
+      ideasGrid.innerHTML = '<p class="ideas-error">Backend not connected yet — see SETUP.md to wire up config.js.</p>';
+      return;
+    }
+    try{
+      var res = await fetch(ATS_SCRIPT_URL);
+      var data = await res.json();
+      renderIdeas(data.items || []);
+    }catch(err){
+      ideasGrid.innerHTML = '<p class="ideas-error">Couldn\'t load proposed ideas right now — try refreshing.</p>';
+    }
+  }
+  loadIdeas();
+
+})();
+</script>
+</body>
+</html>
