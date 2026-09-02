@@ -37,6 +37,7 @@
       <li><a href="ideas.html">Ideas</a></li>
       <li><a href="#gallery">Gallery</a></li>
       <li><a href="#archive">Archive</a></li>
+      <li><a href="#comp-calendar">Calendar</a></li>
       <li><a href="#help">Help</a></li>
     </ul>
     <div class="nav-cta">
@@ -54,6 +55,7 @@
   <a href="ideas.html">Ideas</a>
   <a href="#gallery">Gallery</a>
   <a href="#archive">Archive</a>
+  <a href="#comp-calendar">Calendar</a>
   <a href="#help">Help</a>
 </div>
 
@@ -253,6 +255,51 @@
       <p class="sec-note">Closed-out builds and competitions, with what they were and when they wrapped. Hover a tile for a second look.</p>
     </div>
     <div class="archive-grid reveal-stagger" id="archiveGrid"></div>
+  </div>
+</section>
+
+<!-- ============ COMPETITION CALENDAR ============ -->
+<section id="comp-calendar">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="eyebrow">OFF THE CAMPUS</div>
+        <h2 class="sec-title">Competition <span class="accent">calendar</span></h2>
+      </div>
+      <p class="sec-note">National and international design-build competitions engineering undergrads can enter — no hackathons. Dates roll forward on their own as the year moves.</p>
+    </div>
+
+    <div class="cc-layout reveal">
+      <div class="cc-cal-card">
+        <div class="cc-cal-top">
+          <div class="cc-cal-month">
+            <span id="ccMonthName">October</span> <span id="ccYearName" class="cc-year">2026</span>
+          </div>
+          <div class="cc-cal-nav">
+            <button id="ccPrev" aria-label="Previous month">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button id="ccToday">Today</button>
+            <button id="ccNext" aria-label="Next month">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="cc-weekdays">
+          <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+        </div>
+        <div class="cc-grid" id="ccGrid"></div>
+        <div class="cc-legend">
+          <span><i class="cc-dot cc-dot-india"></i>India</span>
+          <span><i class="cc-dot cc-dot-intl"></i>International</span>
+        </div>
+      </div>
+
+      <div class="cc-list-card">
+        <div class="cc-list-head">Coming up</div>
+        <div class="cc-list" id="ccList"></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -766,6 +813,145 @@
       '</div>'
     );
   }).join('');
+
+  /* ---------- COMPETITION CALENDAR ---------- */
+  (function(){
+    var MS_DAY = 86400000;
+
+    function dOnly(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+    function parseISO(s){ var p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+    function fmtRange(start, end){
+      var opts = {month:'short', day:'numeric'};
+      var sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+      var s = start.toLocaleDateString(undefined, opts);
+      var e = end.toLocaleDateString(undefined, sameMonth ? {day:'numeric'} : opts);
+      var yr = end.getFullYear();
+      return (start.getTime() === end.getTime() ? s : s + ' \u2013 ' + e) + ', ' + yr;
+    }
+
+    // Fixed-date competitions (confirmed dates as announced by organisers)
+    var fixedEvents = [
+      { name:'SUPRA SAEINDIA 2026', org:'SAEINDIA \u00b7 Formula Student', loc:'Buddh International Circuit, Greater Noida', type:'india', cat:'Formula-style race car design & build', start:'2026-09-02', end:'2026-09-05' },
+      { name:'SAE Aero Design Challenge', org:'SAE International', loc:'USA', type:'intl', cat:'Fixed-wing payload aircraft \u2014 registration deadline', start:'2026-10-15', end:'2026-10-15' },
+      { name:'AIAA Design-Build-Fly', org:'AIAA / Cessna / Textron', loc:'Wichita, Kansas, USA', type:'intl', cat:'Design-build-fly RC aircraft \u2014 team formation deadline', start:'2026-11-02', end:'2026-11-02' },
+      { name:'Formula Bharat 2027', org:'SAEINDIA-affiliated', loc:'Kari Motor Speedway, Coimbatore', type:'india', cat:'Formula-style race car \u2014 combustion / EV / driverless', start:'2027-01-19', end:'2027-01-24' },
+      { name:'Go-Kart Design Challenge (GKDC)', org:'ISNEE', loc:'Coimbatore', type:'india', cat:'Go-kart design & fabrication', start:'2027-02-17', end:'2027-02-21' }
+    ];
+
+    // Recurring competitions where the organiser hasn't published next year's exact dates yet.
+    // These roll forward on their own once the current cycle's window has passed.
+    var recurringEvents = [
+      { name:'BAJA SAEINDIA (mBAJA physical round)', org:'SAEINDIA', loc:'Rotating campus venues, India', type:'india', cat:'All-terrain vehicle design & build', month:2, day:25, span:5, note:'Physical rounds run across categories from Dec\u2013Aug \u2014 exact dates confirmed on bajasaeindia.org' },
+      { name:'DD-Robocon India', org:'IIT Delhi \u00b7 Prasar Bharati', loc:'Delhi', type:'india', cat:'Robot design & build \u2014 ABU Robocon national round', month:7, day:13, span:2, note:'National-round timing has moved between March and July in recent years' },
+      { name:'Shell Eco-marathon (regional leg)', org:'Shell \u00b7 Make the Future', loc:'Rotating \u2014 recent legs in Qatar, Indonesia, Poland', type:'intl', cat:'Ultra-energy-efficient vehicle design', month:1, day:21, span:5, note:'Regional-leg dates rotate each season \u2014 check shellecomarathon.com' }
+    ];
+
+    function resolveEvents(today){
+      var out = fixedEvents.map(function(e){
+        return { name:e.name, org:e.org, loc:e.loc, type:e.type, cat:e.cat, start:parseISO(e.start), end:parseISO(e.end), approx:false };
+      });
+      recurringEvents.forEach(function(e){
+        var year = today.getFullYear();
+        var start = new Date(year, e.month - 1, e.day);
+        var end = new Date(start.getTime() + e.span * MS_DAY);
+        if(end < today){
+          start = new Date(year + 1, e.month - 1, e.day);
+          end = new Date(start.getTime() + e.span * MS_DAY);
+        }
+        out.push({ name:e.name, org:e.org, loc:e.loc, type:e.type, cat:e.cat, start:start, end:end, approx:true, note:e.note });
+      });
+      out.sort(function(a, b){ return a.start - b.start; });
+      return out;
+    }
+
+    var today = dOnly(new Date());
+    var allEvents = resolveEvents(today);
+
+    var viewYear = today.getFullYear();
+    var viewMonth = today.getMonth();
+
+    var monthNameEl = document.getElementById('ccMonthName');
+    var yearNameEl = document.getElementById('ccYearName');
+    var gridEl = document.getElementById('ccGrid');
+    var listEl = document.getElementById('ccList');
+    var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function eventsOnDay(date){
+      return allEvents.filter(function(e){ return date >= e.start && date <= e.end; });
+    }
+
+    function renderCalendar(){
+      monthNameEl.textContent = monthNames[viewMonth];
+      yearNameEl.textContent = viewYear;
+
+      var firstOfMonth = new Date(viewYear, viewMonth, 1);
+      var startWeekday = firstOfMonth.getDay();
+      var daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      var prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
+
+      var cells = [];
+      for(var i = startWeekday - 1; i >= 0; i--){
+        cells.push({ day: prevMonthDays - i, pad:true });
+      }
+      for(var d = 1; d <= daysInMonth; d++){
+        cells.push({ day:d, pad:false, date:new Date(viewYear, viewMonth, d) });
+      }
+      while(cells.length % 7 !== 0){
+        cells.push({ day: cells.length - (startWeekday + daysInMonth) + 1, pad:true });
+      }
+
+      gridEl.innerHTML = cells.map(function(c){
+        if(c.pad){ return '<div class="cc-day cc-pad">'+c.day+'</div>'; }
+        var evs = eventsOnDay(c.date);
+        var isToday = c.date.getTime() === today.getTime();
+        var cls = 'cc-day' + (isToday ? ' cc-today' : '') + (evs.length ? ' cc-active' : '');
+        var dots = evs.length ? '<span class="cc-day-dots">' + evs.map(function(e){
+          return '<i style="background:'+(e.type === 'india' ? 'var(--accent)' : 'var(--new)')+'"></i>';
+        }).join('') + '</span>' : '';
+        var titleAttr = evs.length ? ' data-title="'+evs.map(function(e){return e.name;}).join(', ').replace(/"/g,'&quot;')+'" title="'+evs.map(function(e){return e.name;}).join(', ').replace(/"/g,'&quot;')+'"' : '';
+        return '<div class="'+cls+'"'+titleAttr+'>'+c.day+dots+'</div>';
+      }).join('');
+    }
+
+    function renderList(){
+      var upcoming = allEvents.filter(function(e){ return e.end >= today; }).slice(0, 6);
+      if(!upcoming.length){
+        listEl.innerHTML = '<p class="cc-list-empty">Nothing on the calendar right now \u2014 check back soon.</p>';
+        return;
+      }
+      listEl.innerHTML = upcoming.map(function(e){
+        var tagClass = e.type === 'india' ? 'india' : 'intl';
+        var tagLabel = e.type === 'india' ? 'India' : 'Intl';
+        return (
+          '<div class="cc-item">' +
+            '<div class="cc-item-top">' +
+              '<span class="cc-item-tag '+tagClass+'">'+tagLabel+'</span>' +
+              '<span class="cc-item-when">'+fmtRange(e.start, e.end)+'</span>' +
+            '</div>' +
+            '<h5>'+e.name+'</h5>' +
+            '<p>'+e.cat+' \u2014 '+e.loc+'</p>' +
+            (e.approx && e.note ? '<div class="cc-item-note">'+e.note+'</div>' : '') +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    document.getElementById('ccPrev').addEventListener('click', function(){
+      viewMonth--; if(viewMonth < 0){ viewMonth = 11; viewYear--; }
+      renderCalendar();
+    });
+    document.getElementById('ccNext').addEventListener('click', function(){
+      viewMonth++; if(viewMonth > 11){ viewMonth = 0; viewYear++; }
+      renderCalendar();
+    });
+    document.getElementById('ccToday').addEventListener('click', function(){
+      viewYear = today.getFullYear(); viewMonth = today.getMonth();
+      renderCalendar();
+    });
+
+    renderCalendar();
+    renderList();
+  })();
 
   /* ---------- GALLERY ---------- */
   var moments = [
