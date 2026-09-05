@@ -493,28 +493,34 @@
   .hgallery-track{
     display:flex;
     align-items:flex-end;
-    gap:44px;
+    gap:34px;
     width:max-content;
     will-change:transform;
   }
   .hgallery-pin.pin-mode .hgallery-viewport{
     position:sticky;
     top:78px;
-    height:var(--hg-h, 720px);
+    height:var(--hg-h, 620px);
     overflow:hidden;
-    padding:30px 0 0 48px;
+    padding:14px 0 0 48px;
   }
-  .hgallery-pin.pin-mode .hgallery-track{ gap:60px; align-items:flex-end; }
+  .hgallery-pin.pin-mode .hgallery-track{ gap:46px; align-items:flex-end; height:100%; }
   .htile{
     flex:0 0 auto;
     display:flex;
     flex-direction:column;
-    gap:14px;
+    gap:12px;
     scroll-snap-align:start;
-    margin-top:calc(var(--off, 0) * 1px);
-    transform:rotate(calc(var(--rot, 0) * 1deg));
   }
-  @media (max-width:640px){ .htile{ margin-top:calc(var(--off, 0) * 0.4px); transform:none; } }
+  /* vertical scatter — some tiles anchor high, some low, some centered,
+     instead of one straight bottom-aligned row */
+  .htile[data-valign="top"]{ align-self:flex-start; margin-top:calc(var(--off, 0) * 1px); }
+  .htile[data-valign="mid"]{ align-self:center; }
+  .htile[data-valign="bottom"]{ align-self:flex-end; margin-bottom:calc(var(--off, 0) * 1px); }
+  @media (max-width:640px){
+    .htile[data-valign="top"]{ margin-top:calc(var(--off, 0) * 0.35px); }
+    .htile[data-valign="bottom"]{ margin-bottom:calc(var(--off, 0) * 0.35px); }
+  }
   .htile-cap .yr{font-family:var(--ff-mono); font-size:11px; color:var(--accent-dim); letter-spacing:0.1em; text-transform:uppercase;}
   .htile-cap .lbl{font-family:var(--ff-head); font-size:16.5px; font-weight:500; margin-top:4px; line-height:1.2; color:var(--text);}
   .htile-art{
@@ -523,27 +529,34 @@
     border:1px solid var(--line);
     box-shadow:0 18px 34px rgba(24,21,15,0.10);
   }
-  .htile-lg .htile-art{ width:64vw; height:52vh; }
-  .htile-md .htile-art{ width:50vw; height:40vh; }
-  .htile-sm .htile-art{ width:38vw; height:30vh; }
-  .htile-lg{ width:64vw; }
-  .htile-md{ width:50vw; }
-  .htile-sm{ width:38vw; }
+  /* smaller, tighter tile sizes than before — closer to a real photo-strip
+     scale, not near-full-viewport blocks */
+  .htile-xl .htile-art{ width:52vw; height:56vh; }
+  .htile-lg .htile-art{ width:42vw; height:44vh; }
+  .htile-md .htile-art{ width:32vw; height:32vh; }
+  .htile-sm .htile-art{ width:24vw; height:22vh; }
+  .htile-xl{ width:52vw; }
+  .htile-lg{ width:42vw; }
+  .htile-md{ width:32vw; }
+  .htile-sm{ width:24vw; }
   @media (min-width:640px){
-    .htile-lg .htile-art{ width:360px; height:440px; }
-    .htile-md .htile-art{ width:270px; height:340px; }
-    .htile-sm .htile-art{ width:196px; height:246px; }
-    .htile-lg{ width:360px; }
-    .htile-md{ width:270px; }
-    .htile-sm{ width:196px; }
+    .htile-xl .htile-art{ width:280px; height:520px; }
+    .htile-lg .htile-art{ width:300px; height:380px; }
+    .htile-md .htile-art{ width:230px; height:280px; }
+    .htile-sm .htile-art{ width:168px; height:168px; }
+    .htile-xl{ width:280px; }
+    .htile-lg{ width:300px; }
+    .htile-md{ width:230px; }
+    .htile-sm{ width:168px; }
   }
   .htile-note{
     flex:0 0 auto;
     display:flex; align-items:center;
-    width:260px; height:260px;
+    width:230px; height:220px;
     scroll-snap-align:start;
+    align-self:center;
   }
-  @media (min-width:640px){ .htile-note{ width:300px; height:360px; } }
+  @media (min-width:640px){ .htile-note{ width:260px; height:260px; } }
   .htile-note blockquote{
     margin:0; font-family:var(--ff-serif); font-style:italic; font-weight:500;
     font-size:clamp(21px,2.4vw,27px); color:var(--text);
