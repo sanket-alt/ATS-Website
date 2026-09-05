@@ -954,17 +954,20 @@
   })();
 
   /* ---------- GALLERY ---------- */
+  /* Straight (untilted) tiles, scattered across top/mid/bottom of the
+     strip rather than one bottom-aligned line — small tiles float high,
+     one tall tile anchors low, mirroring a real photo-wall cluster. */
   var moments = [
-    {kind:'photo', size:'lg', cap:'SAE Aero, Fabrication Bay', yr:'2025', c1:'#e2531c', c2:'#2a2620', off:10, rot:-1.4},
-    {kind:'photo', size:'sm', cap:'First Static Fire',         yr:'2024', c1:'#b5502a', c2:'#20221f', off:190, rot:1.2},
+    {kind:'photo', size:'xl', valign:'bottom', cap:'SAE Aero, Fabrication Bay', yr:'2025', c1:'#e2531c', c2:'#2a2620', off:0},
+    {kind:'photo', size:'sm', valign:'top',    cap:'First Static Fire',         yr:'2024', c1:'#b5502a', c2:'#20221f', off:0},
     {kind:'note',  quote:'BUILD. FLY. BREAK. REBUILD.', by:'Build log, PPT bay'},
-    {kind:'photo', size:'md', cap:'Kari Speedway Trials',      yr:'2025', c1:'#3a5f8a', c2:'#18150f', off:60, rot:-0.8},
-    {kind:'photo', size:'sm', cap:'Wind Tunnel Session',       yr:'2024', c1:'#7f8a5a', c2:'#20221c', off:220, rot:1.6},
-    {kind:'photo', size:'lg', cap:'Night Before Nationals',    yr:'2025', c1:'#d7c9a0', c2:'#18150f', off:0, rot:-1.0},
+    {kind:'photo', size:'md', valign:'bottom', cap:'Kari Speedway Trials',      yr:'2025', c1:'#3a5f8a', c2:'#18150f', off:0},
+    {kind:'photo', size:'sm', valign:'top',    cap:'Wind Tunnel Session',       yr:'2024', c1:'#7f8a5a', c2:'#20221c', off:36},
+    {kind:'photo', size:'lg', valign:'mid',    cap:'Night Before Nationals',    yr:'2025', c1:'#d7c9a0', c2:'#18150f', off:0},
     {kind:'note',  quote:'It doesn\u2019t fly until it flies on the bench first.', by:'Workshop rule #1'},
-    {kind:'photo', size:'md', cap:'Payload Integration',       yr:'2024', c1:'#e2531c', c2:'#20221f', off:150, rot:0.9},
-    {kind:'photo', size:'sm', cap:'Team Debrief',              yr:'2025', c1:'#3a5f8a', c2:'#231f18', off:70, rot:-1.5},
-    {kind:'photo', size:'md', cap:'Workshop Floor',            yr:'2023', c1:'#b5502a', c2:'#18150f', off:200, rot:1.1}
+    {kind:'photo', size:'md', valign:'bottom', cap:'Payload Integration',       yr:'2024', c1:'#e2531c', c2:'#20221f', off:0},
+    {kind:'photo', size:'sm', valign:'top',    cap:'Team Debrief',              yr:'2025', c1:'#3a5f8a', c2:'#231f18', off:0},
+    {kind:'photo', size:'md', valign:'bottom', cap:'Workshop Floor',            yr:'2023', c1:'#b5502a', c2:'#18150f', off:0}
   ];
 
   var hgTrack = document.getElementById('hgalleryTrack');
@@ -977,7 +980,7 @@
       );
     }
     return (
-      '<figure class="htile htile-'+m.size+'" style="--off:'+m.off+'; --rot:'+m.rot+'">' +
+      '<figure class="htile htile-'+m.size+'" data-valign="'+m.valign+'" style="--off:'+m.off+'">' +
         '<figcaption class="htile-cap"><span class="yr">'+m.yr+'</span><div class="lbl">'+m.cap+'</div></figcaption>' +
         '<div class="htile-art" style="background:'+
           'radial-gradient(circle at 30% 25%, '+m.c1+'40, transparent 60%), '+
