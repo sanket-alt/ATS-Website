@@ -16,10 +16,16 @@
 <div class="contour-bg" aria-hidden="true">
   <svg viewBox="0 0 1600 1600" xmlns="http://www.w3.org/2000/svg" fill="none">
     <g stroke="#18150f" stroke-width="1">
-      <path d="M-50,300 C250,200 400,420 650,380 C900,340 1000,150 1300,220 C1500,270 1580,180 1700,240" />
-      <path d="M-80,420 C220,340 380,560 620,500 C880,440 980,270 1320,340 C1520,380 1600,300 1750,360" />
-      <path d="M-60,560 C240,470 420,700 680,640 C930,580 1030,400 1360,470 C1560,510 1650,430 1780,500" />
-      <path d="M-40,760 C260,660 460,900 720,830 C980,760 1080,580 1400,650 C1600,700 1690,610 1800,680" />
+      <path class="contour-line cl-1" pathLength="100" d="M-50,300 C250,200 400,420 650,380 C900,340 1000,150 1300,220 C1500,270 1580,180 1700,240" />
+      <path class="contour-line cl-2" pathLength="100" d="M-80,420 C220,340 380,560 620,500 C880,440 980,270 1320,340 C1520,380 1600,300 1750,360" />
+      <path class="contour-line cl-3" pathLength="100" d="M-60,560 C240,470 420,700 680,640 C930,580 1030,400 1360,470 C1560,510 1650,430 1780,500" />
+      <path class="contour-line cl-4" pathLength="100" d="M-40,760 C260,660 460,900 720,830 C980,760 1080,580 1400,650 C1600,700 1690,610 1800,680" />
+    </g>
+    <g stroke="#e2531c" stroke-linecap="round">
+      <path class="contour-pulse cp-1" pathLength="100" d="M-50,300 C250,200 400,420 650,380 C900,340 1000,150 1300,220 C1500,270 1580,180 1700,240" />
+      <path class="contour-pulse cp-2" pathLength="100" d="M-80,420 C220,340 380,560 620,500 C880,440 980,270 1320,340 C1520,380 1600,300 1750,360" />
+      <path class="contour-pulse cp-3" pathLength="100" d="M-60,560 C240,470 420,700 680,640 C930,580 1030,400 1360,470 C1560,510 1650,430 1780,500" />
+      <path class="contour-pulse cp-4" pathLength="100" d="M-40,760 C260,660 460,900 720,830 C980,760 1080,580 1400,650 C1600,700 1690,610 1800,680" />
     </g>
   </svg>
 </div>
@@ -307,10 +313,6 @@
       <div class="cc-list-card">
         <div class="cc-list-head">Coming up</div>
         <div class="cc-list" id="ccList"></div>
-      </div>
-      <div class="cc-list-bottom" aria-label="More upcoming competitions">
-        <div class="cc-list-bottom-head">CONTINUING THE LIST</div>
-        <div class="cc-list cc-list-bottom-track" id="ccListBottom"></div>
       </div>
     </div>
   </div>
@@ -1043,7 +1045,6 @@
     var yearNameEl = document.getElementById('ccYearName');
     var gridEl = document.getElementById('ccGrid');
     var listEl = document.getElementById('ccList');
-    var listBottomEl = document.getElementById('ccListBottom');
     var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
     function eventsOnDay(date){
@@ -1084,14 +1085,12 @@
     }
 
     function renderList(){
-      var upcoming = allEvents.filter(function(e){ return e.end >= today; }).slice(0, 8);
+      var upcoming = allEvents.filter(function(e){ return e.end >= today; }).slice(0, 6);
       if(!upcoming.length){
         listEl.innerHTML = '<p class="cc-list-empty">Nothing on the calendar right now \u2014 check back soon.</p>';
-        if(listBottomEl) listBottomEl.innerHTML = '';
         return;
       }
-
-      function itemMarkup(e){
+      listEl.innerHTML = upcoming.map(function(e){
         var tagClass = e.type === 'india' ? 'india' : 'intl';
         var tagLabel = e.type === 'india' ? 'India' : 'Intl';
         return (
@@ -1105,15 +1104,7 @@
             (e.approx && e.note ? '<div class="cc-item-note">'+e.note+'</div>' : '') +
           '</div>'
         );
-      }
-
-      // Keep the first four competitions on the vertical right rail.
-      // The remaining items continue around the corner on the bottom rail.
-      var railCount = Math.min(4, upcoming.length);
-      listEl.innerHTML = upcoming.slice(0, railCount).map(itemMarkup).join('');
-      if(listBottomEl){
-        listBottomEl.innerHTML = upcoming.slice(railCount).map(itemMarkup).join('');
-      }
+      }).join('');
     }
 
     document.getElementById('ccPrev').addEventListener('click', function(){
