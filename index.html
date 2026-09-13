@@ -1162,6 +1162,166 @@
     }
   });
 
+  /* ---------- CURSOR-AVOIDING TEXT ---------- */
+  /* Desktop-only word-dodge effect: on hover, individual words nudge away
+     from the cursor, then spring back. Applied site-wide except the
+     orange ticker marquee (which already slides horizontally on its own)
+     and anything inside form controls. Uses transform only (never
+     touches layout), and small max offsets, so it can never force the
+     page to scroll — and it's fully disabled below the desktop
+     pointer/width breakpoint used elsewhere on this page. */
+  (function(){
+    var dodgeQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
+    var DODGE_RADIUS = 74;      // px — cursor influence radius
+    var DODGE_MAX_OFFSET = 12;  // px — capped so it can never affect page scroll size
+    var DODGE_EXCLUDE = '.marquee, .marquee *, script, style, noscript, input, textarea, select, option, svg, canvas, .contour-bg, .dw, .dwi';
+
+    var dodgeActive = false;
+    var dodgeWords = [];
+    var mouseX = -9999, mouseY = -9999;
+    var rafPending = false;
+    var dodgeObserver = null;
+
+    function isExcluded(el){
+      while(el && el !== document.body){
+        if(el.nodeType === 1 && el.matches && el.matches(DODGE_EXCLUDE)) return true;
+        el = el.parentNode;
+      }
+      return false;
+    }
+
+    function wrapTextNode(node){
+      var text = node.nodeValue;
+      if(!text || !/\S/.test(text)) return;
+      var frag = document.createDocumentFragment();
+      var parts = text.split(/(\s+)/);
+      parts.forEach(function(part){
+        if(part === '') return;
+        if(/^\s+$/.test(part)){
+          frag.appendChild(document.createTextNode(part));
+        } else {
+          var outer = document.createElement('span');
+          outer.className = 'dw';
+          var inner = document.createElement('span');
+          inner.className = 'dwi';
+          inner.textContent = part;
+          outer.appendChild(inner);
+          frag.appendChild(outer);
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    }
+
+    function collectTextNodes(root){
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode: function(node){
+          if(!node.nodeValue || !/\S/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+          if(isExcluded(node.parentNode)) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      var nodes = [];
+      var n;
+      while((n = walker.nextNode())) nodes.push(n);
+      return nodes;
+    }
+
+    function wrapAll(root){
+      collectTextNodes(root).forEach(wrapTextNode);
+    }
+
+    function measureRects(){
+      dodgeWords.forEach(function(w){
+        var r = w.el.parentElement.getBoundingClientRect();
+        w.cx = r.left + r.width / 2;
+        w.cy = r.top + r.height / 2;
+      });
+    }
+
+    function refreshWordList(){
+      dodgeWords = Array.prototype.slice.call(document.querySelectorAll('.dwi')).map(function(el){
+        return { el: el, cx: 0, cy: 0 };
+      });
+      measureRects();
+    }
+
+    function onMouseMove(e){
+      mouseX = e.clientX; mouseY = e.clientY;
+      scheduleFrame();
+    }
+    function onMouseLeave(){
+      mouseX = -9999; mouseY = -9999;
+      scheduleFrame();
+    }
+
+    function scheduleFrame(){
+      if(rafPending) return;
+      rafPending = true;
+      requestAnimationFrame(applyDodge);
+    }
+
+    function applyDodge(){
+      rafPending = false;
+      if(!dodgeActive) return;
+      for(var i = 0; i < dodgeWords.length; i++){
+        var w = dodgeWords[i];
+        var dx = w.cx - mouseX, dy = w.cy - mouseY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if(dist < DODGE_RADIUS && dist > 0.01){
+          var force = 1 - dist / DODGE_RADIUS;
+          var ox = (dx / dist) * force * DODGE_MAX_OFFSET;
+          var oy = (dy / dist) * force * DODGE_MAX_OFFSET;
+          w.el.style.transform = 'translate(' + ox.toFixed(1) + 'px,' + oy.toFixed(1) + 'px)';
+        } else if(w.el.style.transform){
+          w.el.style.transform = '';
+        }
+      }
+    }
+
+    function wrapAllQuiet(){
+      if(dodgeObserver) dodgeObserver.disconnect();
+      wrapAll(document.body);
+      refreshWordList();
+      if(dodgeObserver) dodgeObserver.observe(document.body, {childList:true, subtree:true});
+    }
+
+    function enableDodge(){
+      if(dodgeActive) return;
+      dodgeActive = true;
+      if(!dodgeObserver){
+        dodgeObserver = new MutationObserver(function(){
+          wrapAllQuiet();
+        });
+      }
+      wrapAllQuiet();
+      window.addEventListener('mousemove', onMouseMove, {passive:true});
+      window.addEventListener('mouseleave', onMouseLeave, {passive:true});
+      window.addEventListener('scroll', measureRects, {passive:true});
+      window.addEventListener('resize', measureRects);
+    }
+
+    function disableDodge(){
+      if(!dodgeActive) return;
+      dodgeActive = false;
+      if(dodgeObserver) dodgeObserver.disconnect();
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseleave', onMouseLeave);
+      window.removeEventListener('scroll', measureRects);
+      window.removeEventListener('resize', measureRects);
+      dodgeWords.forEach(function(w){ w.el.style.transform = ''; });
+    }
+
+    function syncDodge(){
+      if(dodgeQuery.matches){ enableDodge(); } else { disableDodge(); }
+    }
+
+    if(dodgeQuery.addEventListener){ dodgeQuery.addEventListener('change', syncDodge); }
+    else if(dodgeQuery.addListener){ dodgeQuery.addListener(syncDodge); }
+
+    window.addEventListener('load', syncDodge);
+    setTimeout(syncDodge, 80);
+  })();
+
 })();
 </script>
 </body>
