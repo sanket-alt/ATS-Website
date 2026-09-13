@@ -308,6 +308,10 @@
         <div class="cc-list-head">Coming up</div>
         <div class="cc-list" id="ccList"></div>
       </div>
+      <div class="cc-list-bottom" aria-label="More upcoming competitions">
+        <div class="cc-list-bottom-head">CONTINUING THE LIST</div>
+        <div class="cc-list cc-list-bottom-track" id="ccListBottom"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -1039,6 +1043,7 @@
     var yearNameEl = document.getElementById('ccYearName');
     var gridEl = document.getElementById('ccGrid');
     var listEl = document.getElementById('ccList');
+    var listBottomEl = document.getElementById('ccListBottom');
     var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
     function eventsOnDay(date){
@@ -1079,12 +1084,14 @@
     }
 
     function renderList(){
-      var upcoming = allEvents.filter(function(e){ return e.end >= today; }).slice(0, 6);
+      var upcoming = allEvents.filter(function(e){ return e.end >= today; }).slice(0, 8);
       if(!upcoming.length){
         listEl.innerHTML = '<p class="cc-list-empty">Nothing on the calendar right now \u2014 check back soon.</p>';
+        if(listBottomEl) listBottomEl.innerHTML = '';
         return;
       }
-      listEl.innerHTML = upcoming.map(function(e){
+
+      function itemMarkup(e){
         var tagClass = e.type === 'india' ? 'india' : 'intl';
         var tagLabel = e.type === 'india' ? 'India' : 'Intl';
         return (
@@ -1098,7 +1105,15 @@
             (e.approx && e.note ? '<div class="cc-item-note">'+e.note+'</div>' : '') +
           '</div>'
         );
-      }).join('');
+      }
+
+      // Keep the first four competitions on the vertical right rail.
+      // The remaining items continue around the corner on the bottom rail.
+      var railCount = Math.min(4, upcoming.length);
+      listEl.innerHTML = upcoming.slice(0, railCount).map(itemMarkup).join('');
+      if(listBottomEl){
+        listBottomEl.innerHTML = upcoming.slice(railCount).map(itemMarkup).join('');
+      }
     }
 
     document.getElementById('ccPrev').addEventListener('click', function(){
