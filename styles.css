@@ -786,7 +786,19 @@
   }
   .cc-legend span{display:flex; align-items:center;}
 
-  .cc-list-card{padding:30px;}
+  /* ============ L-SHAPED COMPETITION RAIL ============ */
+  /*
+     The calendar remains on the left. The first four competitions form
+     a vertical rail on the right; the remaining competitions turn the
+     corner and continue left-to-right underneath the calendar. This
+     uses the otherwise empty space below the calendar instead of making
+     the right-hand list unnecessarily tall.
+  */
+  .cc-list-card{
+    padding:30px;
+    grid-column:2;
+    grid-row:1;
+  }
   .cc-list-head{
     font-family:var(--ff-mono); font-size:11.5px; text-transform:uppercase; letter-spacing:0.08em;
     color:var(--text-dim2); margin-bottom:18px;
@@ -794,9 +806,9 @@
   .cc-list{display:flex; flex-direction:column; gap:14px;}
   .cc-item{
     background:rgba(255,255,255,0.4); border:1px solid var(--line-soft); border-radius:10px;
-    padding:16px 18px; transition:border-color .2s ease, background .2s ease;
+    padding:16px 18px; transition:border-color .2s ease, background .2s ease, transform .2s ease;
   }
-  .cc-item:hover{border-color:var(--accent); background:rgba(255,255,255,0.6);}
+  .cc-item:hover{border-color:var(--accent); background:rgba(255,255,255,0.6); transform:translateY(-2px);}
   .cc-item-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px;}
   .cc-item-tag{
     font-family:var(--ff-mono); font-size:10px; text-transform:uppercase; letter-spacing:0.06em;
@@ -809,6 +821,75 @@
   .cc-item p{font-size:13px; color:var(--text-dim); margin:0;}
   .cc-item .cc-item-note{font-size:11.5px; color:var(--text-dim2); margin-top:6px; font-style:italic;}
   .cc-list-empty{font-size:13.5px; color:var(--text-dim2);}
+
+  /* The lower rail is the second leg of the L. It visually touches the
+     bottom edge of the vertical card so the list reads as one continuous path. */
+  .cc-list-bottom{
+    grid-column:1 / -1;
+    grid-row:2;
+    position:relative;
+    margin-top:-1px;
+    padding:26px 0 0;
+  }
+  .cc-list-bottom::before{
+    content:'';
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:1px;
+    background:var(--line);
+  }
+  .cc-list-bottom::after{
+    content:'';
+    position:absolute;
+    top:-5px;
+    right:0;
+    width:10px;
+    height:10px;
+    border-top:1px solid var(--accent);
+    border-right:1px solid var(--accent);
+    transform:rotate(45deg);
+  }
+  .cc-list-bottom-head{
+    display:none;
+  }
+  .cc-list-bottom-track{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:20px;
+    padding-right:calc((100% - 28px) * 0.05);
+  }
+  .cc-list-bottom-track .cc-item{
+    min-height:142px;
+  }
+
+  @media (max-width:900px){
+    .cc-list-card{
+      grid-column:1;
+      grid-row:auto;
+    }
+    .cc-list-bottom{
+      grid-column:1;
+      grid-row:auto;
+      margin-top:0;
+      padding-top:0;
+    }
+    .cc-list-bottom::before,
+    .cc-list-bottom::after{
+      display:none;
+    }
+    .cc-list-bottom-track{
+      grid-template-columns:1fr;
+      padding-right:0;
+    }
+  }
+
+  @media (max-width:600px){
+    .cc-list-card{padding:22px;}
+    .cc-list-bottom-track{gap:12px;}
+    .cc-item{padding:14px;}
+  }
 
   /* ============ CLOSING STATEMENT ============ */
   .closing{
