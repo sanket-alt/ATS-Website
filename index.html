@@ -30,11 +30,20 @@
   </svg>
 </div>
 
-<!-- Dark-mode cursor reveal — a soft circular window that follows the
-     mouse and inverts whatever's underneath it into a dark reading of
-     the page. Backdrop-filter samples live content directly, so this
-     never needs a duplicate dark-themed copy of the page. Desktop only
-     (see .dark-spot media query in styles.css and the script below). -->
+<!-- Dark-mode cursor reveal — a full-viewport overlay, invisible except
+     where a CSS mask lets it show through. The mask is a live-built stack
+     of expanding, fading ripple rings spawned as the cursor moves, so the
+     revealed dark-mode area behaves like water disturbed by a hand:
+     trailing ripples rather than a fixed circle. Backdrop-filter samples
+     the real page directly, so it always matches whatever's on screen.
+     Desktop only (see .dark-spot media query in styles.css and the
+     script below). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="fluidWobble" x="-30%" y="-30%" width="160%" height="160%">
+    <feTurbulence id="fluidTurb" type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="7" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="22" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
 <div class="dark-spot" id="darkSpot" aria-hidden="true"></div>
 
 <!-- ============ NAV ============ -->
@@ -613,51 +622,138 @@
     setTimeout(syncRadar, 50);
   })();
 
-  /* ---------- DARK-MODE CURSOR REVEAL ---------- */
-  /* A fixed circular element follows the pointer. It uses backdrop-filter
-     (invert + hue-rotate) to render a dark-mode-looking version of
-     whatever page content sits underneath it, masked to a soft circle so
-     only the area right around the cursor flips — the rest of the page
-     stays in its normal light theme. Because it samples live rendered
-     content rather than a duplicated dark-themed DOM, it always matches
-     whatever's currently on screen (open FAQ items, filtered board,
-     current calendar month, etc.) with no extra state to keep in sync.
-     Desktop only — matches the same hover/pointer/width gate used by the
-     other cursor-driven effects on this page (see the CSS media query
-     that hides .dark-spot entirely on touch/narrow viewports). */
+  /* ---------- DARK-MODE CURSOR REVEAL (fluid ripples) ---------- */
+  /* .dark-spot is a full-viewport overlay running backdrop-filter invert
+     over the real page — it samples live content, so it's always in
+     sync with whatever's on screen. It's invisible everywhere except
+     where its CSS mask lets it through. Instead of one fixed circle,
+     the mask is rebuilt every frame from a short-lived pool of "ripple"
+     objects: each mouse move spawns a ring at the cursor position that
+     expands and fades over ~1s, exactly like a real water ripple. Move
+     the cursor continuously and you get a trailing wake of overlapping
+     rings; stop, and the last ones simply finish fading. A light SVG
+     turbulence/displacement filter (#fluidWobble, defined near the top
+     of <body>) is applied to the whole overlay so the ring edges read
+     as liquid rather than geometric circles, and its noise seed is
+     nudged slightly on an interval so the wobble itself keeps drifting.
+     Desktop only — same hover/pointer/width gate as the other
+     cursor-driven effects on this page (see the CSS media query that
+     hides .dark-spot entirely on touch/narrow viewports). */
   (function(){
     var spot = document.getElementById('darkSpot');
+    var turb = document.getElementById('fluidTurb');
     if(!spot) return;
 
     var spotQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
-    var spotActive = false;
-    var rafPending = false;
-    var sx = 0, sy = 0;
+    var spotEnabled = false;
 
-    function render(){
-      rafPending = false;
-      spot.style.transform = 'translate3d(' + sx + 'px,' + sy + 'px,0) translate(-50%,-50%)';
+    var MAX_RIPPLES = 22;   // hard cap on concurrent rings (perf safety)
+    var SPAWN_EVERY = 42;   // ms between new ripples while the cursor moves
+    var LIFETIME = 950;     // ms a ripple takes to fully expand & fade
+    var MIN_RADIUS = 6;     // px — ripple birth size
+    var MAX_RADIUS = 150;   // px — ripple size at end of life
+    var MAX_ALPHA = 0.86;   // per-ripple peak opacity (layers add when they overlap)
+
+    var ripples = [];
+    var lastSpawn = 0;
+    var lastMoveAt = 0;
+    var rafId = null;
+    var turbTimer = null;
+
+    function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+    function spawnRipple(x, y){
+      if(ripples.length >= MAX_RIPPLES) ripples.shift();
+      ripples.push({ x:x, y:y, born:performance.now() });
     }
+
+    // Builds the composite CSS mask-image from every still-living ripple.
+    // Each ripple renders as a soft annulus (ring) via a radial-gradient
+    // whose radius/width/opacity are functions of the ripple's age —
+    // growing and thinning as it ages, exactly like a wave on water.
+    function buildMask(now){
+      if(!ripples.length) return null;
+      var layers = [];
+      for(var i = ripples.length - 1; i >= 0; i--){
+        var r = ripples[i];
+        var age = now - r.born;
+        if(age >= LIFETIME){ ripples.splice(i, 1); continue; }
+        var t = age / LIFETIME;
+        var radius = MIN_RADIUS + (MAX_RADIUS - MIN_RADIUS) * easeOutCubic(t);
+        var width = 34 + 26 * (1 - t);
+        var alphaIn = Math.min(1, age / 110);
+        var alphaOut = 1 - t;
+        var alpha = Math.max(0, Math.min(MAX_ALPHA, alphaIn * alphaOut * MAX_ALPHA));
+        if(alpha <= 0.01) continue;
+        var rInner = Math.max(0, radius - width);
+        var rOuter = radius + width * 0.4;
+        layers.push(
+          'radial-gradient(circle at ' + r.x.toFixed(1) + 'px ' + r.y.toFixed(1) + 'px, ' +
+          'transparent 0px, transparent ' + rInner.toFixed(1) + 'px, ' +
+          'rgba(0,0,0,' + alpha.toFixed(3) + ') ' + radius.toFixed(1) + 'px, ' +
+          'transparent ' + rOuter.toFixed(1) + 'px)'
+        );
+      }
+      return layers.length ? layers.join(',') : null;
+    }
+
+    function tick(){
+      rafId = null;
+      var now = performance.now();
+      var mask = buildMask(now);
+      if(mask){
+        spot.style.maskImage = mask;
+        spot.style.webkitMaskImage = mask;
+        spot.classList.add('active');
+      } else {
+        spot.classList.remove('active');
+      }
+      // Keep animating while ripples are alive, or briefly after the
+      // last move (so the final ripples finish fading), then go idle.
+      if(ripples.length || (now - lastMoveAt) < 120){
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+    function ensureLoop(){
+      if(rafId === null){ rafId = requestAnimationFrame(tick); }
+    }
+
     function onMove(e){
-      sx = e.clientX; sy = e.clientY;
-      spot.classList.add('active');
-      if(!rafPending){ rafPending = true; requestAnimationFrame(render); }
+      var now = performance.now();
+      lastMoveAt = now;
+      if(now - lastSpawn >= SPAWN_EVERY){
+        lastSpawn = now;
+        spawnRipple(e.clientX, e.clientY);
+      }
+      ensureLoop();
     }
-    function onLeave(){
-      spot.classList.remove('active');
+
+    // Slowly drifts the turbulence noise seed so the liquid wobble isn't
+    // a static pattern — cheap since it only recomputes a few times a
+    // second, not every frame.
+    function startTurbDrift(){
+      if(!turb || turbTimer) return;
+      turbTimer = setInterval(function(){
+        turb.setAttribute('seed', String(Math.floor(Math.random() * 1000)));
+      }, 220);
+    }
+    function stopTurbDrift(){
+      if(turbTimer){ clearInterval(turbTimer); turbTimer = null; }
     }
 
     function enableSpot(){
-      if(spotActive) return;
-      spotActive = true;
+      if(spotEnabled) return;
+      spotEnabled = true;
       window.addEventListener('mousemove', onMove, {passive:true});
-      window.addEventListener('mouseleave', onLeave, {passive:true});
+      startTurbDrift();
     }
     function disableSpot(){
-      if(!spotActive) return;
-      spotActive = false;
+      if(!spotEnabled) return;
+      spotEnabled = false;
       window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseleave', onLeave);
+      ripples.length = 0;
+      if(rafId !== null){ cancelAnimationFrame(rafId); rafId = null; }
+      stopTurbDrift();
       spot.classList.remove('active');
     }
     function syncSpot(){
