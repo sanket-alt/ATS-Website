@@ -30,6 +30,13 @@
   </svg>
 </div>
 
+<!-- Dark-mode cursor reveal — a soft circular window that follows the
+     mouse and inverts whatever's underneath it into a dark reading of
+     the page. Backdrop-filter samples live content directly, so this
+     never needs a duplicate dark-themed copy of the page. Desktop only
+     (see .dark-spot media query in styles.css and the script below). -->
+<div class="dark-spot" id="darkSpot" aria-hidden="true"></div>
+
 <!-- ============ NAV ============ -->
 <header id="siteHeader">
   <nav class="wrap">
@@ -604,6 +611,64 @@
 
     window.addEventListener('load', syncRadar);
     setTimeout(syncRadar, 50);
+  })();
+
+  /* ---------- DARK-MODE CURSOR REVEAL ---------- */
+  /* A fixed circular element follows the pointer. It uses backdrop-filter
+     (invert + hue-rotate) to render a dark-mode-looking version of
+     whatever page content sits underneath it, masked to a soft circle so
+     only the area right around the cursor flips — the rest of the page
+     stays in its normal light theme. Because it samples live rendered
+     content rather than a duplicated dark-themed DOM, it always matches
+     whatever's currently on screen (open FAQ items, filtered board,
+     current calendar month, etc.) with no extra state to keep in sync.
+     Desktop only — matches the same hover/pointer/width gate used by the
+     other cursor-driven effects on this page (see the CSS media query
+     that hides .dark-spot entirely on touch/narrow viewports). */
+  (function(){
+    var spot = document.getElementById('darkSpot');
+    if(!spot) return;
+
+    var spotQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
+    var spotActive = false;
+    var rafPending = false;
+    var sx = 0, sy = 0;
+
+    function render(){
+      rafPending = false;
+      spot.style.transform = 'translate3d(' + sx + 'px,' + sy + 'px,0) translate(-50%,-50%)';
+    }
+    function onMove(e){
+      sx = e.clientX; sy = e.clientY;
+      spot.classList.add('active');
+      if(!rafPending){ rafPending = true; requestAnimationFrame(render); }
+    }
+    function onLeave(){
+      spot.classList.remove('active');
+    }
+
+    function enableSpot(){
+      if(spotActive) return;
+      spotActive = true;
+      window.addEventListener('mousemove', onMove, {passive:true});
+      window.addEventListener('mouseleave', onLeave, {passive:true});
+    }
+    function disableSpot(){
+      if(!spotActive) return;
+      spotActive = false;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseleave', onLeave);
+      spot.classList.remove('active');
+    }
+    function syncSpot(){
+      if(spotQuery.matches){ enableSpot(); } else { disableSpot(); }
+    }
+
+    if(spotQuery.addEventListener){ spotQuery.addEventListener('change', syncSpot); }
+    else if(spotQuery.addListener){ spotQuery.addListener(syncSpot); }
+
+    window.addEventListener('load', syncSpot);
+    setTimeout(syncSpot, 50);
   })();
 
   /* ---------- HERO 3D WIREFRAME ENGINE (real vertex math, drawn to canvas) ---------- */
@@ -1346,7 +1411,7 @@
     var dodgeQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
     var DODGE_RADIUS = 74;      // px — cursor influence radius
     var DODGE_MAX_OFFSET = 12;  // px — capped so it can never affect page scroll size
-    var DODGE_EXCLUDE = '.marquee, .marquee *, script, style, noscript, input, textarea, select, option, svg, canvas, .contour-bg, .dw, .dwi';
+    var DODGE_EXCLUDE = '.marquee, .marquee *, script, style, noscript, input, textarea, select, option, svg, canvas, .contour-bg, .dw, .dwi, .dark-spot';
 
     var dodgeActive = false;
     var dodgeWords = [];
