@@ -116,28 +116,31 @@
   }
 
   /* ============================================================
-     DARK-MODE CURSOR REVEAL — a soft circular window that inverts
-     whatever's underneath it into a dark reading of the page,
-     following the cursor. Backdrop-filter samples live content, so
-     it never goes out of sync with the real (light) page — no DOM
-     duplication needed. Desktop only.
+     DARK-MODE CURSOR REVEAL — a full-viewport overlay that inverts
+     whatever's underneath it into a dark reading of the page, visible
+     only where a live-built CSS mask lets it through. The mask is a
+     stack of expanding, fading "ripple" rings spawned as the cursor
+     moves (see the script), so the revealed area trails and fades like
+     real water disturbed by a hand rather than tracking as a fixed
+     circle. Backdrop-filter samples live content, so it never goes out
+     of sync with the real (light) page — no DOM duplication needed.
+     The #fluidWobble SVG filter (defined near the top of <body>) warps
+     the overlay's own rendered edges so the rings read as liquid
+     rather than perfect geometric circles. Desktop only.
   ============================================================ */
   .dark-spot{
     position:fixed;
-    top:0; left:0;
-    width:280px; height:280px;
-    border-radius:50%;
+    inset:0;
     pointer-events:none;
     z-index:9999;
     opacity:0;
-    transform:translate3d(-9999px,-9999px,0) translate(-50%,-50%);
-    transition:opacity .35s ease;
+    transition:opacity .25s ease;
     backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
     -webkit-backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
-    mask-image:radial-gradient(circle, #000 52%, transparent 78%);
-    -webkit-mask-image:radial-gradient(circle, #000 52%, transparent 78%);
-    box-shadow:0 0 0 1px rgba(226,83,28,0.35) inset;
-    will-change:transform;
+    filter:url(#fluidWobble);
+    mask-repeat:no-repeat;
+    -webkit-mask-repeat:no-repeat;
+    will-change:mask-image, opacity;
   }
   .dark-spot.active{ opacity:1; }
   @media (max-width:899px), (hover:none), (pointer:coarse), (prefers-reduced-motion: reduce){
