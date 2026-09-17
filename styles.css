@@ -118,25 +118,27 @@
   /* ============================================================
      DARK-MODE CURSOR REVEAL — a full-viewport overlay that inverts
      whatever's underneath it into a dark reading of the page, visible
-     only inside an organic blob-shaped clip-path region that follows
+     only inside an organic, comet-shaped clip-path region that follows
      the cursor. clip-path (rather than mask-image, which isn't
      reliably clipped against backdrop-filter across every browser) is
      what keeps the invert confined to that shape instead of covering
-     the page. The shape itself — not just its position — is rebuilt
-     every frame in the script: a ring of points is perturbed by
-     rotating noise and stretched toward the current direction of
-     travel, then smoothed into one closed curve, so the blob looks
-     like an actual liquid droplet rather than a circle. Its center and
-     base size are separately smoothed toward the cursor, so it lags
-     slightly behind, grows while moving, and eases back to nothing
-     shortly after stopping — modeled on the Framer "hover mask reveal"
-     component, but revealing a dark-mode invert instead of swapping in
-     a second image. Backdrop-filter samples live content, so it never
-     goes out of sync with the real (light) page — no DOM duplication
-     needed. The #fluidWobble SVG filter (defined near the top of
-     <body>) plus a trailing blur add a finer layer of pixel-level
-     liquid texture on top of the blob's own already-organic edge.
-     Desktop only.
+     the page. The shape and its size are rebuilt every frame in the
+     script: a ring of points is perturbed by rotating noise and pulled
+     into a streak along the current direction of travel, and the
+     blob's overall size tracks real cursor speed — small at a slow,
+     deliberate pace, larger on a fast flick — then smoothed into one
+     closed curve. Its center is separately lerped toward the cursor so
+     it lags slightly behind. The effect is intentionally suppressed
+     (see the script's EXCLUDE_SELECTOR) while hovering the propose-idea
+     form or the help/FAQ section, since an inverted overlay there would
+     hurt readability rather than add polish — this is meant as a subtle
+     progressive enhancement on an otherwise professional site, not a
+     gimmick that fights the content. Backdrop-filter samples live
+     content, so it never goes out of sync with the real (light) page —
+     no DOM duplication needed. The #fluidWobble SVG filter (defined
+     near the top of <body>) adds a finer layer of pixel-level
+     turbulence on top of the blob's own already-organic edge; there's
+     deliberately no blur, so the distortion stays crisp. Desktop only.
   ============================================================ */
   .dark-spot{
     position:fixed;
@@ -149,7 +151,7 @@
     -webkit-backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
     clip-path:circle(0px at 50% 50%);
     -webkit-clip-path:circle(0px at 50% 50%);
-    filter:url(#fluidWobble) blur(4px);
+    filter:url(#fluidWobble);
     will-change:clip-path, opacity;
   }
   .dark-spot.active{ opacity:1; }
