@@ -118,21 +118,24 @@
   /* ============================================================
      DARK-MODE CURSOR REVEAL — a full-viewport overlay that inverts
      whatever's underneath it into a dark reading of the page, visible
-     only inside a circular clip-path region that follows the cursor.
-     clip-path (rather than mask-image, which isn't reliably clipped
-     against backdrop-filter across every browser) is what keeps the
-     invert confined to that circle instead of covering the page. The
-     circle's position and radius are smoothed toward the cursor every
-     frame (see the script), so it lags slightly behind, grows while
-     the cursor moves, and eases back to nothing shortly after it stops
-     — modeled on the Framer "hover mask reveal" component, but
-     revealing a dark-mode invert instead of swapping in a second
-     image. Backdrop-filter samples live content, so it never goes out
-     of sync with the real (light) page — no DOM duplication needed.
-     The #fluidWobble SVG filter (defined near the top of <body>)
-     distorts the circle's own rendered edge with slowly animated
-     turbulence, and the trailing blur softens it further, so the
-     boundary looks liquid rather than a plain hard-edged circle.
+     only inside an organic blob-shaped clip-path region that follows
+     the cursor. clip-path (rather than mask-image, which isn't
+     reliably clipped against backdrop-filter across every browser) is
+     what keeps the invert confined to that shape instead of covering
+     the page. The shape itself — not just its position — is rebuilt
+     every frame in the script: a ring of points is perturbed by
+     rotating noise and stretched toward the current direction of
+     travel, then smoothed into one closed curve, so the blob looks
+     like an actual liquid droplet rather than a circle. Its center and
+     base size are separately smoothed toward the cursor, so it lags
+     slightly behind, grows while moving, and eases back to nothing
+     shortly after stopping — modeled on the Framer "hover mask reveal"
+     component, but revealing a dark-mode invert instead of swapping in
+     a second image. Backdrop-filter samples live content, so it never
+     goes out of sync with the real (light) page — no DOM duplication
+     needed. The #fluidWobble SVG filter (defined near the top of
+     <body>) plus a trailing blur add a finer layer of pixel-level
+     liquid texture on top of the blob's own already-organic edge.
      Desktop only.
   ============================================================ */
   .dark-spot{
