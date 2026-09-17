@@ -630,21 +630,25 @@
   /* .dark-spot is a full-viewport overlay running backdrop-filter invert
      over the real page — it samples live content, so it's always in
      sync with whatever's on screen. It's invisible everywhere except
-     inside a circular clip-path region that follows the cursor (a
-     clip-path, not a CSS mask, because backdrop-filter isn't reliably
-     clipped by mask-image across every browser — without this, moving
-     the mouse at all would invert the entire viewport instead of just
-     a circle around the cursor). That circle's position is smoothed
-     (lerped) toward the cursor every frame rather than snapping to it,
-     so it trails slightly behind — the "Smoothing" knob in the Framer
-     hover-mask-reveal component this borrows from. Its radius eases up
-     to full size while the cursor keeps moving and eases back down to
-     zero shortly after it stops (the component's "Return time"). The
+     inside an organic blob-shaped clip-path region that follows the
+     cursor (clip-path, not a CSS mask, because backdrop-filter isn't
+     reliably clipped by mask-image across every browser). Rather than
+     a circle, the shape itself is built each frame from a ring of
+     points whose radius is perturbed by a small rotating noise
+     function — the rotation is the "swirl" — and stretched along the
+     current direction of motion, so the blob elongates like a real
+     droplet when moving fast and relaxes toward round when it slows.
+     Those points are smoothed into one closed curve (a standard
+     midpoint/quadratic-Bezier blob technique) and set as the clip
+     path. The whole shape's center + base radius are separately
+     smoothed (lerped) toward the cursor, so it trails slightly behind
+     and eases up to full size while moving / back to nothing shortly
+     after stopping — modeled on the Framer "hover mask reveal"
+     component's Smoothing/Size/Return-time knobs, but revealing a
+     dark-mode invert instead of swapping in a second image. The
      #fluidWobble SVG filter defined near the top of <body>, plus a
-     trailing blur, distort the circle's own rendered edge so the
-     boundary reads as liquid rather than a plain hard-edged circle.
-     Desktop only — same hover/pointer/width gate as the other
-     cursor-driven effects on this page. */
+     trailing blur, add a finer layer of pixel-level liquid texture on
+     top of the blob's own already-organic outline. Desktop only. */
   (function(){
     var spot = document.getElementById('darkSpot');
     if(!spot) return;
@@ -652,38 +656,95 @@
     var spotQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
     var spotEnabled = false;
 
-    var SMOOTHING = 0.14;         // position lerp per frame — lower = softer/laggier follow
-    var RADIUS_SMOOTHING = 0.09;  // radius lerp per frame — controls grow/return speed
-    var ACTIVE_RADIUS = 190;      // px — blob size while the cursor is moving
+    var SMOOTHING = 0.14;         // center-position lerp per frame — lower = softer/laggier follow
+    var RADIUS_SMOOTHING = 0.09;  // base-radius lerp per frame — controls grow/return speed
+    var ACTIVE_RADIUS = 180;      // px — base blob size while the cursor is moving
     var IDLE_SHRINK_MS = 550;     // ms of stillness before the blob starts easing back to 0
+    var WOBBLE_AMOUNT = 0.24;     // fraction of radius the rotating noise perturbs by
+    var SWIRL_SPEED = 0.7;        // radians/sec the noise pattern rotates around the blob
+    var STRETCH_AMOUNT = 0.6;     // how much the blob elongates along its direction of travel
+    var POINTS = 12;              // vertices used to build the blob outline — more = smoother
 
-    var tx = 0, ty = 0;           // raw cursor position
-    var sx = 0, sy = 0;           // smoothed (lagging) position actually drawn
-    var targetR = 0, curR = 0;    // target vs. smoothed radius
+    var TWO_PI = Math.PI * 2;
+    var tx = 0, ty = 0;            // raw cursor position
+    var sx = 0, sy = 0;            // smoothed (lagging) center actually drawn
+    var targetR = 0, curR = 0;     // target vs. smoothed base radius
+    var velAngle = 0, speedNorm = 0; // last-measured direction/strength of motion, for the stretch
     var lastMoveAt = 0;
     var rafId = null;
-    var primed = false;           // avoids a big swoop-in from (0,0) on the very first move
+    var primed = false;            // avoids a big swoop-in from (0,0) on the very first move
+    var startTime = performance.now();
+
+    // A dependency-free stand-in for Perlin/simplex noise: a few sine
+    // waves at different frequencies and phases, sampled around the
+    // blob's angle and slowly rotated over time (the swirl).
+    function noiseAt(angle, t){
+      var a = angle + t * SWIRL_SPEED;
+      return Math.sin(a * 2 + t * 0.9) * 0.5 +
+             Math.sin(a * 3 - t * 1.3) * 0.3 +
+             Math.sin(a * 5 + t * 0.6) * 0.2;
+    }
+
+    // Builds a smooth closed blob outline as an SVG path string, ready
+    // to drop straight into clip-path: path(...). Points are placed
+    // around (cx,cy) at radius baseR, perturbed by rotating noise and
+    // stretched toward velAngle by speedNorm, then smoothed into a
+    // single curve via the standard "midpoint + quadratic control
+    // point" blob technique.
+    function buildBlobPath(cx, cy, baseR, t){
+      var pts = [];
+      for(var i = 0; i < POINTS; i++){
+        var angle = (i / POINTS) * TWO_PI;
+        var n = noiseAt(angle, t);
+        var stretch = 1 + STRETCH_AMOUNT * speedNorm * Math.cos(angle - velAngle);
+        var r = Math.max(2, baseR * (1 + WOBBLE_AMOUNT * n) * stretch);
+        pts.push([ cx + r * Math.cos(angle), cy + r * Math.sin(angle) ]);
+      }
+      var mids = [];
+      for(var j = 0; j < POINTS; j++){
+        var a = pts[j], b = pts[(j + 1) % POINTS];
+        mids.push([ (a[0] + b[0]) / 2, (a[1] + b[1]) / 2 ]);
+      }
+      var last = mids[POINTS - 1];
+      var d = 'M ' + last[0].toFixed(1) + ' ' + last[1].toFixed(1) + ' ';
+      for(var k = 0; k < POINTS; k++){
+        d += 'Q ' + pts[k][0].toFixed(1) + ' ' + pts[k][1].toFixed(1) + ' ' +
+                     mids[k][0].toFixed(1) + ' ' + mids[k][1].toFixed(1) + ' ';
+      }
+      return d + 'Z';
+    }
 
     function tick(){
       rafId = null;
       var now = performance.now();
       if(now - lastMoveAt > IDLE_SHRINK_MS){ targetR = 0; }
 
-      sx += (tx - sx) * SMOOTHING;
-      sy += (ty - sy) * SMOOTHING;
+      var dx = tx - sx, dy = ty - sy;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if(dist > 0.5){
+        velAngle = Math.atan2(dy, dx);
+        speedNorm = Math.min(1, dist / 140);
+      } else {
+        speedNorm *= 0.9; // relax the stretch back out once movement settles
+      }
+
+      sx += dx * SMOOTHING;
+      sy += dy * SMOOTHING;
       curR += (targetR - curR) * RADIUS_SMOOTHING;
 
-      if(curR < 0.5 && targetR === 0){
+      if(curR < 1.5 && targetR === 0){
         curR = 0;
         spot.classList.remove('active');
       } else {
-        var clip = 'circle(' + curR.toFixed(1) + 'px at ' + sx.toFixed(1) + 'px ' + sy.toFixed(1) + 'px)';
+        var t = (now - startTime) / 1000;
+        var d = buildBlobPath(sx, sy, curR, t);
+        var clip = 'path("' + d + '")';
         spot.style.clipPath = clip;
         spot.style.webkitClipPath = clip;
         spot.classList.add('active');
       }
 
-      if(curR > 0.5 || targetR > 0){
+      if(curR > 1.5 || targetR > 0){
         rafId = requestAnimationFrame(tick);
       }
     }
@@ -714,7 +775,7 @@
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseleave', onLeaveWindow);
       if(rafId !== null){ cancelAnimationFrame(rafId); rafId = null; }
-      targetR = 0; curR = 0; primed = false;
+      targetR = 0; curR = 0; speedNorm = 0; primed = false;
       spot.classList.remove('active');
     }
     function syncSpot(){
