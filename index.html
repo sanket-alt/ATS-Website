@@ -31,12 +31,23 @@
 </div>
 
 <!-- Dark-mode cursor reveal — a full-viewport overlay, invisible except
-     through a single soft-edged circular mask that follows the cursor.
-     The gradient itself is static; only its position (--mx/--my) moves,
-     which is cheap for the browser to update. The trailing lag comes
-     from a plain CSS transition on mask-position — no per-frame JS
-     animation loop needed. Desktop only (see .dark-spot media query in
-     styles.css and the script below). -->
+     where a CSS mask lets it show through. Instead of an image swap
+     (the Framer "hover mask reveal" pattern this borrows from), the
+     mask is a single soft blob that lags smoothly behind the cursor,
+     grows while the cursor moves and eases back to nothing when it
+     stops. The #fluidWobble filter below distorts the blob's edge with
+     animated turbulence for a liquid/swirling boundary. Backdrop-filter
+     samples the real page directly, so it always matches whatever's on
+     screen. Desktop only (see .dark-spot media query in styles.css and
+     the script below). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="fluidWobble" x="-40%" y="-40%" width="180%" height="180%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.014 0.02" numOctaves="3" seed="7" result="noise">
+      <animate attributeName="baseFrequency" dur="16s" values="0.014 0.02;0.02 0.013;0.011 0.024;0.014 0.02" repeatCount="indefinite"/>
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="30" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
 <div class="dark-spot" id="darkSpot" aria-hidden="true"></div>
 
 <!-- ============ NAV ============ -->
@@ -615,45 +626,98 @@
     setTimeout(syncRadar, 50);
   })();
 
-  /* ---------- DARK-MODE CURSOR REVEAL (lightweight) ---------- */
+  /* ---------- DARK-MODE CURSOR REVEAL (lagging liquid blob) ---------- */
   /* .dark-spot is a full-viewport overlay running backdrop-filter invert
-     over the real page. It's invisible everywhere except through a
-     single, statically-defined circular mask. The ONLY thing that
-     changes on mousemove is the mask's position (--mx/--my custom
-     properties) — the gradient definition itself never changes, so the
-     browser never has to rebuild or reparse it. The trailing lag comes
-     entirely from the CSS transition on mask-position in styles.css, so
-     there's no per-frame JS animation loop, no ripple pool, and no
-     forced-reflow timers. Desktop only — same hover/pointer/width gate
-     as the other cursor-driven effects on this page. */
+     over the real page — it samples live content, so it's always in
+     sync with whatever's on screen. It's invisible everywhere except
+     where its CSS mask lets it through, and that mask is one soft blob
+     rather than a grid of effects: its position is smoothed (lerped)
+     toward the cursor every frame rather than snapping to it, so it
+     trails slightly behind — the "Smoothing" knob in the Framer hover-
+     mask-reveal component this borrows from. Its radius eases up to
+     full size while the cursor keeps moving and eases back down to
+     zero shortly after it stops (the component's "Return time"). The
+     #fluidWobble SVG filter defined near the top of <body> distorts the
+     blob's own rendered edge with slowly animated turbulence, so the
+     boundary reads as liquid and faintly swirling rather than a plain
+     circle — no JS needed for that part, it's a native SMIL animation
+     on the filter. Desktop only — same hover/pointer/width gate as the
+     other cursor-driven effects on this page. */
   (function(){
     var spot = document.getElementById('darkSpot');
     if(!spot) return;
 
     var spotQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
     var spotEnabled = false;
-    var RADIUS = 170; // px — must match --mr in styles.css
+
+    var SMOOTHING = 0.14;         // position lerp per frame — lower = softer/laggier follow
+    var RADIUS_SMOOTHING = 0.09;  // radius lerp per frame — controls grow/return speed
+    var ACTIVE_RADIUS = 190;      // px — blob size while the cursor is moving
+    var IDLE_SHRINK_MS = 550;     // ms of stillness before the blob starts easing back to 0
+    var SOLID_RATIO = 0.68;       // fraction of radius that's fully solid before it feathers out
+    var STRENGTH = 0.92;          // peak mask opacity — how bold the reveal looks
+
+    var tx = 0, ty = 0;           // raw cursor position
+    var sx = 0, sy = 0;           // smoothed (lagging) position actually drawn
+    var targetR = 0, curR = 0;    // target vs. smoothed radius
+    var lastMoveAt = 0;
+    var rafId = null;
+    var primed = false;           // avoids a big swoop-in from (0,0) on the very first move
+
+    function tick(){
+      rafId = null;
+      var now = performance.now();
+      if(now - lastMoveAt > IDLE_SHRINK_MS){ targetR = 0; }
+
+      sx += (tx - sx) * SMOOTHING;
+      sy += (ty - sy) * SMOOTHING;
+      curR += (targetR - curR) * RADIUS_SMOOTHING;
+
+      if(curR < 0.5 && targetR === 0){
+        curR = 0;
+        spot.classList.remove('active');
+      } else {
+        var solid = curR * SOLID_RATIO;
+        var mask = 'radial-gradient(circle at ' + sx.toFixed(1) + 'px ' + sy.toFixed(1) + 'px, ' +
+          'rgba(0,0,0,' + STRENGTH + ') 0px, rgba(0,0,0,' + STRENGTH + ') ' + solid.toFixed(1) + 'px, ' +
+          'transparent ' + curR.toFixed(1) + 'px)';
+        spot.style.maskImage = mask;
+        spot.style.webkitMaskImage = mask;
+        spot.classList.add('active');
+      }
+
+      if(curR > 0.5 || targetR > 0){
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+    function ensureLoop(){
+      if(rafId === null){ rafId = requestAnimationFrame(tick); }
+    }
 
     function onMove(e){
-      spot.style.setProperty('--mx', (e.clientX - RADIUS) + 'px');
-      spot.style.setProperty('--my', (e.clientY - RADIUS) + 'px');
-      spot.classList.add('active');
+      tx = e.clientX; ty = e.clientY;
+      lastMoveAt = performance.now();
+      targetR = ACTIVE_RADIUS;
+      if(!primed){ sx = tx; sy = ty; primed = true; }
+      ensureLoop();
     }
-    function onLeave(){
-      spot.classList.remove('active');
+    function onLeaveWindow(){
+      targetR = 0;
     }
 
     function enableSpot(){
       if(spotEnabled) return;
       spotEnabled = true;
       window.addEventListener('mousemove', onMove, {passive:true});
-      document.addEventListener('mouseleave', onLeave);
+      window.addEventListener('mouseleave', onLeaveWindow, {passive:true});
     }
     function disableSpot(){
       if(!spotEnabled) return;
       spotEnabled = false;
       window.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseleave', onLeave);
+      window.removeEventListener('mouseleave', onLeaveWindow);
+      if(rafId !== null){ cancelAnimationFrame(rafId); rafId = null; }
+      targetR = 0; curR = 0; primed = false;
       spot.classList.remove('active');
     }
     function syncSpot(){
