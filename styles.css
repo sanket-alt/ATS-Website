@@ -116,17 +116,17 @@
   }
 
   /* ============================================================
-     DARK-MODE CURSOR REVEAL — a full-viewport overlay that inverts
-     whatever's underneath it into a dark reading of the page, visible
-     only where a live-built CSS mask lets it through. The mask is a
-     stack of expanding, fading "ripple" rings spawned as the cursor
-     moves (see the script), so the revealed area trails and fades like
-     real water disturbed by a hand rather than tracking as a fixed
-     circle. Backdrop-filter samples live content, so it never goes out
-     of sync with the real (light) page — no DOM duplication needed.
-     The #fluidWobble SVG filter (defined near the top of <body>) warps
-     the overlay's own rendered edges so the rings read as liquid
-     rather than perfect geometric circles. Desktop only.
+     DARK-MODE CURSOR REVEAL — lightweight version.
+     A full-viewport overlay that inverts whatever's underneath it,
+     visible only through a single soft-edged circular mask that
+     follows the cursor. Unlike a JS-driven multi-ripple mask (which
+     has to rebuild a new gradient string every frame — expensive),
+     this keeps the gradient itself completely static and only moves
+     its position via two CSS custom properties (--mx/--my), which is
+     dramatically cheaper for the browser to update. The CSS
+     transition on mask-position gives the reveal its trailing lag
+     for free, with no animation loop or per-frame JS work at all.
+     Desktop only.
   ============================================================ */
   .dark-spot{
     position:fixed;
@@ -134,13 +134,22 @@
     pointer-events:none;
     z-index:9999;
     opacity:0;
-    transition:opacity .25s ease;
-    backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
-    -webkit-backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
-    filter:url(#fluidWobble);
+    --mr:170px; /* reveal radius — keep in sync with RADIUS in the script */
+    transition:
+      opacity .25s ease,
+      mask-position .15s cubic-bezier(.2,.7,.3,1),
+      -webkit-mask-position .15s cubic-bezier(.2,.7,.3,1);
+    backdrop-filter:invert(0.92) hue-rotate(180deg);
+    -webkit-backdrop-filter:invert(0.92) hue-rotate(180deg);
+    mask-image:radial-gradient(circle var(--mr), #000 55%, transparent 100%);
+    -webkit-mask-image:radial-gradient(circle var(--mr), #000 55%, transparent 100%);
     mask-repeat:no-repeat;
     -webkit-mask-repeat:no-repeat;
-    will-change:mask-image, opacity;
+    mask-size:calc(var(--mr) * 2) calc(var(--mr) * 2);
+    -webkit-mask-size:calc(var(--mr) * 2) calc(var(--mr) * 2);
+    mask-position:var(--mx, -999px) var(--my, -999px);
+    -webkit-mask-position:var(--mx, -999px) var(--my, -999px);
+    will-change:mask-position, opacity;
   }
   .dark-spot.active{ opacity:1; }
   @media (max-width:899px), (hover:none), (pointer:coarse), (prefers-reduced-motion: reduce){
