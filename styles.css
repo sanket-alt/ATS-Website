@@ -118,18 +118,22 @@
   /* ============================================================
      DARK-MODE CURSOR REVEAL — a full-viewport overlay that inverts
      whatever's underneath it into a dark reading of the page, visible
-     only where a live-built CSS mask lets it through. Unlike a fixed
-     circle, the mask is one soft blob whose position and radius are
-     smoothed toward the cursor every frame (see the script), so it
-     lags slightly behind, grows while the cursor moves, and eases back
-     to nothing shortly after it stops — modeled on the Framer "hover
-     mask reveal" component, but revealing a dark-mode invert instead
-     of swapping in a second image. Backdrop-filter samples live
-     content, so it never goes out of sync with the real (light) page —
-     no DOM duplication needed. The #fluidWobble SVG filter (defined
-     near the top of <body>) warps the blob's own rendered edge with
-     slowly animated turbulence so its boundary looks liquid and
-     faintly swirling rather than a plain circle. Desktop only.
+     only inside a circular clip-path region that follows the cursor.
+     clip-path (rather than mask-image, which isn't reliably clipped
+     against backdrop-filter across every browser) is what keeps the
+     invert confined to that circle instead of covering the page. The
+     circle's position and radius are smoothed toward the cursor every
+     frame (see the script), so it lags slightly behind, grows while
+     the cursor moves, and eases back to nothing shortly after it stops
+     — modeled on the Framer "hover mask reveal" component, but
+     revealing a dark-mode invert instead of swapping in a second
+     image. Backdrop-filter samples live content, so it never goes out
+     of sync with the real (light) page — no DOM duplication needed.
+     The #fluidWobble SVG filter (defined near the top of <body>)
+     distorts the circle's own rendered edge with slowly animated
+     turbulence, and the trailing blur softens it further, so the
+     boundary looks liquid rather than a plain hard-edged circle.
+     Desktop only.
   ============================================================ */
   .dark-spot{
     position:fixed;
@@ -137,13 +141,13 @@
     pointer-events:none;
     z-index:9999;
     opacity:0;
-    transition:opacity .25s ease;
+    transition:opacity .2s ease;
     backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
     -webkit-backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
-    filter:url(#fluidWobble);
-    mask-repeat:no-repeat;
-    -webkit-mask-repeat:no-repeat;
-    will-change:mask-image, opacity;
+    clip-path:circle(0px at 50% 50%);
+    -webkit-clip-path:circle(0px at 50% 50%);
+    filter:url(#fluidWobble) blur(4px);
+    will-change:clip-path, opacity;
   }
   .dark-spot.active{ opacity:1; }
   @media (max-width:899px), (hover:none), (pointer:coarse), (prefers-reduced-motion: reduce){
