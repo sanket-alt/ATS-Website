@@ -630,19 +630,21 @@
   /* .dark-spot is a full-viewport overlay running backdrop-filter invert
      over the real page — it samples live content, so it's always in
      sync with whatever's on screen. It's invisible everywhere except
-     where its CSS mask lets it through, and that mask is one soft blob
-     rather than a grid of effects: its position is smoothed (lerped)
-     toward the cursor every frame rather than snapping to it, so it
-     trails slightly behind — the "Smoothing" knob in the Framer hover-
-     mask-reveal component this borrows from. Its radius eases up to
-     full size while the cursor keeps moving and eases back down to
+     inside a circular clip-path region that follows the cursor (a
+     clip-path, not a CSS mask, because backdrop-filter isn't reliably
+     clipped by mask-image across every browser — without this, moving
+     the mouse at all would invert the entire viewport instead of just
+     a circle around the cursor). That circle's position is smoothed
+     (lerped) toward the cursor every frame rather than snapping to it,
+     so it trails slightly behind — the "Smoothing" knob in the Framer
+     hover-mask-reveal component this borrows from. Its radius eases up
+     to full size while the cursor keeps moving and eases back down to
      zero shortly after it stops (the component's "Return time"). The
-     #fluidWobble SVG filter defined near the top of <body> distorts the
-     blob's own rendered edge with slowly animated turbulence, so the
-     boundary reads as liquid and faintly swirling rather than a plain
-     circle — no JS needed for that part, it's a native SMIL animation
-     on the filter. Desktop only — same hover/pointer/width gate as the
-     other cursor-driven effects on this page. */
+     #fluidWobble SVG filter defined near the top of <body>, plus a
+     trailing blur, distort the circle's own rendered edge so the
+     boundary reads as liquid rather than a plain hard-edged circle.
+     Desktop only — same hover/pointer/width gate as the other
+     cursor-driven effects on this page. */
   (function(){
     var spot = document.getElementById('darkSpot');
     if(!spot) return;
@@ -654,8 +656,6 @@
     var RADIUS_SMOOTHING = 0.09;  // radius lerp per frame — controls grow/return speed
     var ACTIVE_RADIUS = 190;      // px — blob size while the cursor is moving
     var IDLE_SHRINK_MS = 550;     // ms of stillness before the blob starts easing back to 0
-    var SOLID_RATIO = 0.68;       // fraction of radius that's fully solid before it feathers out
-    var STRENGTH = 0.92;          // peak mask opacity — how bold the reveal looks
 
     var tx = 0, ty = 0;           // raw cursor position
     var sx = 0, sy = 0;           // smoothed (lagging) position actually drawn
@@ -677,12 +677,9 @@
         curR = 0;
         spot.classList.remove('active');
       } else {
-        var solid = curR * SOLID_RATIO;
-        var mask = 'radial-gradient(circle at ' + sx.toFixed(1) + 'px ' + sy.toFixed(1) + 'px, ' +
-          'rgba(0,0,0,' + STRENGTH + ') 0px, rgba(0,0,0,' + STRENGTH + ') ' + solid.toFixed(1) + 'px, ' +
-          'transparent ' + curR.toFixed(1) + 'px)';
-        spot.style.maskImage = mask;
-        spot.style.webkitMaskImage = mask;
+        var clip = 'circle(' + curR.toFixed(1) + 'px at ' + sx.toFixed(1) + 'px ' + sy.toFixed(1) + 'px)';
+        spot.style.clipPath = clip;
+        spot.style.webkitClipPath = clip;
         spot.classList.add('active');
       }
 
