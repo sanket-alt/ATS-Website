@@ -45,7 +45,7 @@
     <feTurbulence type="fractalNoise" baseFrequency="0.014 0.02" numOctaves="3" seed="7" result="noise">
       <animate attributeName="baseFrequency" dur="16s" values="0.014 0.02;0.02 0.013;0.011 0.024;0.014 0.02" repeatCount="indefinite"/>
     </feTurbulence>
-    <feDisplacementMap in="SourceGraphic" in2="noise" scale="30" xChannelSelector="R" yChannelSelector="G"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="48" xChannelSelector="R" yChannelSelector="G"/>
   </filter>
 </svg>
 <div class="dark-spot" id="darkSpot" aria-hidden="true"></div>
@@ -632,48 +632,71 @@
      sync with whatever's on screen. It's invisible everywhere except
      inside an organic blob-shaped clip-path region that follows the
      cursor (clip-path, not a CSS mask, because backdrop-filter isn't
-     reliably clipped by mask-image across every browser). Rather than
-     a circle, the shape itself is built each frame from a ring of
-     points whose radius is perturbed by a small rotating noise
-     function — the rotation is the "swirl" — and stretched along the
-     current direction of motion, so the blob elongates like a real
-     droplet when moving fast and relaxes toward round when it slows.
-     Those points are smoothed into one closed curve (a standard
-     midpoint/quadratic-Bezier blob technique) and set as the clip
-     path. The whole shape's center + base radius are separately
-     smoothed (lerped) toward the cursor, so it trails slightly behind
-     and eases up to full size while moving / back to nothing shortly
-     after stopping — modeled on the Framer "hover mask reveal"
-     component's Smoothing/Size/Return-time knobs, but revealing a
-     dark-mode invert instead of swapping in a second image. The
-     #fluidWobble SVG filter defined near the top of <body>, plus a
-     trailing blur, add a finer layer of pixel-level liquid texture on
-     top of the blob's own already-organic outline. Desktop only. */
+     reliably clipped by mask-image across every browser).
+
+     The shape is rebuilt every frame from a ring of points around a
+     smoothed (lagging) center: each point's radius is perturbed by a
+     slowly rotating noise pattern (the "swirl") and pulled outward
+     along the current direction of travel more than it's pulled in on
+     the trailing side — a comet/streak shape, not a symmetric ellipse
+     — so the faster the cursor moves, the longer the leading edge
+     trails in that direction. The blob's base size itself also tracks
+     real cursor speed (measured between consecutive mousemove events,
+     smoothed to avoid jitter): slow, deliberate movement gives a small
+     blob; a fast flick gives a much larger one. Points are smoothed
+     into one closed curve (a standard midpoint/quadratic-Bezier blob
+     technique) and set as the clip path.
+
+     This is a UX-first progressive enhancement, not a gimmick that
+     should get in the way of using the site: it's suppressed entirely
+     (eased down to nothing, not just paused) while the cursor is over
+     the propose-idea form or the help/FAQ section, since an inverted
+     overlay would fight with reading form labels or FAQ text. It's
+     also desktop-only, respects prefers-reduced-motion, and stays out
+     from under interactive form controls at all times via
+     pointer-events:none.
+
+     The #fluidWobble SVG filter (defined near the top of <body>) adds
+     a finer layer of pixel-level turbulence on top of the blob's own
+     already-organic edge — no blur, so the distortion stays crisp
+     rather than soft. Desktop only. */
   (function(){
     var spot = document.getElementById('darkSpot');
     if(!spot) return;
 
+    var EXCLUDE_SELECTOR = '#propose, #help';
+
     var spotQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
     var spotEnabled = false;
 
-    var SMOOTHING = 0.14;         // center-position lerp per frame — lower = softer/laggier follow
-    var RADIUS_SMOOTHING = 0.09;  // base-radius lerp per frame — controls grow/return speed
-    var ACTIVE_RADIUS = 180;      // px — base blob size while the cursor is moving
-    var IDLE_SHRINK_MS = 550;     // ms of stillness before the blob starts easing back to 0
-    var WOBBLE_AMOUNT = 0.24;     // fraction of radius the rotating noise perturbs by
-    var SWIRL_SPEED = 0.7;        // radians/sec the noise pattern rotates around the blob
-    var STRETCH_AMOUNT = 0.6;     // how much the blob elongates along its direction of travel
-    var POINTS = 12;              // vertices used to build the blob outline — more = smoother
+    var SMOOTHING = 0.14;          // center-position lerp per frame — lower = softer/laggier follow
+    var RADIUS_SMOOTHING = 0.13;   // base-radius lerp per frame — how fast size reacts to speed changes
+    var MIN_RADIUS_ACTIVE = 55;    // px — blob size at slow/deliberate cursor speed
+    var MAX_RADIUS_ACTIVE = 205;   // px — blob size at a fast flick
+    var SPEED_REF = 1.5;           // px/ms cursor speed that maps to MAX_RADIUS_ACTIVE
+    var SPEED_SMOOTHING = 0.35;    // how much a single fast/slow move affects the tracked speed
+    var IDLE_SHRINK_MS = 420;      // ms of stillness before the blob starts easing back to 0
+    var WOBBLE_AMOUNT = 0.3;       // fraction of radius the rotating noise perturbs by
+    var SWIRL_SPEED = 0.8;         // radians/sec the noise pattern rotates around the blob
+    var STREAK_FORWARD = 1.15;     // how far the leading edge stretches in the direction of travel
+    var STREAK_BACK = 0.4;         // how far the trailing edge pulls in behind it
+    var POINTS = 14;               // vertices used to build the blob outline — more = smoother
 
     var TWO_PI = Math.PI * 2;
-    var tx = 0, ty = 0;            // raw cursor position
-    var sx = 0, sy = 0;            // smoothed (lagging) center actually drawn
-    var targetR = 0, curR = 0;     // target vs. smoothed base radius
-    var velAngle = 0, speedNorm = 0; // last-measured direction/strength of motion, for the stretch
+    var tx = 0, ty = 0;             // raw cursor position
+    var sx = 0, sy = 0;             // smoothed (lagging) center actually drawn
+    var targetR = 0, curR = 0;      // target vs. smoothed base radius
+    var velAngle = 0;               // last-measured direction of travel
+    var speedPxPerMs = 0;           // smoothed cursor speed
+    var lastRawX = 0, lastRawY = 0, lastRawT = 0;
     var lastMoveAt = 0;
     var rafId = null;
-    var primed = false;            // avoids a big swoop-in from (0,0) on the very first move
+    var primed = false;             // avoids a big swoop-in from (0,0) on the very first move
     var startTime = performance.now();
+
+    function isOverExcluded(target){
+      return !!(target && target.closest && target.closest(EXCLUDE_SELECTOR));
+    }
 
     // A dependency-free stand-in for Perlin/simplex noise: a few sine
     // waves at different frequencies and phases, sampled around the
@@ -688,16 +711,21 @@
     // Builds a smooth closed blob outline as an SVG path string, ready
     // to drop straight into clip-path: path(...). Points are placed
     // around (cx,cy) at radius baseR, perturbed by rotating noise and
-    // stretched toward velAngle by speedNorm, then smoothed into a
-    // single curve via the standard "midpoint + quadratic control
+    // pulled into a comet shape along velAngle (further out on the
+    // leading edge, pulled in on the trailing edge), then smoothed into
+    // a single curve via the standard "midpoint + quadratic control
     // point" blob technique.
-    function buildBlobPath(cx, cy, baseR, t){
+    function buildBlobPath(cx, cy, baseR, t, speedNorm){
       var pts = [];
       for(var i = 0; i < POINTS; i++){
         var angle = (i / POINTS) * TWO_PI;
         var n = noiseAt(angle, t);
-        var stretch = 1 + STRETCH_AMOUNT * speedNorm * Math.cos(angle - velAngle);
-        var r = Math.max(2, baseR * (1 + WOBBLE_AMOUNT * n) * stretch);
+        var c = Math.cos(angle - velAngle);
+        var forward = Math.max(0, c);
+        var backward = Math.max(0, -c);
+        var streak = 1 + STREAK_FORWARD * speedNorm * Math.pow(forward, 1.4) -
+                         STREAK_BACK * speedNorm * Math.pow(backward, 1.4);
+        var r = Math.max(2, baseR * (1 + WOBBLE_AMOUNT * n) * streak);
         pts.push([ cx + r * Math.cos(angle), cy + r * Math.sin(angle) ]);
       }
       var mids = [];
@@ -717,19 +745,13 @@
     function tick(){
       rafId = null;
       var now = performance.now();
-      if(now - lastMoveAt > IDLE_SHRINK_MS){ targetR = 0; }
-
-      var dx = tx - sx, dy = ty - sy;
-      var dist = Math.sqrt(dx * dx + dy * dy);
-      if(dist > 0.5){
-        velAngle = Math.atan2(dy, dx);
-        speedNorm = Math.min(1, dist / 140);
-      } else {
-        speedNorm *= 0.9; // relax the stretch back out once movement settles
+      if(now - lastMoveAt > IDLE_SHRINK_MS){
+        targetR = 0;
+        speedPxPerMs *= 0.9; // ease the streak back out too, not just the size
       }
 
-      sx += dx * SMOOTHING;
-      sy += dy * SMOOTHING;
+      sx += (tx - sx) * SMOOTHING;
+      sy += (ty - sy) * SMOOTHING;
       curR += (targetR - curR) * RADIUS_SMOOTHING;
 
       if(curR < 1.5 && targetR === 0){
@@ -737,7 +759,8 @@
         spot.classList.remove('active');
       } else {
         var t = (now - startTime) / 1000;
-        var d = buildBlobPath(sx, sy, curR, t);
+        var speedNorm = Math.min(1, speedPxPerMs / SPEED_REF);
+        var d = buildBlobPath(sx, sy, curR, t, speedNorm);
         var clip = 'path("' + d + '")';
         spot.style.clipPath = clip;
         spot.style.webkitClipPath = clip;
@@ -753,10 +776,33 @@
     }
 
     function onMove(e){
+      var now = performance.now();
       tx = e.clientX; ty = e.clientY;
-      lastMoveAt = performance.now();
-      targetR = ACTIVE_RADIUS;
-      if(!primed){ sx = tx; sy = ty; primed = true; }
+      lastMoveAt = now;
+
+      if(!primed){
+        sx = tx; sy = ty;
+        lastRawX = tx; lastRawY = ty; lastRawT = now;
+        primed = true;
+      }
+
+      var dt = now - lastRawT;
+      if(dt > 0){
+        var dx = tx - lastRawX, dy = ty - lastRawY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if(dist > 1){ velAngle = Math.atan2(dy, dx); }
+        var instSpeed = dist / dt; // px per ms
+        speedPxPerMs += (instSpeed - speedPxPerMs) * SPEED_SMOOTHING;
+      }
+      lastRawX = tx; lastRawY = ty; lastRawT = now;
+
+      if(isOverExcluded(e.target)){
+        targetR = 0; // ease out rather than snapping, for a gentler handoff to the form/FAQ
+      } else {
+        var speedNorm = Math.min(1, speedPxPerMs / SPEED_REF);
+        targetR = MIN_RADIUS_ACTIVE + (MAX_RADIUS_ACTIVE - MIN_RADIUS_ACTIVE) * speedNorm;
+      }
+
       ensureLoop();
     }
     function onLeaveWindow(){
@@ -775,7 +821,7 @@
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseleave', onLeaveWindow);
       if(rafId !== null){ cancelAnimationFrame(rafId); rafId = null; }
-      targetR = 0; curR = 0; speedNorm = 0; primed = false;
+      targetR = 0; curR = 0; speedPxPerMs = 0; primed = false;
       spot.classList.remove('active');
     }
     function syncSpot(){
