@@ -373,7 +373,8 @@
 </div>
 
 <!-- ============ ADMIN DASHBOARD ============ -->
-<section id="adminDashboard" style="display: none; padding-top: 140px; min-height: 100vh;">
+<!-- ============ ADMIN DASHBOARD (CMS UI) ============ -->
+<section id="adminDashboard" style="display: none; padding-top: 140px; padding-bottom: 80px; min-height: 100vh;">
   <div class="wrap">
     <div class="sec-head">
       <div>
@@ -383,33 +384,129 @@
       <button id="logoutBtn" class="btn">Logout</button>
     </div>
 
-    <div class="propose-panel">
-      <!-- Upload Photo Form -->
-      <div>
+    <!-- 1. GALLERY MANAGEMENT SECTION -->
+    <div class="admin-section">
+      <div class="admin-section-head">
+        <h3>Gallery Management</h3>
+        <button class="btn btn-solid btn-sm" id="toggleAddGalleryBtn">+ Upload New Photo</button>
+      </div>
+      
+      <!-- Upload New Photo Form (Hidden by default) -->
+      <div id="addGalleryForm" class="admin-form-box" style="display: none;">
         <h4 style="margin-top: 0;">Upload to Gallery</h4>
-        <div class="field">
-          <label>Image Title / Caption</label>
-          <input type="text" placeholder="e.g. Kari Speedway Trials">
+        <div class="field-row">
+          <div class="field">
+            <label>Image Title / Caption</label>
+            <input type="text" id="galTitleInput" placeholder="e.g. SAE Aero Fabrication Bay">
+          </div>
+          <div class="field">
+            <label>Image URL (or File Upload)</label>
+            <input type="text" id="galUrlInput" placeholder="Paste image link here...">
+          </div>
         </div>
-        <div class="field">
-          <label>Select Image</label>
-          <input type="file" accept="image/*" style="padding: 9px;">
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button class="btn btn-solid" onclick="alert('Image added to table! (Requires backend to save permanently)')">Save Photo</button>
+          <button class="btn" id="cancelAddGalleryBtn">Cancel</button>
         </div>
-        <button class="btn btn-solid" onclick="alert('Requires Google Sheets backend connection to save permanently.')">Upload Image</button>
       </div>
 
-      <!-- Add Project Form -->
-      <div>
-        <h4 style="margin-top: 0;">Post Project Update</h4>
+      <!-- Gallery Table -->
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width: 80px;">Image</th>
+              <th>Caption / Title</th>
+              <th style="width: 120px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminGalleryTableBody">
+            <!-- Mock Existing Rows -->
+            <tr>
+              <td><div class="img-preview" style="background-color: #3a5f8a;"></div></td>
+              <td>Kari Speedway Trials (2025)</td>
+              <td>
+                <div class="admin-action-group">
+                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="img-preview" style="background-color: #b5502a;"></div></td>
+              <td>First Static Fire (2024)</td>
+              <td>
+                <div class="admin-action-group">
+                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2. PROJECT MANAGEMENT SECTION -->
+    <div class="admin-section">
+      <div class="admin-section-head">
+        <h3>Project Management</h3>
+        <button class="btn btn-solid btn-sm" id="toggleAddProjectBtn">+ Add New Project</button>
+      </div>
+
+      <!-- Add/Edit Project Form (Hidden by default) -->
+      <div id="addProjectForm" class="admin-form-box" style="display: none;">
+        <h4 style="margin-top: 0;" id="projectFormMode">Add / Update Project</h4>
         <div class="field">
           <label>Project Title</label>
-          <input type="text" placeholder="e.g. Nano-Satellite Simulator">
+          <input type="text" id="projTitleInput" placeholder="e.g. Nano-Satellite Simulator">
+        </div>
+        <div class="field">
+          <label>Cover Image URL (Optional)</label>
+          <input type="text" id="projImageInput" placeholder="Paste image link here...">
         </div>
         <div class="field">
           <label>Description</label>
-          <textarea rows="3" placeholder="Status update..."></textarea>
+          <textarea id="projDescInput" rows="3" placeholder="Status update or full description..."></textarea>
         </div>
-        <button class="btn btn-solid" onclick="alert('Requires Google Sheets backend connection to save permanently.')">Save Project</button>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button class="btn btn-solid" onclick="alert('Project saved to table! (Requires backend to save permanently)')">Save Project</button>
+          <button class="btn" id="cancelAddProjectBtn">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Projects Table -->
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Project Title</th>
+              <th>Description</th>
+              <th style="width: 160px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminProjectTableBody">
+            <!-- Mock Existing Rows -->
+            <tr>
+              <td><strong>Autonomous UAV Navigation Rig</strong></td>
+              <td style="color: var(--text-dim); font-size: 13.5px;">Building a GPS-denied indoor navigation stack for a quadrotor...</td>
+              <td>
+                <div class="admin-action-group">
+                  <button class="btn btn-sm" onclick="editProject()">Edit</button>
+                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Pulsed Plasma Thruster Test Stand</strong></td>
+              <td style="color: var(--text-dim); font-size: 13.5px;">Designing and instrumenting a thrust stand for a lab-scale...</td>
+              <td>
+                <div class="admin-action-group">
+                  <button class="btn btn-sm" onclick="editProject()">Edit</button>
+                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
