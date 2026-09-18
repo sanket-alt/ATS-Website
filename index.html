@@ -1703,9 +1703,11 @@
     const ADMIN_ID = "ATSwebsite";
     const ADMIN_PWD = "Plane@bombing";
 
-    // Secret Keyboard Shortcut to open Login (Ctrl + Shift + L)
+   // Secret Keyboard Shortcut to open Login (Ctrl+Shift+L or Cmd+Shift+L)
     window.addEventListener('keydown', function(e) {
-      if (e.ctrlKey && e.shiftKey && e.key === 'L') {
+      // (e.ctrlKey covers Windows, e.metaKey covers Mac Command)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+        e.preventDefault(); // Prevents the browser from opening its own search/sidebar tools
         adminModal.classList.add('open');
         adminIdInput.focus();
       }
