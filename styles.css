@@ -72,9 +72,6 @@
     100%{ transform:translate(-51%,-52%) scale(1.01); }
   }
 
-  /* Flowing traced lines — each contour "draws" itself in a loop via a
-     travelling dash pattern (normalized to 0–100 by pathLength so the
-     motion speed reads consistently regardless of curve length). */
   .contour-line{
     stroke-dasharray:14 10;
     animation-name:flowDash;
@@ -89,9 +86,6 @@
     to{ stroke-dashoffset:-200; }
   }
 
-  /* A brighter accent pulse travels along each line on top of the base
-     trace, like a signal running through the contour — the vector-line
-     motion effect. */
   .contour-pulse{
     fill:none;
     stroke-width:1.6;
@@ -116,29 +110,7 @@
   }
 
   /* ============================================================
-     DARK-MODE CURSOR REVEAL — a full-viewport overlay that inverts
-     whatever's underneath it into a dark reading of the page, visible
-     only inside an organic, comet-shaped clip-path region that follows
-     the cursor. clip-path (rather than mask-image, which isn't
-     reliably clipped against backdrop-filter across every browser) is
-     what keeps the invert confined to that shape instead of covering
-     the page. The shape and its size are rebuilt every frame in the
-     script: a ring of points is perturbed by rotating noise and pulled
-     into a streak along the current direction of travel, and the
-     blob's overall size tracks real cursor speed — small at a slow,
-     deliberate pace, larger on a fast flick — then smoothed into one
-     closed curve. Its center is separately lerped toward the cursor so
-     it lags slightly behind. The effect is intentionally suppressed
-     (see the script's EXCLUDE_SELECTOR) while hovering the propose-idea
-     form or the help/FAQ section, since an inverted overlay there would
-     hurt readability rather than add polish — this is meant as a subtle
-     progressive enhancement on an otherwise professional site, not a
-     gimmick that fights the content. Backdrop-filter samples live
-     content, so it never goes out of sync with the real (light) page —
-     no DOM duplication needed. The #fluidWobble SVG filter (defined
-     near the top of <body>) adds a finer layer of pixel-level
-     turbulence on top of the blob's own already-organic edge; there's
-     deliberately no blur, so the distortion stays crisp. Desktop only.
+     DARK-MODE CURSOR REVEAL
   ============================================================ */
   .dark-spot{
     position:fixed;
@@ -259,7 +231,7 @@
   }
 
   /* ============================================================
-     ALTIMETER GAUGE — thin ruled scroll-progress gauge, desktop only
+     ALTIMETER GAUGE
   ============================================================ */
   .altimeter{
     position:fixed;
@@ -401,7 +373,6 @@
   }
   .hero-actions { display: flex; gap: 14px; margin-top: 38px; flex-wrap: wrap; opacity: 0; animation: fadeUp .8s ease .68s forwards; }
   
-  /* Telemetry Window */
   .hero-viewport {
     display: flex; flex-direction: column; gap: 16px;
     opacity: 0; animation: fadeUp .8s ease .8s forwards;
@@ -438,7 +409,6 @@
     font-family: var(--ff-mono); font-size: 10px; color: var(--text-dim2); letter-spacing: 0.1em; text-transform: uppercase;
   }
 
-  /* --- REAL 3D WIREFRAME SCENE (canvas, see the mesh renderer in JS) --- */
   .css-3d-scene {
     position: absolute; inset: 0; z-index: 5;
     display: flex; align-items: center; justify-content: center;
@@ -446,8 +416,6 @@
   }
   #holoCanvas { width: 100%; height: 100%; display: block; }
 
-  /* --- Idle radar ping — rings pulse from the cursor's last resting
-     point inside the telemetry window while it stays still. --- */
   .radar-ring{
     position: absolute;
     width: 10px; height: 10px;
@@ -464,7 +432,6 @@
     100%{ transform: scale(9); opacity: 0; border-width: 0.5px; }
   }
 
-  /* Readout Block */
   .viewport-readout { border-left: 2px solid var(--accent); padding-left: 14px; }
   .readout-header {
     font-family: var(--ff-mono); font-size: 10.5px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em;
@@ -702,8 +669,6 @@
     gap:12px;
     scroll-snap-align:start;
   }
-  /* vertical scatter — some tiles anchor high, some low, some centered,
-     instead of one straight bottom-aligned row */
   .htile[data-valign="top"]{ align-self:flex-start; margin-top:calc(var(--off, 0) * 1px); }
   .htile[data-valign="mid"]{ align-self:center; }
   .htile[data-valign="bottom"]{ align-self:flex-end; margin-bottom:calc(var(--off, 0) * 1px); }
@@ -719,8 +684,6 @@
     border:1px solid var(--line);
     box-shadow:0 18px 34px rgba(24,21,15,0.10);
   }
-  /* smaller, tighter tile sizes than before — closer to a real photo-strip
-     scale, not near-full-viewport blocks */
   .htile-xl .htile-art{ width:52vw; height:56vh; }
   .htile-lg .htile-art{ width:42vw; height:44vh; }
   .htile-md .htile-art{ width:32vw; height:32vh; }
@@ -924,6 +887,40 @@
   .footer-bottom{display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; padding-top:24px; border-top:1px solid var(--line-soft);}
   .footer-bottom p{font-family:var(--ff-mono); font-size:11.5px; color:var(--text-dim2); margin:0;}
 
+  /* ============ ADMIN MODAL STYLES ============ */
+  .admin-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 21, 15, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .admin-modal.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .admin-modal-content {
+    background: var(--bg-panel);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+  }
+  .admin-modal.open .admin-modal-content {
+    transform: translateY(0);
+  }
+
   /* ============ IDEAS BOARD (proposed-ideas page) ============ */
   .ideas-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;}
   @media (max-width:980px){ .ideas-grid{grid-template-columns:repeat(2,1fr);} }
@@ -946,15 +943,7 @@
   .ideas-empty, .ideas-error{font-size:14.5px; color:var(--text-dim2); padding:20px 0;}
   .ideas-error{color:var(--danger);}
 
-  /* ============ CURSOR-AVOIDING TEXT (desktop only) ============ */
-  /* Words are wrapped by JS into .dw > .dwi. .dw stays a plain inline
-     box so line-wrapping is unaffected; .dwi carries the transform that
-     nudges the word away from the cursor, capped small enough (see the
-     DODGE_MAX_OFFSET constant in the script) that it can never expand
-     the page's scrollable area. Disabled entirely on touch/narrow
-     viewports since the effect is only wired up under a desktop
-     hover+pointer+width media query in JS — this rule just keeps the
-     transition snappy on the surfaces where it runs. */
+  /* ============ CURSOR-AVOIDING TEXT ============ */
   .dw{ display:inline-block; }
   .dwi{
     display:inline-block;
