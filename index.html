@@ -30,16 +30,7 @@
   </svg>
 </div>
 
-<!-- Dark-mode cursor reveal — a full-viewport overlay, invisible except
-     where a CSS mask lets it show through. Instead of an image swap
-     (the Framer "hover mask reveal" pattern this borrows from), the
-     mask is a single soft blob that lags smoothly behind the cursor,
-     grows while the cursor moves and eases back to nothing when it
-     stops. The #fluidWobble filter below distorts the blob's edge with
-     animated turbulence for a liquid/swirling boundary. Backdrop-filter
-     samples the real page directly, so it always matches whatever's on
-     screen. Desktop only (see .dark-spot media query in styles.css and
-     the script below). -->
+<!-- Dark-mode cursor reveal -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <filter id="fluidWobble" x="-40%" y="-40%" width="180%" height="180%">
     <feTurbulence type="fractalNoise" baseFrequency="0.014 0.02" numOctaves="3" seed="7" result="noise">
@@ -85,7 +76,7 @@
   <a href="#help">Help</a>
 </div>
 
-<!-- ============ ALTIMETER GAUGE (desktop only) ============ -->
+<!-- ============ ALTIMETER GAUGE ============ -->
 <div class="altimeter" id="altimeter" aria-hidden="true">
   <div class="altimeter-readout"><span id="altimeterPct">00</span><small>%</small></div>
   <div class="altimeter-track" id="altimeterTrack">
@@ -97,9 +88,7 @@
 <!-- ============ HERO ============ -->
 <section class="hero" id="top">
   <div class="hero-glow"></div>
-  
   <div class="wrap hero-grid">
-    <!-- Left: Typography -->
     <div class="hero-content">
       <div class="eyebrow reveal in">PUNJAB ENGINEERING COLLEGE · CHANDIGARH</div>
       <h1 class="hero-headline hero-kinetic">
@@ -113,8 +102,6 @@
         <a href="#propose" class="btn">Propose a project →</a>
       </div>
     </div>
-
-    <!-- Right: CSS 3D Viewport -->
     <div class="hero-viewport">
       <div class="viewport-chrome">
         <span class="crosshair top-left"></span>
@@ -122,14 +109,10 @@
         <span class="crosshair bottom-left"></span>
         <span class="crosshair bottom-right"></span>
         <div class="viewport-label">TELEMETRY // <span id="holoTargetName">CHASSIS NODE</span></div>
-        
-        <!-- Pure CSS 3D Engine -->
         <div class="css-3d-scene">
           <canvas id="holoCanvas"></canvas>
         </div>
       </div>
-      
-      <!-- Technical Readout -->
       <div class="viewport-readout">
         <div class="readout-header">
           <span class="status-dot"></span> LIVE PARSING
@@ -191,7 +174,6 @@
       </div>
       <p class="sec-note">Every build and competition ATS is running right now, plus what's opening next. Tap a card to say you're interested.</p>
     </div>
-
     <div class="board-filters reveal">
       <button class="chip active" data-filter="all">All</button>
       <button class="chip" data-filter="project">Projects</button>
@@ -200,7 +182,6 @@
       <button class="chip" data-filter="recruiting">Recruiting</button>
       <button class="chip" data-filter="upcoming">Upcoming</button>
     </div>
-
     <div class="board-grid reveal-stagger" id="boardGrid"></div>
   </div>
 </section>
@@ -215,7 +196,6 @@
       </div>
       <p class="sec-note">Anyone in PEC can drop an idea here — a competition worth entering, a build worth starting. The core team reviews these to shape next semester's board.</p>
     </div>
-
     <div class="propose-panel reveal">
       <div>
         <form id="proposeForm">
@@ -249,7 +229,6 @@
           <p class="form-note">Submissions post to a shared board other visitors can see — skip identifying details you'd rather keep private.</p>
         </form>
       </div>
-
       <div class="recent-box">
         <h4>Recently proposed</h4>
         <div class="recent-list" id="recentList">
@@ -271,7 +250,6 @@
       <p class="sec-note hgallery-hint">Keep scrolling — this strip moves sideways. Swap these tiles for real shots whenever you've got them.</p>
     </div>
   </div>
-
   <div class="hgallery-pin" id="hgalleryPin">
     <div class="hgallery-viewport" id="hgalleryViewport">
       <div class="hgallery-track" id="hgalleryTrack"></div>
@@ -303,7 +281,6 @@
       </div>
       <p class="sec-note">National and international design-build competitions engineering undergrads can enter — no hackathons. Dates roll forward on their own as the year moves.</p>
     </div>
-
     <div class="cc-layout reveal">
       <div class="cc-cal-card">
         <div class="cc-cal-top">
@@ -329,7 +306,6 @@
           <span><i class="cc-dot cc-dot-intl"></i>International</span>
         </div>
       </div>
-
       <div class="cc-list-card">
         <div class="cc-list-head">Coming up</div>
         <div class="cc-list" id="ccList"></div>
@@ -347,14 +323,11 @@
         <h2 class="sec-title">Help & <span class="accent">how to join</span></h2>
       </div>
     </div>
-
     <div class="help-layout">
       <div class="reveal" id="faqList"></div>
-
       <div class="contact-card reveal">
         <h4>Talk to the core team</h4>
         <p>For build help, sponsorship, or anything the FAQ doesn't cover.</p>
-
         <div class="contact-row">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z" opacity="0"/><path d="M4 6l8 7 8-7M4 6v12h16V6"/></svg>
           <div><div class="label">Email</div><a class="value" href="mailto:ats@pec.edu.in">ats@pec.edu.in</a></div>
@@ -376,6 +349,123 @@
 <section class="closing">
   <div class="wrap">
     <h2>Always building <span class="accent">forward.</span></h2>
+  </div>
+</section>
+
+<!-- ============ ADMIN LOGIN MODAL ============ -->
+<div id="adminLoginModal" class="admin-modal" aria-hidden="true">
+  <div class="admin-modal-content">
+    <div class="sec-head" style="margin-bottom: 20px;">
+      <h2 class="sec-title" style="font-size: 24px;">Admin <span class="accent">Access</span></h2>
+    </div>
+    <div class="field">
+      <label for="adminId">ID</label>
+      <input type="text" id="adminId" placeholder="Enter Admin ID">
+    </div>
+    <div class="field">
+      <label for="adminPwd">Password</label>
+      <input type="password" id="adminPwd" placeholder="Enter Password">
+    </div>
+    <button id="submitLoginBtn" class="btn btn-solid" style="width: 100%; margin-top: 10px;">Login</button>
+    <div id="loginStatus" class="form-status err"></div>
+    <button id="closeLoginBtn" class="btn" style="width: 100%; margin-top: 10px; justify-content: center; border: none;">Cancel</button>
+  </div>
+</div>
+
+<!-- ============ ADMIN DASHBOARD (CMS UI) ============ -->
+<section id="adminDashboard" style="display: none; padding-top: 140px; padding-bottom: 80px; min-height: 100vh;">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">SYSTEM OVERRIDE</div>
+        <h2 class="sec-title">Admin <span class="accent">Dashboard</span></h2>
+      </div>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
+
+    <!-- 1. GALLERY MANAGEMENT SECTION -->
+    <div class="admin-section">
+      <div class="admin-section-head">
+        <h3>Gallery Management</h3>
+        <button class="btn btn-solid btn-sm" id="toggleAddGalleryBtn">+ Upload New Photo</button>
+      </div>
+      
+      <!-- Upload New Photo Form (Hidden by default) -->
+      <div id="addGalleryForm" class="admin-form-box" style="display: none;">
+        <h4 style="margin-top: 0;">Upload to Gallery</h4>
+        <div class="field-row">
+          <div class="field">
+            <label>Image Title / Caption</label>
+            <input type="text" id="galTitleInput" placeholder="e.g. SAE Aero Fabrication Bay">
+          </div>
+          <div class="field">
+            <label>Image URL</label>
+            <input type="text" id="galUrlInput" placeholder="Paste image link here...">
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button class="btn btn-solid" onclick="alert('Image added to table! (Requires backend to save permanently)')">Save Photo</button>
+          <button class="btn" id="cancelAddGalleryBtn">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Gallery Table -->
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width: 80px;">Image</th>
+              <th>Caption / Title</th>
+              <th style="width: 120px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminGalleryTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2. PROJECT MANAGEMENT SECTION -->
+    <div class="admin-section">
+      <div class="admin-section-head">
+        <h3>Project Management</h3>
+        <button class="btn btn-solid btn-sm" id="toggleAddProjectBtn">+ Add New Project</button>
+      </div>
+
+      <!-- Add/Edit Project Form (Hidden by default) -->
+      <div id="addProjectForm" class="admin-form-box" style="display: none;">
+        <h4 style="margin-top: 0;" id="projectFormMode">Add / Update Project</h4>
+        <div class="field">
+          <label>Project Title</label>
+          <input type="text" id="projTitleInput" placeholder="e.g. Nano-Satellite Simulator">
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea id="projDescInput" rows="3" placeholder="Status update or full description..."></textarea>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button class="btn btn-solid" onclick="alert('Project saved to table! (Requires backend to save permanently)')">Save Project</button>
+          <button class="btn" id="cancelAddProjectBtn">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Projects Table -->
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Project Title</th>
+              <th>Description</th>
+              <th style="width: 160px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminProjectTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -412,7 +502,6 @@
   </div>
 </footer>
 
-<script src="config.js"></script>
 <script>
 (function(){
   "use strict";
@@ -469,11 +558,7 @@
   }, {threshold:0.12});
   revealTargets.forEach(function(t){ revealObserver.observe(t); });
 
-  /* ---------- ALTIMETER GAUGE (desktop only) ---------- */
-  /* A thin ruled vertical gauge pinned to the right edge. Its marker
-     climbs the ruler as the page scrolls, alongside a live percentage
-     readout. Ticks are generated once; position updates are driven by
-     scroll/resize, throttled to rAF like the header scroll handler. */
+  /* ---------- ALTIMETER GAUGE ---------- */
   (function(){
     var altimeterEl = document.getElementById('altimeter');
     var altTrack = document.getElementById('altimeterTrack');
@@ -485,7 +570,6 @@
     var altActive = false;
     var altTicking = false;
 
-    // Build the ruled ticks once — a mark every 5%, a longer one every 25%.
     var ticksBuilt = false;
     function buildTicks(){
       if(ticksBuilt) return;
@@ -546,313 +630,20 @@
     setTimeout(syncAltimeter, 50);
   })();
 
-  /* ---------- IDLE RADAR PING (hero telemetry window, desktop only) ---------- */
-  /* Hover the hero telemetry viewport and hold the cursor still for ~2s:
-     a radar ring pulses outward from that point, repeating on an interval
-     while the cursor stays put. Any movement resets the idle timer and
-     stops the pulsing until it goes still again. */
-  (function(){
-    var scope = document.querySelector('.viewport-chrome');
-    if(!scope) return;
+  /* ---------- HERO 3D WIREFRAME ENGINE ---------- */
+  const HOLO_USEG = 15;
+  const HOLO_VSEG = 22;
 
-    var radarQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
-    var IDLE_DELAY = 2000;
-    var PULSE_EVERY = 1300;
-    var idleTimer = null;
-    var pulseInterval = null;
-    var lastX = 0, lastY = 0;
-    var radarEnabled = false;
-
-    function spawnRing(x, y){
-      var ring = document.createElement('span');
-      ring.className = 'radar-ring';
-      ring.style.left = x + 'px';
-      ring.style.top = y + 'px';
-      scope.appendChild(ring);
-      ring.addEventListener('animationend', function(){
-        if(ring.parentNode) ring.parentNode.removeChild(ring);
-      });
-    }
-
-    function stopPulsing(){
-      if(pulseInterval){ clearInterval(pulseInterval); pulseInterval = null; }
-    }
-    function startPulsing(){
-      stopPulsing();
-      spawnRing(lastX, lastY);
-      pulseInterval = setInterval(function(){ spawnRing(lastX, lastY); }, PULSE_EVERY);
-    }
-    function resetIdle(){
-      clearTimeout(idleTimer);
-      stopPulsing();
-      idleTimer = setTimeout(startPulsing, IDLE_DELAY);
-    }
-    function onMove(e){
-      if(!radarEnabled) return;
-      var rect = scope.getBoundingClientRect();
-      lastX = e.clientX - rect.left;
-      lastY = e.clientY - rect.top;
-      resetIdle();
-    }
-    function onLeave(){
-      clearTimeout(idleTimer);
-      stopPulsing();
-    }
-
-    function enableRadar(){
-      if(radarEnabled) return;
-      radarEnabled = true;
-      scope.addEventListener('mousemove', onMove);
-      scope.addEventListener('mouseenter', onMove);
-      scope.addEventListener('mouseleave', onLeave);
-    }
-    function disableRadar(){
-      if(!radarEnabled) return;
-      radarEnabled = false;
-      scope.removeEventListener('mousemove', onMove);
-      scope.removeEventListener('mouseenter', onMove);
-      scope.removeEventListener('mouseleave', onLeave);
-      clearTimeout(idleTimer);
-      stopPulsing();
-    }
-    function syncRadar(){
-      if(radarQuery.matches){ enableRadar(); } else { disableRadar(); }
-    }
-
-    if(radarQuery.addEventListener){ radarQuery.addEventListener('change', syncRadar); }
-    else if(radarQuery.addListener){ radarQuery.addListener(syncRadar); }
-
-    window.addEventListener('load', syncRadar);
-    setTimeout(syncRadar, 50);
-  })();
-
-  /* ---------- DARK-MODE CURSOR REVEAL (lagging liquid blob) ---------- */
-  /* .dark-spot is a full-viewport overlay running backdrop-filter invert
-     over the real page — it samples live content, so it's always in
-     sync with whatever's on screen. It's invisible everywhere except
-     inside an organic blob-shaped clip-path region that follows the
-     cursor (clip-path, not a CSS mask, because backdrop-filter isn't
-     reliably clipped by mask-image across every browser).
-
-     The shape is rebuilt every frame from a ring of points around a
-     smoothed (lagging) center: each point's radius is perturbed by a
-     slowly rotating noise pattern (the "swirl") and pulled outward
-     along the current direction of travel more than it's pulled in on
-     the trailing side — a comet/streak shape, not a symmetric ellipse
-     — so the faster the cursor moves, the longer the leading edge
-     trails in that direction. The blob's base size itself also tracks
-     real cursor speed (measured between consecutive mousemove events,
-     smoothed to avoid jitter): slow, deliberate movement gives a small
-     blob; a fast flick gives a much larger one. Points are smoothed
-     into one closed curve (a standard midpoint/quadratic-Bezier blob
-     technique) and set as the clip path.
-
-     This is a UX-first progressive enhancement, not a gimmick that
-     should get in the way of using the site: it's suppressed entirely
-     (eased down to nothing, not just paused) while the cursor is over
-     the propose-idea form or the help/FAQ section, since an inverted
-     overlay would fight with reading form labels or FAQ text. It's
-     also desktop-only, respects prefers-reduced-motion, and stays out
-     from under interactive form controls at all times via
-     pointer-events:none.
-
-     The #fluidWobble SVG filter (defined near the top of <body>) adds
-     a finer layer of pixel-level turbulence on top of the blob's own
-     already-organic edge — no blur, so the distortion stays crisp
-     rather than soft. Desktop only. */
-  (function(){
-    var spot = document.getElementById('darkSpot');
-    if(!spot) return;
-
-    var EXCLUDE_SELECTOR = '#propose, #help';
-
-    var spotQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
-    var spotEnabled = false;
-
-    var SMOOTHING = 0.14;          // center-position lerp per frame — lower = softer/laggier follow
-    var RADIUS_SMOOTHING = 0.13;   // base-radius lerp per frame — how fast size reacts to speed changes
-    var MIN_RADIUS_ACTIVE = 55;    // px — blob size at slow/deliberate cursor speed
-    var MAX_RADIUS_ACTIVE = 205;   // px — blob size at a fast flick
-    var SPEED_REF = 1.5;           // px/ms cursor speed that maps to MAX_RADIUS_ACTIVE
-    var SPEED_SMOOTHING = 0.35;    // how much a single fast/slow move affects the tracked speed
-    var IDLE_SHRINK_MS = 420;      // ms of stillness before the blob starts easing back to 0
-    var WOBBLE_AMOUNT = 0.3;       // fraction of radius the rotating noise perturbs by
-    var SWIRL_SPEED = 0.8;         // radians/sec the noise pattern rotates around the blob
-    var STREAK_FORWARD = 1.15;     // how far the leading edge stretches in the direction of travel
-    var STREAK_BACK = 0.4;         // how far the trailing edge pulls in behind it
-    var POINTS = 14;               // vertices used to build the blob outline — more = smoother
-
-    var TWO_PI = Math.PI * 2;
-    var tx = 0, ty = 0;             // raw cursor position
-    var sx = 0, sy = 0;             // smoothed (lagging) center actually drawn
-    var targetR = 0, curR = 0;      // target vs. smoothed base radius
-    var velAngle = 0;               // last-measured direction of travel
-    var speedPxPerMs = 0;           // smoothed cursor speed
-    var lastRawX = 0, lastRawY = 0, lastRawT = 0;
-    var lastMoveAt = 0;
-    var rafId = null;
-    var primed = false;             // avoids a big swoop-in from (0,0) on the very first move
-    var startTime = performance.now();
-
-    function isOverExcluded(target){
-      return !!(target && target.closest && target.closest(EXCLUDE_SELECTOR));
-    }
-
-    // A dependency-free stand-in for Perlin/simplex noise: a few sine
-    // waves at different frequencies and phases, sampled around the
-    // blob's angle and slowly rotated over time (the swirl).
-    function noiseAt(angle, t){
-      var a = angle + t * SWIRL_SPEED;
-      return Math.sin(a * 2 + t * 0.9) * 0.5 +
-             Math.sin(a * 3 - t * 1.3) * 0.3 +
-             Math.sin(a * 5 + t * 0.6) * 0.2;
-    }
-
-    // Builds a smooth closed blob outline as an SVG path string, ready
-    // to drop straight into clip-path: path(...). Points are placed
-    // around (cx,cy) at radius baseR, perturbed by rotating noise and
-    // pulled into a comet shape along velAngle (further out on the
-    // leading edge, pulled in on the trailing edge), then smoothed into
-    // a single curve via the standard "midpoint + quadratic control
-    // point" blob technique.
-    function buildBlobPath(cx, cy, baseR, t, speedNorm){
-      var pts = [];
-      for(var i = 0; i < POINTS; i++){
-        var angle = (i / POINTS) * TWO_PI;
-        var n = noiseAt(angle, t);
-        var c = Math.cos(angle - velAngle);
-        var forward = Math.max(0, c);
-        var backward = Math.max(0, -c);
-        var streak = 1 + STREAK_FORWARD * speedNorm * Math.pow(forward, 1.4) -
-                         STREAK_BACK * speedNorm * Math.pow(backward, 1.4);
-        var r = Math.max(2, baseR * (1 + WOBBLE_AMOUNT * n) * streak);
-        pts.push([ cx + r * Math.cos(angle), cy + r * Math.sin(angle) ]);
-      }
-      var mids = [];
-      for(var j = 0; j < POINTS; j++){
-        var a = pts[j], b = pts[(j + 1) % POINTS];
-        mids.push([ (a[0] + b[0]) / 2, (a[1] + b[1]) / 2 ]);
-      }
-      var last = mids[POINTS - 1];
-      var d = 'M ' + last[0].toFixed(1) + ' ' + last[1].toFixed(1) + ' ';
-      for(var k = 0; k < POINTS; k++){
-        d += 'Q ' + pts[k][0].toFixed(1) + ' ' + pts[k][1].toFixed(1) + ' ' +
-                     mids[k][0].toFixed(1) + ' ' + mids[k][1].toFixed(1) + ' ';
-      }
-      return d + 'Z';
-    }
-
-    function tick(){
-      rafId = null;
-      var now = performance.now();
-      if(now - lastMoveAt > IDLE_SHRINK_MS){
-        targetR = 0;
-        speedPxPerMs *= 0.9; // ease the streak back out too, not just the size
-      }
-
-      sx += (tx - sx) * SMOOTHING;
-      sy += (ty - sy) * SMOOTHING;
-      curR += (targetR - curR) * RADIUS_SMOOTHING;
-
-      if(curR < 1.5 && targetR === 0){
-        curR = 0;
-        spot.classList.remove('active');
-      } else {
-        var t = (now - startTime) / 1000;
-        var speedNorm = Math.min(1, speedPxPerMs / SPEED_REF);
-        var d = buildBlobPath(sx, sy, curR, t, speedNorm);
-        var clip = 'path("' + d + '")';
-        spot.style.clipPath = clip;
-        spot.style.webkitClipPath = clip;
-        spot.classList.add('active');
-      }
-
-      if(curR > 1.5 || targetR > 0){
-        rafId = requestAnimationFrame(tick);
-      }
-    }
-    function ensureLoop(){
-      if(rafId === null){ rafId = requestAnimationFrame(tick); }
-    }
-
-    function onMove(e){
-      var now = performance.now();
-      tx = e.clientX; ty = e.clientY;
-      lastMoveAt = now;
-
-      if(!primed){
-        sx = tx; sy = ty;
-        lastRawX = tx; lastRawY = ty; lastRawT = now;
-        primed = true;
-      }
-
-      var dt = now - lastRawT;
-      if(dt > 0){
-        var dx = tx - lastRawX, dy = ty - lastRawY;
-        var dist = Math.sqrt(dx * dx + dy * dy);
-        if(dist > 1){ velAngle = Math.atan2(dy, dx); }
-        var instSpeed = dist / dt; // px per ms
-        speedPxPerMs += (instSpeed - speedPxPerMs) * SPEED_SMOOTHING;
-      }
-      lastRawX = tx; lastRawY = ty; lastRawT = now;
-
-      if(isOverExcluded(e.target)){
-        targetR = 0; // ease out rather than snapping, for a gentler handoff to the form/FAQ
-      } else {
-        var speedNorm = Math.min(1, speedPxPerMs / SPEED_REF);
-        targetR = MIN_RADIUS_ACTIVE + (MAX_RADIUS_ACTIVE - MIN_RADIUS_ACTIVE) * speedNorm;
-      }
-
-      ensureLoop();
-    }
-    function onLeaveWindow(){
-      targetR = 0;
-    }
-
-    function enableSpot(){
-      if(spotEnabled) return;
-      spotEnabled = true;
-      window.addEventListener('mousemove', onMove, {passive:true});
-      window.addEventListener('mouseleave', onLeaveWindow, {passive:true});
-    }
-    function disableSpot(){
-      if(!spotEnabled) return;
-      spotEnabled = false;
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseleave', onLeaveWindow);
-      if(rafId !== null){ cancelAnimationFrame(rafId); rafId = null; }
-      targetR = 0; curR = 0; speedPxPerMs = 0; primed = false;
-      spot.classList.remove('active');
-    }
-    function syncSpot(){
-      if(spotQuery.matches){ enableSpot(); } else { disableSpot(); }
-    }
-
-    if(spotQuery.addEventListener){ spotQuery.addEventListener('change', syncSpot); }
-    else if(spotQuery.addListener){ spotQuery.addListener(syncSpot); }
-
-    window.addEventListener('load', syncSpot);
-    setTimeout(syncSpot, 50);
-  })();
-
-  /* ---------- HERO 3D WIREFRAME ENGINE (real vertex math, drawn to canvas) ---------- */
-  const HOLO_USEG = 15; // segments along the long axis
-  const HOLO_VSEG = 22; // segments around the circumference
-
-  // Each returns a 0..1 radius multiplier for u in [0,1] (0 = nose, 1 = tail).
   function chassisProfile(u){
-    // slender boom, rounded caps, two collar bulges where the axles mount
     var body = Math.pow(Math.sin(Math.PI * u), 0.28);
     var collarA = Math.exp(-Math.pow((u - 0.26) / 0.05, 2)) * 0.35;
     var collarB = Math.exp(-Math.pow((u - 0.74) / 0.05, 2)) * 0.35;
     return Math.min(1, body + collarA + collarB);
   }
   function balloonProfile(u){
-    // blunt rounded nose, long tapering tail — a classic airship envelope
     return Math.sqrt(Math.max(0, Math.sin(Math.PI * Math.pow(u, 0.62))));
   }
   function aeroProfile(u){
-    // converging-diverging duct: wide inlet, narrow throat, wide exit
     return 0.62 + 0.38 * Math.abs(Math.cos(Math.PI * u));
   }
 
@@ -897,8 +688,8 @@
       profile: aeroProfile, length: 190, maxR: 40,
       buildExtras: function(length, maxR){
         return { lines: [
-          [[-length / 2, 0, 0], [length / 2, 0, 0]],                              // fan shaft centerline
-          [[-length * 0.12, -maxR * 1.9, 0], [-length * 0.12, -maxR * 0.7, 0]]     // pylon mount strut
+          [[-length / 2, 0, 0], [length / 2, 0, 0]],
+          [[-length * 0.12, -maxR * 1.9, 0], [-length * 0.12, -maxR * 0.7, 0]]
         ], fins: [] };
       }
     }
@@ -957,7 +748,7 @@
   window.addEventListener('resize', resizeHoloCanvas);
 
   var holoStateKeys = ['chassis', 'balloon', 'aero'];
-  var holoIndex = 1; // index 0 is the initial state, already shown
+  var holoIndex = 1;
   var holoTo = HOLO_STATES[holoStateKeys[0]];
   var holoFrom = null;
   var holoTransitionStart = 0;
@@ -994,7 +785,7 @@
       };
     }
     var t = Math.min(1, (now - holoTransitionStart) / HOLO_TRANSITION_MS);
-    var te = t * t * (3 - 2 * t); // smoothstep
+    var te = t * t * (3 - 2 * t);
     return {
       length: holoFrom.length + (holoTo.length - holoFrom.length) * te,
       maxR: holoFrom.maxR + (holoTo.maxR - holoFrom.maxR) * te,
@@ -1050,7 +841,7 @@
     holoCtx.lineWidth = 1;
     holoCtx.strokeStyle = hexToRgba(holoAccent, 0.82);
 
-    for (var vi = 0; vi <= HOLO_VSEG; vi++){ // meridians
+    for (var vi = 0; vi <= HOLO_VSEG; vi++){
       holoCtx.beginPath();
       for (var ui = 0; ui <= HOLO_USEG; ui++){
         var p = projected[ui][vi];
@@ -1058,7 +849,7 @@
       }
       holoCtx.stroke();
     }
-    for (var ui2 = 0; ui2 <= HOLO_USEG; ui2++){ // latitude rings
+    for (var ui2 = 0; ui2 <= HOLO_USEG; ui2++){
       holoCtx.beginPath();
       for (var vi2 = 0; vi2 <= HOLO_VSEG; vi2++){
         var p2 = projected[ui2][vi2];
@@ -1122,8 +913,8 @@
   }
 
   var statusLabel = {active:'Active', recruiting:'Recruiting', upcoming:'Upcoming'};
-
   var boardGrid = document.getElementById('boardGrid');
+
   function renderBoard(list){
     boardGrid.innerHTML = list.map(function(it){
       var deadlineText = it.deadlineDate ? (it.deadline + ' — <b>' + daysLeft(it.deadlineDate) + '</b>') : it.deadline;
@@ -1229,7 +1020,6 @@
       return (start.getTime() === end.getTime() ? s : s + ' \u2013 ' + e) + ', ' + yr;
     }
 
-    // Fixed-date competitions (confirmed dates as announced by organisers)
     var fixedEvents = [
       { name:'SUPRA SAEINDIA 2026', org:'SAEINDIA \u00b7 Formula Student', loc:'Buddh International Circuit, Greater Noida', type:'india', cat:'Formula-style race car design & build', start:'2026-09-02', end:'2026-09-05' },
       { name:'SAE Aero Design Challenge', org:'SAE International', loc:'USA', type:'intl', cat:'Fixed-wing payload aircraft \u2014 registration deadline', start:'2026-10-15', end:'2026-10-15' },
@@ -1238,8 +1028,6 @@
       { name:'Go-Kart Design Challenge (GKDC)', org:'ISNEE', loc:'Coimbatore', type:'india', cat:'Go-kart design & fabrication', start:'2027-02-17', end:'2027-02-21' }
     ];
 
-    // Recurring competitions where the organiser hasn't published next year's exact dates yet.
-    // These roll forward on their own once the current cycle's window has passed.
     var recurringEvents = [
       { name:'BAJA SAEINDIA (mBAJA physical round)', org:'SAEINDIA', loc:'Rotating campus venues, India', type:'india', cat:'All-terrain vehicle design & build', month:2, day:25, span:5, note:'Physical rounds run across categories from Dec\u2013Aug \u2014 exact dates confirmed on bajasaeindia.org' },
       { name:'DD-Robocon India', org:'IIT Delhi \u00b7 Prasar Bharati', loc:'Delhi', type:'india', cat:'Robot design & build \u2014 ABU Robocon national round', month:7, day:13, span:2, note:'National-round timing has moved between March and July in recent years' },
@@ -1354,9 +1142,6 @@
   })();
 
   /* ---------- GALLERY ---------- */
-  /* Straight (untilted) tiles, scattered across top/mid/bottom of the
-     strip rather than one bottom-aligned line — small tiles float high,
-     one tall tile anchors low, mirroring a real photo-wall cluster. */
   var moments = [
     {kind:'photo', size:'xl', valign:'bottom', cap:'SAE Aero, Fabrication Bay', yr:'2025', c1:'#e2531c', c2:'#2a2620', off:0},
     {kind:'photo', size:'sm', valign:'top',    cap:'First Static Fire',         yr:'2024', c1:'#b5502a', c2:'#20221f', off:0},
@@ -1473,7 +1258,7 @@
     });
   });
 
-  /* ---------- PROPOSE FORM (backed by Google Apps Script — see SETUP.md) ---------- */
+  /* ---------- PROPOSE FORM ---------- */
   var recentList = document.getElementById('recentList');
   var formStatus = document.getElementById('formStatus');
 
@@ -1544,8 +1329,6 @@
     formStatus.className = 'form-status';
 
     try{
-      // Sent as text/plain (not application/json) so the browser doesn't
-      // send a CORS preflight — Apps Script web apps can't answer OPTIONS.
       var res = await fetch(ATS_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1563,165 +1346,154 @@
     }
   });
 
-  /* ---------- CURSOR-AVOIDING TEXT ---------- */
-  /* Desktop-only word-dodge effect: on hover, individual words nudge away
-     from the cursor, then spring back. Applied site-wide except the
-     orange ticker marquee (which already slides horizontally on its own)
-     and anything inside form controls. Uses transform only (never
-     touches layout), and small max offsets, so it can never force the
-     page to scroll — and it's fully disabled below the desktop
-     pointer/width breakpoint used elsewhere on this page. */
-  (function(){
-    var dodgeQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
-    var DODGE_RADIUS = 74;      // px — cursor influence radius
-    var DODGE_MAX_OFFSET = 12;  // px — capped so it can never affect page scroll size
-    var DODGE_EXCLUDE = '.marquee, .marquee *, script, style, noscript, input, textarea, select, option, svg, canvas, .contour-bg, .dw, .dwi, .dark-spot';
-
-    var dodgeActive = false;
-    var dodgeWords = [];
-    var mouseX = -9999, mouseY = -9999;
-    var rafPending = false;
-    var dodgeObserver = null;
-
-    function isExcluded(el){
-      while(el && el !== document.body){
-        if(el.nodeType === 1 && el.matches && el.matches(DODGE_EXCLUDE)) return true;
-        el = el.parentNode;
-      }
-      return false;
-    }
-
-    function wrapTextNode(node){
-      var text = node.nodeValue;
-      if(!text || !/\S/.test(text)) return;
-      var frag = document.createDocumentFragment();
-      var parts = text.split(/(\s+)/);
-      parts.forEach(function(part){
-        if(part === '') return;
-        if(/^\s+$/.test(part)){
-          frag.appendChild(document.createTextNode(part));
+  /* ---------- POPULATE ADMIN TABLES DYNAMICALLY ---------- */
+  /* ---------- POPULATE ADMIN TABLES DYNAMICALLY (FIXED) ---------- */
+  function populateAdminTables() {
+    // 1. Populate Gallery Table with ALL items from 'moments'
+    const galleryTableBody = document.getElementById('adminGalleryTableBody');
+    if (galleryTableBody && typeof moments !== 'undefined') {
+      let galleryHtml = '';
+      for (let i = 0; i < moments.length; i++) {
+        let m = moments[i];
+        if (m.kind === 'note') {
+          galleryHtml += `
+            <tr>
+              <td><div class="img-preview" style="background: var(--text-dim2); display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px;">NOTE</div></td>
+              <td>"${m.quote}" — <em>${m.by}</em></td>
+              <td>
+                <div class="admin-action-group">
+                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+                </div>
+              </td>
+            </tr>`;
         } else {
-          var outer = document.createElement('span');
-          outer.className = 'dw';
-          var inner = document.createElement('span');
-          inner.className = 'dwi';
-          inner.textContent = part;
-          outer.appendChild(inner);
-          frag.appendChild(outer);
-        }
-      });
-      node.parentNode.replaceChild(frag, node);
-    }
-
-    function collectTextNodes(root){
-      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-        acceptNode: function(node){
-          if(!node.nodeValue || !/\S/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
-          if(isExcluded(node.parentNode)) return NodeFilter.FILTER_REJECT;
-          return NodeFilter.FILTER_ACCEPT;
-        }
-      });
-      var nodes = [];
-      var n;
-      while((n = walker.nextNode())) nodes.push(n);
-      return nodes;
-    }
-
-    function wrapAll(root){
-      collectTextNodes(root).forEach(wrapTextNode);
-    }
-
-    function measureRects(){
-      dodgeWords.forEach(function(w){
-        var r = w.el.parentElement.getBoundingClientRect();
-        w.cx = r.left + r.width / 2;
-        w.cy = r.top + r.height / 2;
-      });
-    }
-
-    function refreshWordList(){
-      dodgeWords = Array.prototype.slice.call(document.querySelectorAll('.dwi')).map(function(el){
-        return { el: el, cx: 0, cy: 0 };
-      });
-      measureRects();
-    }
-
-    function onMouseMove(e){
-      mouseX = e.clientX; mouseY = e.clientY;
-      scheduleFrame();
-    }
-    function onMouseLeave(){
-      mouseX = -9999; mouseY = -9999;
-      scheduleFrame();
-    }
-
-    function scheduleFrame(){
-      if(rafPending) return;
-      rafPending = true;
-      requestAnimationFrame(applyDodge);
-    }
-
-    function applyDodge(){
-      rafPending = false;
-      if(!dodgeActive) return;
-      for(var i = 0; i < dodgeWords.length; i++){
-        var w = dodgeWords[i];
-        var dx = w.cx - mouseX, dy = w.cy - mouseY;
-        var dist = Math.sqrt(dx * dx + dy * dy);
-        if(dist < DODGE_RADIUS && dist > 0.01){
-          var force = 1 - dist / DODGE_RADIUS;
-          var ox = (dx / dist) * force * DODGE_MAX_OFFSET;
-          var oy = (dy / dist) * force * DODGE_MAX_OFFSET;
-          w.el.style.transform = 'translate(' + ox.toFixed(1) + 'px,' + oy.toFixed(1) + 'px)';
-        } else if(w.el.style.transform){
-          w.el.style.transform = '';
+          galleryHtml += `
+            <tr>
+              <td><div class="img-preview" style="background: radial-gradient(circle at 30% 25%, ${m.c1}40, transparent 60%), linear-gradient(155deg, ${m.c2}, #18150f 80%);"></div></td>
+              <td><strong>${m.cap}</strong> (${m.yr})</td>
+              <td>
+                <div class="admin-action-group">
+                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+                </div>
+              </td>
+            </tr>`;
         }
       }
+      galleryTableBody.innerHTML = galleryHtml;
     }
 
-    function wrapAllQuiet(){
-      if(dodgeObserver) dodgeObserver.disconnect();
-      wrapAll(document.body);
-      refreshWordList();
-      if(dodgeObserver) dodgeObserver.observe(document.body, {childList:true, subtree:true});
-    }
-
-    function enableDodge(){
-      if(dodgeActive) return;
-      dodgeActive = true;
-      if(!dodgeObserver){
-        dodgeObserver = new MutationObserver(function(){
-          wrapAllQuiet();
-        });
+    // 2. Populate Projects Table with ALL items from 'items'
+    const projectTableBody = document.getElementById('adminProjectTableBody');
+    if (projectTableBody && typeof items !== 'undefined') {
+      let projectHtml = '';
+      for (let j = 0; j < items.length; j++) {
+        let it = items[j];
+        projectHtml += `
+          <tr>
+            <td><strong>${it.title}</strong></td>
+            <td style="color: var(--text-dim); font-size: 13.5px;">${it.desc}</td>
+            <td>
+              <div class="admin-action-group">
+                <button class="btn btn-sm" onclick="editProject()">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+              </div>
+            </td>
+          </tr>`;
       }
-      wrapAllQuiet();
-      window.addEventListener('mousemove', onMouseMove, {passive:true});
-      window.addEventListener('mouseleave', onMouseLeave, {passive:true});
-      window.addEventListener('scroll', measureRects, {passive:true});
-      window.addEventListener('resize', measureRects);
+      projectTableBody.innerHTML = projectHtml;
     }
+  }
 
-    function disableDodge(){
-      if(!dodgeActive) return;
-      dodgeActive = false;
-      if(dodgeObserver) dodgeObserver.disconnect();
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseleave', onMouseLeave);
-      window.removeEventListener('scroll', measureRects);
-      window.removeEventListener('resize', measureRects);
-      dodgeWords.forEach(function(w){ w.el.style.transform = ''; });
+  /* ---------- ADMIN UI TOGGLES ---------- */
+  const toggleAddGalleryBtn = document.getElementById('toggleAddGalleryBtn');
+  const cancelAddGalleryBtn = document.getElementById('cancelAddGalleryBtn');
+  const addGalleryForm = document.getElementById('addGalleryForm');
+
+  if(toggleAddGalleryBtn) {
+    toggleAddGalleryBtn.addEventListener('click', () => {
+      addGalleryForm.style.display = 'block';
+      toggleAddGalleryBtn.style.display = 'none';
+    });
+    cancelAddGalleryBtn.addEventListener('click', () => {
+      addGalleryForm.style.display = 'none';
+      toggleAddGalleryBtn.style.display = 'inline-flex';
+    });
+  }
+
+  const toggleAddProjectBtn = document.getElementById('toggleAddProjectBtn');
+  const cancelAddProjectBtn = document.getElementById('cancelAddProjectBtn');
+  const addProjectForm = document.getElementById('addProjectForm');
+
+  if(toggleAddProjectBtn) {
+    toggleAddProjectBtn.addEventListener('click', () => {
+      document.getElementById('projectFormMode').innerText = "Add New Project";
+      document.getElementById('projTitleInput').value = "";
+      document.getElementById('projDescInput').value = "";
+      addProjectForm.style.display = 'block';
+      toggleAddProjectBtn.style.display = 'none';
+    });
+    cancelAddProjectBtn.addEventListener('click', () => {
+      addProjectForm.style.display = 'none';
+      toggleAddProjectBtn.style.display = 'inline-flex';
+    });
+  }
+
+  window.editProject = function() {
+    document.getElementById('projectFormMode').innerText = "Update Existing Project";
+    addProjectForm.style.display = 'block';
+    toggleAddProjectBtn.style.display = 'none';
+    setTimeout(() => document.getElementById('projTitleInput').focus(), 100);
+  };
+
+  /* ---------- ADMIN AUTHENTICATION ---------- */
+  const adminModal = document.getElementById('adminLoginModal');
+  const adminIdInput = document.getElementById('adminId');
+  const adminPwdInput = document.getElementById('adminPwd');
+  const loginBtn = document.getElementById('submitLoginBtn');
+  const closeBtn = document.getElementById('closeLoginBtn');
+  const loginStatus = document.getElementById('loginStatus');
+  
+  const adminDashboard = document.getElementById('adminDashboard');
+  const mainContent = document.querySelectorAll('section:not(#adminDashboard), header, footer, .hero');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  const ADMIN_ID = "ATSwebsite";
+  const ADMIN_PWD = "Plane@bombing";
+
+  window.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+      e.preventDefault();
+      adminModal.classList.add('open');
+      adminIdInput.focus();
     }
+  });
 
-    function syncDodge(){
-      if(dodgeQuery.matches){ enableDodge(); } else { disableDodge(); }
+  closeBtn.addEventListener('click', function() {
+    adminModal.classList.remove('open');
+    loginStatus.textContent = '';
+  });
+
+  loginBtn.addEventListener('click', function() {
+    if (adminIdInput.value === ADMIN_ID && adminPwdInput.value === ADMIN_PWD) {
+      adminModal.classList.remove('open');
+      adminIdInput.value = '';
+      adminPwdInput.value = '';
+      loginStatus.textContent = '';
+      
+      mainContent.forEach(el => el.style.display = 'none');
+      adminDashboard.style.display = 'block';
+      
+      populateAdminTables();
+      window.scrollTo(0,0);
+    } else {
+      loginStatus.textContent = 'Invalid ID or Password.';
     }
+  });
 
-    if(dodgeQuery.addEventListener){ dodgeQuery.addEventListener('change', syncDodge); }
-    else if(dodgeQuery.addListener){ dodgeQuery.addListener(syncDodge); }
-
-    window.addEventListener('load', syncDodge);
-    setTimeout(syncDodge, 80);
-  })();
+  logoutBtn.addEventListener('click', function() {
+    adminDashboard.style.display = 'none';
+    mainContent.forEach(el => el.style.display = '');
+  });
 
 })();
 </script>
