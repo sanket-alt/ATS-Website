@@ -372,7 +372,6 @@
   </div>
 </div>
 
-<!-- ============ ADMIN DASHBOARD ============ -->
 <!-- ============ ADMIN DASHBOARD (CMS UI) ============ -->
 <section id="adminDashboard" style="display: none; padding-top: 140px; padding-bottom: 80px; min-height: 100vh;">
   <div class="wrap">
@@ -400,7 +399,7 @@
             <input type="text" id="galTitleInput" placeholder="e.g. SAE Aero Fabrication Bay">
           </div>
           <div class="field">
-            <label>Image URL (or File Upload)</label>
+            <label>Image URL</label>
             <input type="text" id="galUrlInput" placeholder="Paste image link here...">
           </div>
         </div>
@@ -421,25 +420,7 @@
             </tr>
           </thead>
           <tbody id="adminGalleryTableBody">
-            <!-- Mock Existing Rows -->
-            <tr>
-              <td><div class="img-preview" style="background-color: #3a5f8a;"></div></td>
-              <td>Kari Speedway Trials (2025)</td>
-              <td>
-                <div class="admin-action-group">
-                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><div class="img-preview" style="background-color: #b5502a;"></div></td>
-              <td>First Static Fire (2024)</td>
-              <td>
-                <div class="admin-action-group">
-                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
-                </div>
-              </td>
-            </tr>
+            <!-- Dynamically populated -->
           </tbody>
         </table>
       </div>
@@ -458,10 +439,6 @@
         <div class="field">
           <label>Project Title</label>
           <input type="text" id="projTitleInput" placeholder="e.g. Nano-Satellite Simulator">
-        </div>
-        <div class="field">
-          <label>Cover Image URL (Optional)</label>
-          <input type="text" id="projImageInput" placeholder="Paste image link here...">
         </div>
         <div class="field">
           <label>Description</label>
@@ -484,27 +461,7 @@
             </tr>
           </thead>
           <tbody id="adminProjectTableBody">
-            <!-- Mock Existing Rows -->
-            <tr>
-              <td><strong>Autonomous UAV Navigation Rig</strong></td>
-              <td style="color: var(--text-dim); font-size: 13.5px;">Building a GPS-denied indoor navigation stack for a quadrotor...</td>
-              <td>
-                <div class="admin-action-group">
-                  <button class="btn btn-sm" onclick="editProject()">Edit</button>
-                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Pulsed Plasma Thruster Test Stand</strong></td>
-              <td style="color: var(--text-dim); font-size: 13.5px;">Designing and instrumenting a thrust stand for a lab-scale...</td>
-              <td>
-                <div class="admin-action-group">
-                  <button class="btn btn-sm" onclick="editProject()">Edit</button>
-                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
-                </div>
-              </td>
-            </tr>
+            <!-- Dynamically populated -->
           </tbody>
         </table>
       </div>
@@ -545,8 +502,6 @@
   </div>
 </footer>
 
-<!-- External config script if you have it -->
-<!-- <script src="config.js"></script> -->
 <script>
 (function(){
   "use strict";
@@ -673,245 +628,6 @@
 
     window.addEventListener('load', syncAltimeter);
     setTimeout(syncAltimeter, 50);
-  })();
-
-  /* ---------- IDLE RADAR PING ---------- */
-  (function(){
-    var scope = document.querySelector('.viewport-chrome');
-    if(!scope) return;
-
-    var radarQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
-    var IDLE_DELAY = 2000;
-    var PULSE_EVERY = 1300;
-    var idleTimer = null;
-    var pulseInterval = null;
-    var lastX = 0, lastY = 0;
-    var radarEnabled = false;
-
-    function spawnRing(x, y){
-      var ring = document.createElement('span');
-      ring.className = 'radar-ring';
-      ring.style.left = x + 'px';
-      ring.style.top = y + 'px';
-      scope.appendChild(ring);
-      ring.addEventListener('animationend', function(){
-        if(ring.parentNode) ring.parentNode.removeChild(ring);
-      });
-    }
-
-    function stopPulsing(){
-      if(pulseInterval){ clearInterval(pulseInterval); pulseInterval = null; }
-    }
-    function startPulsing(){
-      stopPulsing();
-      spawnRing(lastX, lastY);
-      pulseInterval = setInterval(function(){ spawnRing(lastX, lastY); }, PULSE_EVERY);
-    }
-    function resetIdle(){
-      clearTimeout(idleTimer);
-      stopPulsing();
-      idleTimer = setTimeout(startPulsing, IDLE_DELAY);
-    }
-    function onMove(e){
-      if(!radarEnabled) return;
-      var rect = scope.getBoundingClientRect();
-      lastX = e.clientX - rect.left;
-      lastY = e.clientY - rect.top;
-      resetIdle();
-    }
-    function onLeave(){
-      clearTimeout(idleTimer);
-      stopPulsing();
-    }
-
-    function enableRadar(){
-      if(radarEnabled) return;
-      radarEnabled = true;
-      scope.addEventListener('mousemove', onMove);
-      scope.addEventListener('mouseenter', onMove);
-      scope.addEventListener('mouseleave', onLeave);
-    }
-    function disableRadar(){
-      if(!radarEnabled) return;
-      radarEnabled = false;
-      scope.removeEventListener('mousemove', onMove);
-      scope.removeEventListener('mouseenter', onMove);
-      scope.removeEventListener('mouseleave', onLeave);
-      clearTimeout(idleTimer);
-      stopPulsing();
-    }
-    function syncRadar(){
-      if(radarQuery.matches){ enableRadar(); } else { disableRadar(); }
-    }
-
-    if(radarQuery.addEventListener){ radarQuery.addEventListener('change', syncRadar); }
-    else if(radarQuery.addListener){ radarQuery.addListener(syncRadar); }
-
-    window.addEventListener('load', syncRadar);
-    setTimeout(syncRadar, 50);
-  })();
-
-  /* ---------- DARK-MODE CURSOR REVEAL ---------- */
-  (function(){
-    var spot = document.getElementById('darkSpot');
-    if(!spot) return;
-
-    var EXCLUDE_SELECTOR = '#propose, #help, #adminLoginModal, #adminDashboard';
-    var spotQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
-    var spotEnabled = false;
-
-    var SMOOTHING = 0.14; 
-    var RADIUS_SMOOTHING = 0.13; 
-    var MIN_RADIUS_ACTIVE = 55; 
-    var MAX_RADIUS_ACTIVE = 205; 
-    var SPEED_REF = 1.5; 
-    var SPEED_SMOOTHING = 0.35; 
-    var IDLE_SHRINK_MS = 420; 
-    var WOBBLE_AMOUNT = 0.3; 
-    var SWIRL_SPEED = 0.8; 
-    var STREAK_FORWARD = 1.15; 
-    var STREAK_BACK = 0.4; 
-    var POINTS = 14; 
-
-    var TWO_PI = Math.PI * 2;
-    var tx = 0, ty = 0; 
-    var sx = 0, sy = 0; 
-    var targetR = 0, curR = 0; 
-    var velAngle = 0; 
-    var speedPxPerMs = 0; 
-    var lastRawX = 0, lastRawY = 0, lastRawT = 0;
-    var lastMoveAt = 0;
-    var rafId = null;
-    var primed = false; 
-    var startTime = performance.now();
-
-    function isOverExcluded(target){
-      return !!(target && target.closest && target.closest(EXCLUDE_SELECTOR));
-    }
-
-    function noiseAt(angle, t){
-      var a = angle + t * SWIRL_SPEED;
-      return Math.sin(a * 2 + t * 0.9) * 0.5 +
-             Math.sin(a * 3 - t * 1.3) * 0.3 +
-             Math.sin(a * 5 + t * 0.6) * 0.2;
-    }
-
-    function buildBlobPath(cx, cy, baseR, t, speedNorm){
-      var pts = [];
-      for(var i = 0; i < POINTS; i++){
-        var angle = (i / POINTS) * TWO_PI;
-        var n = noiseAt(angle, t);
-        var c = Math.cos(angle - velAngle);
-        var forward = Math.max(0, c);
-        var backward = Math.max(0, -c);
-        var streak = 1 + STREAK_FORWARD * speedNorm * Math.pow(forward, 1.4) -
-                         STREAK_BACK * speedNorm * Math.pow(backward, 1.4);
-        var r = Math.max(2, baseR * (1 + WOBBLE_AMOUNT * n) * streak);
-        pts.push([ cx + r * Math.cos(angle), cy + r * Math.sin(angle) ]);
-      }
-      var mids = [];
-      for(var j = 0; j < POINTS; j++){
-        var a = pts[j], b = pts[(j + 1) % POINTS];
-        mids.push([ (a[0] + b[0]) / 2, (a[1] + b[1]) / 2 ]);
-      }
-      var last = mids[POINTS - 1];
-      var d = 'M ' + last[0].toFixed(1) + ' ' + last[1].toFixed(1) + ' ';
-      for(var k = 0; k < POINTS; k++){
-        d += 'Q ' + pts[k][0].toFixed(1) + ' ' + pts[k][1].toFixed(1) + ' ' +
-                     mids[k][0].toFixed(1) + ' ' + mids[k][1].toFixed(1) + ' ';
-      }
-      return d + 'Z';
-    }
-
-    function tick(){
-      rafId = null;
-      var now = performance.now();
-      if(now - lastMoveAt > IDLE_SHRINK_MS){
-        targetR = 0;
-        speedPxPerMs *= 0.9;
-      }
-
-      sx += (tx - sx) * SMOOTHING;
-      sy += (ty - sy) * SMOOTHING;
-      curR += (targetR - curR) * RADIUS_SMOOTHING;
-
-      if(curR < 1.5 && targetR === 0){
-        curR = 0;
-        spot.classList.remove('active');
-      } else {
-        var t = (now - startTime) / 1000;
-        var speedNorm = Math.min(1, speedPxPerMs / SPEED_REF);
-        var d = buildBlobPath(sx, sy, curR, t, speedNorm);
-        var clip = 'path("' + d + '")';
-        spot.style.clipPath = clip;
-        spot.style.webkitClipPath = clip;
-        spot.classList.add('active');
-      }
-
-      if(curR > 1.5 || targetR > 0){
-        rafId = requestAnimationFrame(tick);
-      }
-    }
-    function ensureLoop(){
-      if(rafId === null){ rafId = requestAnimationFrame(tick); }
-    }
-
-    function onMove(e){
-      var now = performance.now();
-      tx = e.clientX; ty = e.clientY;
-      lastMoveAt = now;
-
-      if(!primed){
-        sx = tx; sy = ty;
-        lastRawX = tx; lastRawY = ty; lastRawT = now;
-        primed = true;
-      }
-
-      var dt = now - lastRawT;
-      if(dt > 0){
-        var dx = tx - lastRawX, dy = ty - lastRawY;
-        var dist = Math.sqrt(dx * dx + dy * dy);
-        if(dist > 1){ velAngle = Math.atan2(dy, dx); }
-        var instSpeed = dist / dt;
-        speedPxPerMs += (instSpeed - speedPxPerMs) * SPEED_SMOOTHING;
-      }
-      lastRawX = tx; lastRawY = ty; lastRawT = now;
-
-      if(isOverExcluded(e.target)){
-        targetR = 0;
-      } else {
-        var speedNorm = Math.min(1, speedPxPerMs / SPEED_REF);
-        targetR = MIN_RADIUS_ACTIVE + (MAX_RADIUS_ACTIVE - MIN_RADIUS_ACTIVE) * speedNorm;
-      }
-
-      ensureLoop();
-    }
-    function onLeaveWindow(){ targetR = 0; }
-
-    function enableSpot(){
-      if(spotEnabled) return;
-      spotEnabled = true;
-      window.addEventListener('mousemove', onMove, {passive:true});
-      window.addEventListener('mouseleave', onLeaveWindow, {passive:true});
-    }
-    function disableSpot(){
-      if(!spotEnabled) return;
-      spotEnabled = false;
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseleave', onLeaveWindow);
-      if(rafId !== null){ cancelAnimationFrame(rafId); rafId = null; }
-      targetR = 0; curR = 0; speedPxPerMs = 0; primed = false;
-      spot.classList.remove('active');
-    }
-    function syncSpot(){
-      if(spotQuery.matches){ enableSpot(); } else { disableSpot(); }
-    }
-
-    if(spotQuery.addEventListener){ spotQuery.addEventListener('change', syncSpot); }
-    else if(spotQuery.addListener){ spotQuery.addListener(syncSpot); }
-
-    window.addEventListener('load', syncSpot);
-    setTimeout(syncSpot, 50);
   })();
 
   /* ---------- HERO 3D WIREFRAME ENGINE ---------- */
@@ -1630,214 +1346,144 @@
     }
   });
 
-  /* ---------- CURSOR-AVOIDING TEXT ---------- */
-  (function(){
-    var dodgeQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
-    var DODGE_RADIUS = 74;      
-    var DODGE_MAX_OFFSET = 12;  
-    var DODGE_EXCLUDE = '.marquee, .marquee *, script, style, noscript, input, textarea, select, option, svg, canvas, .contour-bg, .dw, .dwi, .dark-spot';
-
-    var dodgeActive = false;
-    var dodgeWords = [];
-    var mouseX = -9999, mouseY = -9999;
-    var rafPending = false;
-    var dodgeObserver = null;
-
-    function isExcluded(el){
-      while(el && el !== document.body){
-        if(el.nodeType === 1 && el.matches && el.matches(DODGE_EXCLUDE)) return true;
-        el = el.parentNode;
-      }
-      return false;
-    }
-
-    function wrapTextNode(node){
-      var text = node.nodeValue;
-      if(!text || !/\S/.test(text)) return;
-      var frag = document.createDocumentFragment();
-      var parts = text.split(/(\s+)/);
-      parts.forEach(function(part){
-        if(part === '') return;
-        if(/^\s+$/.test(part)){
-          frag.appendChild(document.createTextNode(part));
-        } else {
-          var outer = document.createElement('span');
-          outer.className = 'dw';
-          var inner = document.createElement('span');
-          inner.className = 'dwi';
-          inner.textContent = part;
-          outer.appendChild(inner);
-          frag.appendChild(outer);
+  /* ---------- POPULATE ADMIN TABLES DYNAMICALLY ---------- */
+  function populateAdminTables() {
+    const galleryTableBody = document.getElementById('adminGalleryTableBody');
+    if (galleryTableBody && typeof moments !== 'undefined') {
+      galleryTableBody.innerHTML = moments.map((m) => {
+        if (m.kind === 'note') {
+          return `
+            <tr>
+              <td><div class="img-preview" style="background: var(--text-dim2); display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px;">NOTE</div></td>
+              <td>"${m.quote}" — <em>${m.by}</em></td>
+              <td>
+                <div class="admin-action-group">
+                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+                </div>
+              </td>
+            </tr>`;
         }
-      });
-      node.parentNode.replaceChild(frag, node);
+        return `
+          <tr>
+            <td><div class="img-preview" style="background: radial-gradient(circle at 30% 25%, ${m.c1}40, transparent 60%), linear-gradient(155deg, ${m.c2}, #18150f 80%);"></div></td>
+            <td><strong>${m.cap}</strong> (${m.yr})</td>
+            <td>
+              <div class="admin-action-group">
+                <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
     }
 
-    function collectTextNodes(root){
-      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-        acceptNode: function(node){
-          if(!node.nodeValue || !/\S/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
-          if(isExcluded(node.parentNode)) return NodeFilter.FILTER_REJECT;
-          return NodeFilter.FILTER_ACCEPT;
-        }
-      });
-      var nodes = [];
-      var n;
-      while((n = walker.nextNode())) nodes.push(n);
-      return nodes;
+    const projectTableBody = document.getElementById('adminProjectTableBody');
+    if (projectTableBody && typeof items !== 'undefined') {
+      projectTableBody.innerHTML = items.map((it) => {
+        return `
+          <tr>
+            <td><strong>${it.title}</strong></td>
+            <td style="color: var(--text-dim); font-size: 13.5px;">${it.desc}</td>
+            <td>
+              <div class="admin-action-group">
+                <button class="btn btn-sm" onclick="editProject()">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
     }
+  }
 
-    function wrapAll(root){
-      collectTextNodes(root).forEach(wrapTextNode);
-    }
+  /* ---------- ADMIN UI TOGGLES ---------- */
+  const toggleAddGalleryBtn = document.getElementById('toggleAddGalleryBtn');
+  const cancelAddGalleryBtn = document.getElementById('cancelAddGalleryBtn');
+  const addGalleryForm = document.getElementById('addGalleryForm');
 
-    function measureRects(){
-      dodgeWords.forEach(function(w){
-        var r = w.el.parentElement.getBoundingClientRect();
-        w.cx = r.left + r.width / 2;
-        w.cy = r.top + r.height / 2;
-      });
-    }
+  if(toggleAddGalleryBtn) {
+    toggleAddGalleryBtn.addEventListener('click', () => {
+      addGalleryForm.style.display = 'block';
+      toggleAddGalleryBtn.style.display = 'none';
+    });
+    cancelAddGalleryBtn.addEventListener('click', () => {
+      addGalleryForm.style.display = 'none';
+      toggleAddGalleryBtn.style.display = 'inline-flex';
+    });
+  }
 
-    function refreshWordList(){
-      dodgeWords = Array.prototype.slice.call(document.querySelectorAll('.dwi')).map(function(el){
-        return { el: el, cx: 0, cy: 0 };
-      });
-      measureRects();
-    }
+  const toggleAddProjectBtn = document.getElementById('toggleAddProjectBtn');
+  const cancelAddProjectBtn = document.getElementById('cancelAddProjectBtn');
+  const addProjectForm = document.getElementById('addProjectForm');
 
-    function onMouseMove(e){
-      mouseX = e.clientX; mouseY = e.clientY;
-      scheduleFrame();
-    }
-    function onMouseLeave(){
-      mouseX = -9999; mouseY = -9999;
-      scheduleFrame();
-    }
+  if(toggleAddProjectBtn) {
+    toggleAddProjectBtn.addEventListener('click', () => {
+      document.getElementById('projectFormMode').innerText = "Add New Project";
+      document.getElementById('projTitleInput').value = "";
+      document.getElementById('projDescInput').value = "";
+      addProjectForm.style.display = 'block';
+      toggleAddProjectBtn.style.display = 'none';
+    });
+    cancelAddProjectBtn.addEventListener('click', () => {
+      addProjectForm.style.display = 'none';
+      toggleAddProjectBtn.style.display = 'inline-flex';
+    });
+  }
 
-    function scheduleFrame(){
-      if(rafPending) return;
-      rafPending = true;
-      requestAnimationFrame(applyDodge);
-    }
-
-    function applyDodge(){
-      rafPending = false;
-      if(!dodgeActive) return;
-      for(var i = 0; i < dodgeWords.length; i++){
-        var w = dodgeWords[i];
-        var dx = w.cx - mouseX, dy = w.cy - mouseY;
-        var dist = Math.sqrt(dx * dx + dy * dy);
-        if(dist < DODGE_RADIUS && dist > 0.01){
-          var force = 1 - dist / DODGE_RADIUS;
-          var ox = (dx / dist) * force * DODGE_MAX_OFFSET;
-          var oy = (dy / dist) * force * DODGE_MAX_OFFSET;
-          w.el.style.transform = 'translate(' + ox.toFixed(1) + 'px,' + oy.toFixed(1) + 'px)';
-        } else if(w.el.style.transform){
-          w.el.style.transform = '';
-        }
-      }
-    }
-
-    function wrapAllQuiet(){
-      if(dodgeObserver) dodgeObserver.disconnect();
-      wrapAll(document.body);
-      refreshWordList();
-      if(dodgeObserver) dodgeObserver.observe(document.body, {childList:true, subtree:true});
-    }
-
-    function enableDodge(){
-      if(dodgeActive) return;
-      dodgeActive = true;
-      if(!dodgeObserver){
-        dodgeObserver = new MutationObserver(function(){
-          wrapAllQuiet();
-        });
-      }
-      wrapAllQuiet();
-      window.addEventListener('mousemove', onMouseMove, {passive:true});
-      window.addEventListener('mouseleave', onMouseLeave, {passive:true});
-      window.addEventListener('scroll', measureRects, {passive:true});
-      window.addEventListener('resize', measureRects);
-    }
-
-    function disableDodge(){
-      if(!dodgeActive) return;
-      dodgeActive = false;
-      if(dodgeObserver) dodgeObserver.disconnect();
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseleave', onMouseLeave);
-      window.removeEventListener('scroll', measureRects);
-      window.removeEventListener('resize', measureRects);
-      dodgeWords.forEach(function(w){ w.el.style.transform = ''; });
-    }
-
-    function syncDodge(){
-      if(dodgeQuery.matches){ enableDodge(); } else { disableDodge(); }
-    }
-
-    if(dodgeQuery.addEventListener){ dodgeQuery.addEventListener('change', syncDodge); }
-    else if(dodgeQuery.addListener){ dodgeQuery.addListener(syncDodge); }
-
-    window.addEventListener('load', syncDodge);
-    setTimeout(syncDodge, 80);
-  })();
+  window.editProject = function() {
+    document.getElementById('projectFormMode').innerText = "Update Existing Project";
+    addProjectForm.style.display = 'block';
+    toggleAddProjectBtn.style.display = 'none';
+    setTimeout(() => document.getElementById('projTitleInput').focus(), 100);
+  };
 
   /* ---------- ADMIN AUTHENTICATION ---------- */
-  (function(){
-    const adminModal = document.getElementById('adminLoginModal');
-    const adminIdInput = document.getElementById('adminId');
-    const adminPwdInput = document.getElementById('adminPwd');
-    const loginBtn = document.getElementById('submitLoginBtn');
-    const closeBtn = document.getElementById('closeLoginBtn');
-    const loginStatus = document.getElementById('loginStatus');
-    
-    const adminDashboard = document.getElementById('adminDashboard');
-    const mainContent = document.querySelectorAll('section:not(#adminDashboard), header, footer, .hero');
-    const logoutBtn = document.getElementById('logoutBtn');
+  const adminModal = document.getElementById('adminLoginModal');
+  const adminIdInput = document.getElementById('adminId');
+  const adminPwdInput = document.getElementById('adminPwd');
+  const loginBtn = document.getElementById('submitLoginBtn');
+  const closeBtn = document.getElementById('closeLoginBtn');
+  const loginStatus = document.getElementById('loginStatus');
+  
+  const adminDashboard = document.getElementById('adminDashboard');
+  const mainContent = document.querySelectorAll('section:not(#adminDashboard), header, footer, .hero');
+  const logoutBtn = document.getElementById('logoutBtn');
 
-    // Hardcoded credentials
-    const ADMIN_ID = "ATSwebsite";
-    const ADMIN_PWD = "Plane@bombing";
+  const ADMIN_ID = "ATSwebsite";
+  const ADMIN_PWD = "Plane@bombing";
 
-   // Secret Keyboard Shortcut to open Login (Ctrl+Shift+L or Cmd+Shift+L)
-    window.addEventListener('keydown', function(e) {
-      // (e.ctrlKey covers Windows, e.metaKey covers Mac Command)
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
-        e.preventDefault(); // Prevents the browser from opening its own search/sidebar tools
-        adminModal.classList.add('open');
-        adminIdInput.focus();
-      }
-    });
+  window.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+      e.preventDefault();
+      adminModal.classList.add('open');
+      adminIdInput.focus();
+    }
+  });
 
-    closeBtn.addEventListener('click', function() {
+  closeBtn.addEventListener('click', function() {
+    adminModal.classList.remove('open');
+    loginStatus.textContent = '';
+  });
+
+  loginBtn.addEventListener('click', function() {
+    if (adminIdInput.value === ADMIN_ID && adminPwdInput.value === ADMIN_PWD) {
       adminModal.classList.remove('open');
+      adminIdInput.value = '';
+      adminPwdInput.value = '';
       loginStatus.textContent = '';
-    });
+      
+      mainContent.forEach(el => el.style.display = 'none');
+      adminDashboard.style.display = 'block';
+      
+      populateAdminTables();
+      window.scrollTo(0,0);
+    } else {
+      loginStatus.textContent = 'Invalid ID or Password.';
+    }
+  });
 
-    loginBtn.addEventListener('click', function() {
-      if (adminIdInput.value === ADMIN_ID && adminPwdInput.value === ADMIN_PWD) {
-        // Success: Hide main site, show dashboard
-        adminModal.classList.remove('open');
-        adminIdInput.value = '';
-        adminPwdInput.value = '';
-        loginStatus.textContent = '';
-        
-        mainContent.forEach(el => el.style.display = 'none');
-        adminDashboard.style.display = 'block';
-        window.scrollTo(0,0);
-      } else {
-        // Fail
-        loginStatus.textContent = 'Invalid ID or Password.';
-      }
-    });
-
-    logoutBtn.addEventListener('click', function() {
-      // Show main site, hide dashboard
-      adminDashboard.style.display = 'none';
-      mainContent.forEach(el => el.style.display = '');
-    });
-  })();
+  logoutBtn.addEventListener('click', function() {
+    adminDashboard.style.display = 'none';
+    mainContent.forEach(el => el.style.display = '');
+  });
 
 })();
 </script>
