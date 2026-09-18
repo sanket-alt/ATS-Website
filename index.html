@@ -1347,12 +1347,16 @@
   });
 
   /* ---------- POPULATE ADMIN TABLES DYNAMICALLY ---------- */
+  /* ---------- POPULATE ADMIN TABLES DYNAMICALLY (FIXED) ---------- */
   function populateAdminTables() {
+    // 1. Populate Gallery Table with ALL items from 'moments'
     const galleryTableBody = document.getElementById('adminGalleryTableBody');
     if (galleryTableBody && typeof moments !== 'undefined') {
-      galleryTableBody.innerHTML = moments.map((m) => {
+      let galleryHtml = '';
+      for (let i = 0; i < moments.length; i++) {
+        let m = moments[i];
         if (m.kind === 'note') {
-          return `
+          galleryHtml += `
             <tr>
               <td><div class="img-preview" style="background: var(--text-dim2); display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px;">NOTE</div></td>
               <td>"${m.quote}" — <em>${m.by}</em></td>
@@ -1362,24 +1366,29 @@
                 </div>
               </td>
             </tr>`;
+        } else {
+          galleryHtml += `
+            <tr>
+              <td><div class="img-preview" style="background: radial-gradient(circle at 30% 25%, ${m.c1}40, transparent 60%), linear-gradient(155deg, ${m.c2}, #18150f 80%);"></div></td>
+              <td><strong>${m.cap}</strong> (${m.yr})</td>
+              <td>
+                <div class="admin-action-group">
+                  <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+                </div>
+              </td>
+            </tr>`;
         }
-        return `
-          <tr>
-            <td><div class="img-preview" style="background: radial-gradient(circle at 30% 25%, ${m.c1}40, transparent 60%), linear-gradient(155deg, ${m.c2}, #18150f 80%);"></div></td>
-            <td><strong>${m.cap}</strong> (${m.yr})</td>
-            <td>
-              <div class="admin-action-group">
-                <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button>
-              </div>
-            </td>
-          </tr>`;
-      }).join('');
+      }
+      galleryTableBody.innerHTML = galleryHtml;
     }
 
+    // 2. Populate Projects Table with ALL items from 'items'
     const projectTableBody = document.getElementById('adminProjectTableBody');
     if (projectTableBody && typeof items !== 'undefined') {
-      projectTableBody.innerHTML = items.map((it) => {
-        return `
+      let projectHtml = '';
+      for (let j = 0; j < items.length; j++) {
+        let it = items[j];
+        projectHtml += `
           <tr>
             <td><strong>${it.title}</strong></td>
             <td style="color: var(--text-dim); font-size: 13.5px;">${it.desc}</td>
@@ -1390,7 +1399,8 @@
               </div>
             </td>
           </tr>`;
-      }).join('');
+      }
+      projectTableBody.innerHTML = projectHtml;
     }
   }
 
