@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATS Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#efece2; --bg-panel:#f6f4ea; --bg-panel-2:#e8e4d5;
+    --bg-raised:#ffffff; --text:#18150f; --text-dim:#5c584c;
+    --text-dim2:#8d876f; --accent:#e2531c; --accent-2:#ff7a3d;
+    --accent-dim:#b84314; --on-accent:#fbf7ec;
+    --line:rgba(24,21,15,0.14); --line-soft:rgba(24,21,15,0.09);
+    --ok:#4a7a4f; --new:#3a5f8a; --danger:#b8431c;
+    --radius:6px;
+    --ff-display:'Archivo Black', sans-serif;
+    --ff-head:'Space Grotesk', sans-serif;
+    --ff-mono:'JetBrains Mono', monospace;
+    --ff-body:'Inter', sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--ff-body);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+  input,select,textarea{font-family:inherit;font-size:14px;}
+
+  /* ============ LOGIN SCREEN ============ */
+  .login-wrap{
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:40px 20px;
+  }
+  .login-card{
+    background:var(--bg-raised); border:1px solid var(--line);
+    border-radius:12px; padding:40px 36px; width:100%; max-width:420px;
+    box-shadow:0 20px 50px rgba(24,21,15,0.08);
+  }
+  .login-brand{
+    display:flex; align-items:center; gap:10px; margin-bottom:24px;
+  }
+  .login-brand svg{width:28px;height:28px;}
+  .login-brand span{
+    font-family:var(--ff-head); font-weight:700; font-size:15px;
+    letter-spacing:0.02em; text-transform:uppercase;
+  }
+  .login-brand span b{color:var(--accent);}
+  .login-eyebrow{
+    font-family:var(--ff-mono); font-size:11px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--accent); margin-bottom:10px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .login-eyebrow::before{content:'';width:16px;height:1px;background:var(--accent);}
+  .login-title{
+    font-family:var(--ff-display); font-size:28px; margin:0 0 6px;
+    text-transform:uppercase; letter-spacing:-0.01em;
+  }
+  .login-sub{font-size:14px;color:var(--text-dim);margin:0 0 28px;}
+  .login-field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+  .login-field label{
+    font-family:var(--ff-mono); font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--text-dim2);
+  }
+  .login-field input{
+    background:var(--bg-panel); border:1px solid var(--line);
+    border-radius:var(--radius); padding:12px 14px; color:var(--text);
+    transition:border-color .2s ease;
+  }
+  .login-field input:focus{outline:none;border-color:var(--accent);}
+  .login-btn{
+    width:100%; background:var(--accent); color:var(--on-accent);
+    font-family:var(--ff-mono); font-size:12px; font-weight:600;
+    letter-spacing:0.06em; text-transform:uppercase;
+    padding:14px; border-radius:100px; margin-top:8px;
+    transition:background .2s ease;
+  }
+  .login-btn:hover{background:var(--accent-2);}
+  .login-error{
+    font-family:var(--ff-mono); font-size:12px; color:var(--danger);
+    margin-top:12px; min-height:16px; text-align:center;
+  }
+  .login-foot{
+    margin-top:24px; padding-top:18px; border-top:1px solid var(--line-soft);
+    font-size:12px; color:var(--text-dim2); text-align:center;
+  }
+  .login-foot a{color:var(--accent-dim);text-decoration:underline;}
+
+  /* ============ DASHBOARD ============ */
+  .dash{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
+  @media (max-width:900px){.dash{grid-template-columns:1fr;}}
+
+  .dash-sidebar{
+    background:var(--bg-raised); border-right:1px solid var(--line);
+    padding:24px 0; position:sticky; top:0; height:100vh; overflow-y:auto;
+  }
+  @media (max-width:900px){
+    .dash-sidebar{
+      position:fixed; left:-100%; top:0; width:260px; z-index:50;
+      transition:left .3s ease;
+    }
+    .dash-sidebar.open{left:0;}
+  }
+  .dash-sidebar .login-brand{padding:0 24px;margin-bottom:28px;}
+  .dash-nav{display:flex;flex-direction:column;gap:2px;padding:0 12px;}
+  .dash-nav-item{
+    display:flex; align-items:center; gap:12px;
+    padding:11px 14px; border-radius:var(--radius);
+    font-family:var(--ff-mono); font-size:12.5px; letter-spacing:0.02em;
+    color:var(--text-dim); transition:all .15s ease; cursor:pointer;
+    text-align:left; width:100%;
+  }
+  .dash-nav-item:hover{background:var(--bg-panel);color:var(--text);}
+  .dash-nav-item.active{background:var(--accent);color:var(--on-accent);}
+  .dash-nav-item svg{width:16px;height:16px;flex-shrink:0;}
+
+  .dash-sidebar-foot{
+    padding:16px 24px; margin-top:20px; border-top:1px solid var(--line-soft);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .dash-sidebar-foot a{
+    font-family:var(--ff-mono); font-size:11.5px; color:var(--text-dim2);
+    letter-spacing:0.04em; text-transform:uppercase;
+  }
+  .dash-sidebar-foot a:hover{color:var(--accent);}
+
+  .dash-main{padding:32px 40px;overflow-x:hidden;}
+  @media (max-width:900px){.dash-main{padding:24px 20px;}}
+
+  .dash-topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:28px; gap:16px; flex-wrap:wrap;
+  }
+  .dash-topbar h1{
+    font-family:var(--ff-display); font-size:24px;
+    text-transform:uppercase; letter-spacing:-0.01em; margin:0;
+  }
+  .dash-topbar-actions{display:flex;gap:10px;align-items:center;}
+  .mobile-menu-btn{
+    display:none; padding:8px; border:1px solid var(--line); border-radius:var(--radius);
+  }
+  @media (max-width:900px){.mobile-menu-btn{display:block;}}
+
+  /* ============ SECTION PANELS ============ */
+  .dash-section{display:none;}
+  .dash-section.active{display:block;}
+
+  .section-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-bottom:24px; gap:16px; flex-wrap:wrap;
+  }
+  .section-head h2{
+    font-family:var(--ff-head); font-size:20px; font-weight:600; margin:0;
+  }
+  .section-head p{
+    font-size:13.5px; color:var(--text-dim); margin:4px 0 0; max-width:640px;
+  }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--ff-mono); font-size:11.5px; font-weight:500;
+    letter-spacing:0.04em; text-transform:uppercase;
+    padding:9px 16px; border-radius:100px;
+    border:1px solid var(--line); background:transparent;
+    color:var(--text); transition:all .2s ease; white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent);}
+  .btn-solid{background:var(--accent);color:var(--on-accent);border-color:var(--accent);}
+  .btn-solid:hover{background:var(--accent-2);border-color:var(--accent-2);color:var(--on-accent);}
+  .btn-danger{color:var(--danger);border-color:var(--line);}
+  .btn-danger:hover{background:var(--danger);border-color:var(--danger);color:var(--on-accent);}
+  .btn-sm{padding:6px 11px;font-size:10.5px;}
+  .btn svg{width:14px;height:14px;}
+
+  /* Item list */
+  .item-list{display:flex;flex-direction:column;gap:10px;}
+  .item-row{
+    background:var(--bg-raised); border:1px solid var(--line);
+    border-radius:var(--radius); padding:16px 20px;
+    display:grid; grid-template-columns:1fr auto; gap:14px; align-items:center;
+    transition:border-color .2s ease;
+  }
+  .item-row:hover{border-color:var(--accent);}
+  .item-meta{display:flex;flex-direction:column;gap:4px;min-width:0;}
+  .item-title{
+    font-family:var(--ff-head); font-size:15px; font-weight:600;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .item-sub{font-size:12.5px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .item-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+  .item-tag{
+    font-family:var(--ff-mono); font-size:10px; letter-spacing:0.04em;
+    text-transform:uppercase; padding:2px 8px; border-radius:100px;
+    background:var(--bg-panel); color:var(--text-dim2); border:1px solid var(--line-soft);
+  }
+  .item-actions{display:flex;gap:6px;flex-shrink:0;}
+  .empty-state{
+    text-align:center; padding:40px 20px; color:var(--text-dim2);
+    border:1px dashed var(--line); border-radius:var(--radius);
+  }
+
+  /* ============ MODAL ============ */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(24,21,15,0.5);
+    backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+    z-index:100; display:none; align-items:flex-start; justify-content:center;
+    padding:40px 20px; overflow-y:auto;
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal{
+    background:var(--bg-raised); border:1px solid var(--line);
+    border-radius:12px; width:100%; max-width:640px;
+    padding:32px; box-shadow:0 30px 60px rgba(24,21,15,0.16);
+  }
+  .modal h3{
+    font-family:var(--ff-display); font-size:22px;
+    text-transform:uppercase; letter-spacing:-0.01em; margin:0 0 4px;
+  }
+  .modal p.modal-sub{font-size:13px;color:var(--text-dim);margin:0 0 24px;}
+  .modal-form{display:flex;flex-direction:column;gap:14px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:520px){.form-row{grid-template-columns:1fr;}}
+  .form-field{display:flex;flex-direction:column;gap:5px;}
+  .form-field label{
+    font-family:var(--ff-mono); font-size:10.5px; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--text-dim2);
+  }
+  .form-field input,.form-field select,.form-field textarea{
+    background:var(--bg-panel); border:1px solid var(--line);
+    border-radius:var(--radius); padding:10px 12px; color:var(--text);
+    transition:border-color .2s ease;
+  }
+  .form-field input:focus,.form-field select:focus,.form-field textarea:focus{
+    outline:none;border-color:var(--accent);
+  }
+  .form-field textarea{resize:vertical;min-height:70px;}
+  .form-field .hint{font-size:11px;color:var(--text-dim2);margin-top:2px;}
+  .form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:8px;}
+  .form-error{
+    font-family:var(--ff-mono); font-size:12px; color:var(--danger);
+    margin-top:4px; min-height:14px;
+  }
+
+  /* Image picker */
+  .img-picker{display:flex;gap:12px;align-items:flex-start;}
+  .img-preview{
+    width:100px; height:100px; border-radius:var(--radius);
+    border:1px dashed var(--line); background:var(--bg-panel);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden; flex-shrink:0; font-size:11px; color:var(--text-dim2);
+    text-align:center; padding:6px;
+  }
+  .img-preview img{width:100%;height:100%;object-fit:cover;}
+  .img-picker-main{flex:1;display:flex;flex-direction:column;gap:8px;}
+  .img-picker-btns{display:flex;gap:6px;flex-wrap:wrap;}
+
+  /* ============ TOAST ============ */
+  .toast-container{
+    position:fixed; bottom:20px; right:20px; z-index:200;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .toast{
+    background:var(--bg-raised); border:1px solid var(--line);
+    border-left:3px solid var(--ok); border-radius:var(--radius);
+    padding:12px 16px; box-shadow:0 10px 24px rgba(24,21,15,0.12);
+    font-size:13px; min-width:240px; animation:slideIn .25s ease;
+  }
+  .toast.err{border-left-color:var(--danger);}
+  @keyframes slideIn{from{transform:translateX(30px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+  /* ============ SETTINGS ============ */
+  .settings-card{
+    background:var(--bg-raised); border:1px solid var(--line);
+    border-radius:var(--radius); padding:24px; margin-bottom:16px;
+  }
+  .settings-card h4{
+    font-family:var(--ff-head); font-size:15px; font-weight:600;
+    margin:0 0 4px;
+  }
+  .settings-card > p{font-size:13px;color:var(--text-dim);margin:0 0 18px;}
+  .warn-box{
+    background:rgba(226,83,28,0.08); border:1px solid rgba(226,83,28,0.25);
+    border-radius:var(--radius); padding:12px 14px; font-size:12.5px;
+    color:var(--accent-dim); margin-bottom:18px;
+  }
+  .help-card{
+    background:var(--bg-panel); border:1px solid var(--line-soft);
+    border-radius:var(--radius); padding:20px; margin-bottom:12px;
+  }
+  .help-card h5{
+    font-family:var(--ff-head); font-size:14px; margin:0 0 6px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .help-card h5::before{
+    content:''; width:6px; height:6px; background:var(--accent); border-radius:50%;
+  }
+  .help-card p{font-size:13px;color:var(--text-dim);margin:0;}
+  .help-card code{
+    font-family:var(--ff-mono); font-size:11.5px;
+    background:var(--bg-raised); padding:2px 6px; border-radius:3px;
+    border:1px solid var(--line-soft);
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-brand">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 30C14 22 20 14 24 6L34 12L24 22L16 20L6 30Z" fill="#E2531C"/></svg>
+      <span>AT<b>S</b> ADMIN</span>
+    </div>
+    <div class="login-eyebrow">RESTRICTED ACCESS</div>
+    <h1 class="login-title">Admin sign in</h1>
+    <p class="login-sub">Enter your admin ID and password to manage site content.</p>
+    <form id="loginForm">
+      <div class="login-field">
+        <label for="loginId">Admin ID</label>
+        <input type="text" id="loginId" autocomplete="username" required>
+      </div>
+      <div class="login-field">
+        <label for="loginPw">Password</label>
+        <input type="password" id="loginPw" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="login-btn">Sign in</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+    <div class="login-foot">
+      First time? Default ID: <code>ATSwebsite</code> / <code>Plane@bombing</code><br>
+      <a href="index.html">← Back to site</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div class="dash" id="dashWrap" style="display:none;">
+  <aside class="dash-sidebar" id="sidebar">
+    <div class="login-brand">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 30C14 22 20 14 24 6L34 12L24 22L16 20L6 30Z" fill="#E2531C"/></svg>
+      <span>AT<b>S</b> ADMIN</span>
+    </div>
+    <nav class="dash-nav" id="dashNav">
+      <button class="dash-nav-item active" data-tab="projects">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Projects board
+      </button>
+      <button class="dash-nav-item" data-tab="gallery">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        Gallery
+      </button>
+      <button class="dash-nav-item" data-tab="archive">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+        Archive
+      </button>
+      <button class="dash-nav-item" data-tab="faq">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+        FAQ
+      </button>
+      <button class="dash-nav-item" data-tab="calendar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Calendar
+      </button>
+      <button class="dash-nav-item" data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </button>
+    </nav>
+    <div class="dash-sidebar-foot">
+      <a href="index.html">View site →</a>
+      <a href="#" id="logoutBtn">Log out</a>
+    </div>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-topbar">
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <h1 id="dashTitle">Projects board</h1>
+      <div class="dash-topbar-actions">
+        <span style="font-family:var(--ff-mono);font-size:11px;color:var(--text-dim2);" id="sessionId"></span>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <section class="dash-section active" id="sec-projects">
+      <div class="section-head">
+        <div>
+          <h2>Projects & competitions</h2>
+          <p>Active builds, open competitions and upcoming challenges on the board.</p>
+        </div>
+        <button class="btn btn-solid" data-add="projects">+ Add new</button>
+      </div>
+      <div class="item-list" id="list-projects"></div>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="dash-section" id="sec-gallery">
+      <div class="section-head">
+        <div>
+          <h2>Gallery photos</h2>
+          <p>Add image URLs (links to hosted images) or upload small photos directly. Photos appear in the horizontal scroll gallery.</p>
+        </div>
+        <button class="btn btn-solid" data-add="gallery">+ Add photo</button>
+      </div>
+      <div class="item-list" id="list-gallery"></div>
+    </section>
+
+    <!-- ARCHIVE -->
+    <section class="dash-section" id="sec-archive">
+      <div class="section-head">
+        <div>
+          <h2>Past projects (archive)</h2>
+          <p>Closed-out builds and competitions from previous years.</p>
+        </div>
+        <button class="btn btn-solid" data-add="archive">+ Add entry</button>
+      </div>
+      <div class="item-list" id="list-archive"></div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="dash-section" id="sec-faq">
+      <div class="section-head">
+        <div>
+          <h2>Frequently asked questions</h2>
+          <p>Questions and answers shown in the Help section.</p>
+        </div>
+        <button class="btn btn-solid" data-add="faq">+ Add FAQ</button>
+      </div>
+      <div class="item-list" id="list-faq"></div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="dash-section" id="sec-calendar">
+      <div class="section-head">
+        <div>
+          <h2>Competition calendar</h2>
+          <p>National and international competitions. Dates are shown on the calendar widget.</p>
+        </div>
+        <button class="btn btn-solid" data-add="calendar">+ Add event</button>
+      </div>
+      <div class="item-list" id="list-calendar"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="dash-section" id="sec-settings">
+      <div class="section-head">
+        <div>
+          <h2>Settings</h2>
+          <p>Change your login credentials and manage saved data.</p>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h4>Change admin credentials</h4>
+        <p>Update the ID and password used to log into this panel.</p>
+        <form id="credForm" class="modal-form">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="newId">New admin ID</label>
+              <input type="text" id="newId" required>
+            </div>
+            <div class="form-field">
+              <label for="newPw">New password</label>
+              <input type="password" id="newPw" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="newPw2">Confirm password</label>
+              <input type="password" id="newPw2" required>
+            </div>
+            <div class="form-field"></div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-solid">Save credentials</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="settings-card">
+        <h4>Data management</h4>
+        <p>All changes are saved in this browser's storage. Export to back up your data, or reset to return to the original site content.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn" id="exportBtn">⬇ Export all data (JSON)</button>
+          <button class="btn" id="importBtn">⬆ Import data</button>
+          <input type="file" id="importFile" accept=".json" style="display:none;">
+          <button class="btn btn-danger" id="resetBtn">Reset to defaults</button>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h4>How to use this panel</h4>
+        <div class="help-card">
+          <h5>Adding a project / gallery item</h5>
+          <p>Click the <b>+ Add new</b> button on the relevant tab, fill the form, and hit Save. Changes appear on the site immediately when you refresh it.</p>
+        </div>
+        <div class="help-card">
+          <h5>Uploading gallery photos</h5>
+          <p><b>Option 1 (easiest):</b> Upload your photo to a free host like <code>imgur.com</code> or <code>postimages.org</code>, copy the direct image URL, and paste it into the "Image URL" field.<br>
+          <b>Option 2:</b> Use the <b>Choose file</b> button to upload a small photo directly (best under 500KB — larger photos slow the site down).</p>
+        </div>
+        <div class="help-card">
+          <h5>Data is stored in this browser</h5>
+          <p>Changes only apply to <b>this browser, on this device</b>. Use <b>Export</b> to back up your work, and <b>Import</b> to load it on another device. If you clear browser data, you'll lose changes — that's why exporting is important.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h3 id="modalTitle">Edit</h3>
+    <p class="modal-sub" id="modalSub"></p>
+    <form class="modal-form" id="modalForm"></form>
+  </div>
+</div>
+
+<!-- ============ TOASTS ============ -->
+<div class="toast-container" id="toasts"></div>
+
+<script src="config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
