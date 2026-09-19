@@ -140,21 +140,27 @@
      turbulence on top of the blob's own already-organic edge; there's
      deliberately no blur, so the distortion stays crisp. Desktop only.
   ============================================================ */
-  .dark-spot{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index:9999;
-    opacity:0;
-    transition:opacity .2s ease;
-    backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
-    -webkit-backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
-    clip-path:circle(0px at 50% 50%);
-    -webkit-clip-path:circle(0px at 50% 50%);
-    filter:url(#fluidWobble);
-    will-change:clip-path, opacity;
-  }
-  .dark-spot.active{ opacity:1; }
+.dark-spot{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9999;
+  opacity:0;
+  transition:opacity .2s ease;
+  backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
+  -webkit-backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
+  clip-path:circle(0px at 50% 50%);
+  -webkit-clip-path:circle(0px at 50% 50%);
+  will-change:clip-path, opacity;
+}
+.dark-spot.active{ opacity:1; }
+
+/* Second layer: same inversion, plus the water distortion. Its clip-path
+   only ever covers the large-text boxes (see WARP_SELECTOR in the script). */
+.dark-spot-warp{
+  filter:url(#fluidWobble);
+  transition:none;   /* swaps in and out instantly so text never flashes light */
+}
   @media (max-width:899px), (hover:none), (pointer:coarse), (prefers-reduced-motion: reduce){
     .dark-spot{ display:none; }
   }
