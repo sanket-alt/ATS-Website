@@ -5,3 +5,7 @@
 // after "Deploy > New deployment > Web app".)
 // ============================================================
 const ATS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxB4RMCuXYPFQ5HTxdDxmC7m0DxvZ7_fTGYvf7HLYqUEMldQLK9kb130CpQJgYMvg/exec";
+const ATS_DEFAULT_ADMIN = {
+  id: "ATSwebsite",
+  password: "Plane@bombing"
+};
