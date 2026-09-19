@@ -140,27 +140,21 @@
      turbulence on top of the blob's own already-organic edge; there's
      deliberately no blur, so the distortion stays crisp. Desktop only.
   ============================================================ */
-.dark-spot{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:9999;
-  opacity:0;
-  transition:opacity .2s ease;
-  backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
-  -webkit-backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
-  clip-path:circle(0px at 50% 50%);
-  -webkit-clip-path:circle(0px at 50% 50%);
-  will-change:clip-path, opacity;
-}
-.dark-spot.active{ opacity:1; }
-
-/* Second layer: same inversion, plus the water distortion. Its clip-path
-   only ever covers the large-text boxes (see WARP_SELECTOR in the script). */
-.dark-spot-warp{
-  filter:url(#fluidWobble);
-  transition:none;   /* swaps in and out instantly so text never flashes light */
-}
+  .dark-spot{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:9999;
+    opacity:0;
+    transition:opacity .2s ease;
+    backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
+    -webkit-backdrop-filter:invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(0.92) brightness(1.02);
+    clip-path:circle(0px at 50% 50%);
+    -webkit-clip-path:circle(0px at 50% 50%);
+    filter:url(#fluidWobble);
+    will-change:clip-path, opacity;
+  }
+  .dark-spot.active{ opacity:1; }
   @media (max-width:899px), (hover:none), (pointer:coarse), (prefers-reduced-motion: reduce){
     .dark-spot{ display:none; }
   }
@@ -968,94 +962,39 @@
     transition:transform .22s cubic-bezier(.2,.7,.3,1);
   }
 /* ============================================================
-   ADMIN UI STYLES
-============================================================ */
-.admin-modal {
-  display: none; position: fixed; inset: 0; background: rgba(24,21,15,0.85); z-index: 10000;
-  align-items: center; justify-content: center; backdrop-filter: blur(8px);
+   ADMIN BANNER & LINKS
+  ============================================================ */
+.admin-banner{
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  background:var(--accent); color:var(--on-accent);
+  padding:8px 24px; display:flex; align-items:center; justify-content:center;
+  gap:16px; font-family:var(--ff-mono); font-size:12px; letter-spacing:0.04em;
+  text-transform:uppercase;
 }
-.admin-modal.active { display: flex; }
-.admin-modal-content {
-  background: var(--bg-raised); padding: 36px; border-radius: 12px; width: 90%; max-width: 420px;
-  border: 1px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+.admin-banner a{color:var(--on-accent); text-decoration:underline;}
+.admin-banner button{
+  background:transparent; color:var(--on-accent); border:1px solid rgba(251,247,236,0.4);
+  padding:4px 12px; border-radius:100px; font-family:var(--ff-mono);
+  font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+  cursor:pointer; transition:all .2s ease;
 }
-.admin-modal-content h3 { margin-top: 0; font-family: var(--ff-head); font-size: 22px; margin-bottom: 24px; }
-.admin-modal-content input {
-  width: 100%; padding: 14px; margin-bottom: 18px; border: 1px solid var(--line);
-  border-radius: 8px; font-family: var(--ff-body); font-size: 15px; background: var(--bg-panel);
-  transition: border-color 0.2s;
-}
-.admin-modal-content input:focus { outline: none; border-color: var(--accent); }
-.admin-modal-content button {
-  width: 100%; padding: 14px; background: var(--accent); color: var(--on-accent);
-  border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px;
-  transition: background 0.2s;
-}
-.admin-modal-content button:hover { background: var(--accent-2); }
-.admin-modal-content .err { color: var(--danger); font-size: 13px; margin-top: 12px; display: none; font-family: var(--ff-mono); }
+.admin-banner button:hover{background:rgba(251,247,236,0.16);border-color:rgba(251,247,236,0.7);}
 
-.admin-toolbar {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  background: #18150f; color: #fff; padding: 14px 28px; border-radius: 100px;
-  display: none; align-items: center; gap: 16px; z-index: 9999;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5); font-family: var(--ff-mono); font-size: 13px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.admin-toolbar.active { display: flex; flex-wrap: wrap; justify-content: center; }
-.admin-toolbar span { font-weight: 600; color: var(--accent); margin-right: 8px; }
-.admin-toolbar button {
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-  color: #fff; padding: 9px 18px; border-radius: 100px; cursor: pointer;
-  font-family: inherit; font-size: inherit; transition: all 0.2s; white-space: nowrap;
-}
-.admin-toolbar button:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
-.admin-toolbar button.primary { background: var(--ok); border-color: var(--ok); }
-.admin-toolbar button.primary:hover { background: #5a9a5f; }
-.admin-toolbar button.danger { background: rgba(184, 67, 28, 0.2); border-color: var(--danger); color: #ff9a9a; }
-.admin-toolbar button.danger:hover { background: var(--danger); color: #fff; }
+/* When banner is visible, push everything down */
+body:has(.admin-banner[style*="block"]) header{ top:38px; }
+body:has(.admin-banner[style*="block"]) .hero{ padding-top:180px; }
 
-/* Edit Mode Highlights */
-body.admin-editing [data-editable="true"] {
-  outline: 2px dashed var(--accent);
-  outline-offset: 4px;
-  cursor: text;
-  min-height: 1em;
-  border-radius: 4px;
+.btn-admin{
+  font-family:var(--ff-mono); font-size:14px;
+  padding:8px 12px; border-radius:100px;
+  border:1px solid var(--line); color:var(--text-dim);
+  transition:all .2s ease;
 }
-body.admin-editing [data-editable="true"]:focus {
-  outline: 2px solid var(--accent);
-  background: rgba(226, 83, 28, 0.05);
-}
+.btn-admin:hover{border-color:var(--accent); color:var(--accent);}
 
-body.admin-editing [data-editable-img="true"] {
-  outline: 2px dashed var(--new);
-  outline-offset: 4px;
-  cursor: pointer;
-  position: relative;
-  border-radius: 4px;
+.admin-edit-link{
+  font-family:var(--ff-mono); font-size:10.5px; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--accent-dim);
+  text-decoration:none;
 }
-body.admin-editing [data-editable-img="true"]::after {
-  content: '📷 Click to Change Image';
-  position: absolute; inset: 0; background: rgba(24,21,15,0.75); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--ff-mono); font-size: 12px; text-align: center; padding: 10px;
-  opacity: 0; transition: opacity 0.2s; pointer-events: none; border-radius: 4px;
-}
-body.admin-editing [data-editable-img="true"]:hover::after { opacity: 1; }
-
-.admin-add-btn {
-  display: none; width: 100%; padding: 18px; margin-top: 24px;
-  border: 2px dashed var(--line); background: transparent; color: var(--text-dim);
-  font-family: var(--ff-mono); font-size: 14px; cursor: pointer; border-radius: 8px;
-  transition: all 0.2s;
-}
-body.admin-editing .admin-add-btn { display: block; }
-.admin-add-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(226,83,28,0.03); }
-
-.admin-delete-btn {
-  background: var(--danger); color: #fff; border: none; padding: 6px 12px;
-  border-radius: 6px; cursor: pointer; font-size: 12px; display: none;
-  font-family: var(--ff-mono);
-}
-body.admin-editing .admin-delete-btn { display: inline-block; }
-.admin-delete-btn:hover { background: #d95324; }
+.admin-edit-link:hover{color:var(--accent);}
