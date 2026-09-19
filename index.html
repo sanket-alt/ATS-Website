@@ -40,6 +40,12 @@
 </svg>
 <div class="dark-spot" id="darkSpot" aria-hidden="true"></div>
 
+<!-- Admin banner (shown when logged in) -->
+<div class="admin-banner" id="adminBanner" style="display:none;">
+  <span>✎ Admin mode — <a href="admin.html">Open dashboard</a> to edit content</span>
+  <button id="adminLogoutBtn">Log out</button>
+</div>
+
 <!-- ============ NAV ============ -->
 <header id="siteHeader">
   <nav class="wrap">
@@ -58,6 +64,7 @@
     </ul>
     <div class="nav-cta">
       <a href="#propose" class="btn btn-solid">Propose an idea</a>
+      <a href="admin.html" class="btn btn-admin" title="Admin">⚙</a>
       <button class="burger" id="burgerBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
@@ -73,6 +80,7 @@
   <a href="#archive">Archive</a>
   <a href="#comp-calendar">Calendar</a>
   <a href="#help">Help</a>
+  <a href="admin.html" style="color:var(--accent);">⚙ Admin panel</a>
 </div>
 
 <!-- ============ ALTIMETER GAUGE ============ -->
@@ -89,19 +97,18 @@
   <div class="hero-glow"></div>
   <div class="wrap hero-grid">
     <div class="hero-content">
-      <div class="eyebrow reveal in" data-key="hero_eyebrow" data-editable="true">PUNJAB ENGINEERING COLLEGE · CHANDIGARH</div>
+      <div class="eyebrow reveal in">PUNJAB ENGINEERING COLLEGE · CHANDIGARH</div>
       <h1 class="hero-headline hero-kinetic">
-        <div class="line"><span data-key="hero_title_1" data-editable="true">BUILD. FLY.</span></div>
-        <div class="line"><span data-key="hero_title_2" data-editable="true">BREAK.</span></div>
-        <div class="line"><span data-key="hero_title_3" data-editable="true">REBUILD.</span></div>
+        <div class="line"><span>BUILD. FLY.</span></div>
+        <div class="line"><span>BREAK.</span></div>
+        <div class="line"><span>REBUILD.</span></div>
       </h1>
-      <p class="hero-sub" data-key="hero_sub" data-editable="true">The Aerospace Technical Society is where PEC's aero, avionics and propulsion builds move off paper — this page tracks what's active, what's open, and what needs a hand.</p>
+      <p class="hero-sub">The Aerospace Technical Society is where PEC's aero, avionics and propulsion builds move off paper — this page tracks what's active, what's open, and what needs a hand.</p>
       <div class="hero-actions">
         <a href="#projects" class="btn btn-solid">See the board</a>
         <a href="#propose" class="btn">Propose a project →</a>
       </div>
     </div>
-
     <div class="hero-viewport">
       <div class="viewport-chrome">
         <span class="crosshair top-left"></span>
@@ -109,14 +116,10 @@
         <span class="crosshair bottom-left"></span>
         <span class="crosshair bottom-right"></span>
         <div class="viewport-label">TELEMETRY // <span id="holoTargetName">CHASSIS NODE</span></div>
-        <div class="css-3d-scene">
-          <canvas id="holoCanvas"></canvas>
-        </div>
+        <div class="css-3d-scene"><canvas id="holoCanvas"></canvas></div>
       </div>
       <div class="viewport-readout">
-        <div class="readout-header">
-          <span class="status-dot"></span> LIVE PARSING
-        </div>
+        <div class="readout-header"><span class="status-dot"></span> LIVE PARSING</div>
         <p id="holoDescription">Initializing structural specifications...</p>
       </div>
     </div>
@@ -126,11 +129,11 @@
 <!-- ============ ABOUT ============ -->
 <section class="about-strip" style="padding:34px 0;">
   <div class="wrap">
-    <p data-key="about_text" data-editable="true"><strong>ATS</strong> is PEC's student aerospace society — flight, propulsion and orbital mechanics, built by undergrads, outside class hours.</p>
+    <p><strong>ATS</strong> is PEC's student aerospace society — flight, propulsion and orbital mechanics, built by undergrads, outside class hours.</p>
     <div class="stat-row">
       <div class="stat"><b id="statActive">–</b><span>Active builds</span></div>
       <div class="stat"><b id="statOpen">–</b><span>Open competitions</span></div>
-      <div class="stat"><b>6</b><span>Past missions logged</span></div>
+      <div class="stat"><b id="statArchive">–</b><span>Past missions logged</span></div>
     </div>
   </div>
 </section>
@@ -160,9 +163,7 @@
 </section>
 
 <!-- ============ MARQUEE ============ -->
-<div class="marquee">
-  <div class="marquee-track" id="tickerTrack"></div>
-</div>
+<div class="marquee"><div class="marquee-track" id="tickerTrack"></div></div>
 
 <!-- ============ PROJECT / COMPETITION BOARD ============ -->
 <section id="projects">
@@ -174,7 +175,6 @@
       </div>
       <p class="sec-note">Every build and competition ATS is running right now, plus what's opening next. Tap a card to say you're interested.</p>
     </div>
-
     <div class="board-filters reveal">
       <button class="chip active" data-filter="all">All</button>
       <button class="chip" data-filter="project">Projects</button>
@@ -183,7 +183,6 @@
       <button class="chip" data-filter="recruiting">Recruiting</button>
       <button class="chip" data-filter="upcoming">Upcoming</button>
     </div>
-
     <div class="board-grid reveal-stagger" id="boardGrid"></div>
   </div>
 </section>
@@ -198,7 +197,6 @@
       </div>
       <p class="sec-note">Anyone in PEC can drop an idea here — a competition worth entering, a build worth starting. The core team reviews these to shape next semester's board.</p>
     </div>
-
     <div class="propose-panel reveal">
       <div>
         <form id="proposeForm">
@@ -232,7 +230,6 @@
           <p class="form-note">Submissions post to a shared board other visitors can see — skip identifying details you'd rather keep private.</p>
         </form>
       </div>
-
       <div class="recent-box">
         <h4>Recently proposed</h4>
         <div class="recent-list" id="recentList">
@@ -254,49 +251,9 @@
       <p class="sec-note hgallery-hint">Keep scrolling — this strip moves sideways. Swap these tiles for real shots whenever you've got them.</p>
     </div>
   </div>
-
   <div class="hgallery-pin" id="hgalleryPin">
     <div class="hgallery-viewport" id="hgalleryViewport">
-      <div class="hgallery-track" id="hgalleryTrack">
-        <figure class="htile htile-xl" data-valign="bottom" style="--off:0">
-          <figcaption class="htile-cap">
-            <span class="yr" data-key="gal_1_yr" data-editable="true">2025</span>
-            <div class="lbl" data-key="gal_1_lbl" data-editable="true">SAE Aero, Fabrication Bay</div>
-          </figcaption>
-          <div class="htile-art" data-key="gal_1_img" data-editable-img="true" style="background:radial-gradient(circle at 30% 25%, #e2531c40, transparent 60%), linear-gradient(155deg, #2a2620, #18150f 80%);"></div>
-        </figure>
-        <figure class="htile htile-sm" data-valign="top" style="--off:0">
-          <figcaption class="htile-cap">
-            <span class="yr" data-key="gal_2_yr" data-editable="true">2024</span>
-            <div class="lbl" data-key="gal_2_lbl" data-editable="true">First Static Fire</div>
-          </figcaption>
-          <div class="htile-art" data-key="gal_2_img" data-editable-img="true" style="background:radial-gradient(circle at 30% 25%, #b5502a40, transparent 60%), linear-gradient(155deg, #20221f, #18150f 80%);"></div>
-        </figure>
-        <figure class="htile htile-note">
-          <blockquote>“BUILD. FLY. BREAK. REBUILD.”<cite>Build log, PPT bay</cite></blockquote>
-        </figure>
-        <figure class="htile htile-md" data-valign="bottom" style="--off:0">
-          <figcaption class="htile-cap">
-            <span class="yr" data-key="gal_4_yr" data-editable="true">2025</span>
-            <div class="lbl" data-key="gal_4_lbl" data-editable="true">Kari Speedway Trials</div>
-          </figcaption>
-          <div class="htile-art" data-key="gal_4_img" data-editable-img="true" style="background:radial-gradient(circle at 30% 25%, #3a5f8a40, transparent 60%), linear-gradient(155deg, #18150f, #18150f 80%);"></div>
-        </figure>
-        <figure class="htile htile-sm" data-valign="top" style="--off:36">
-          <figcaption class="htile-cap">
-            <span class="yr" data-key="gal_5_yr" data-editable="true">2024</span>
-            <div class="lbl" data-key="gal_5_lbl" data-editable="true">Wind Tunnel Session</div>
-          </figcaption>
-          <div class="htile-art" data-key="gal_5_img" data-editable-img="true" style="background:radial-gradient(circle at 30% 25%, #7f8a5a40, transparent 60%), linear-gradient(155deg, #20221c, #18150f 80%);"></div>
-        </figure>
-        <figure class="htile htile-lg" data-valign="mid" style="--off:0">
-          <figcaption class="htile-cap">
-            <span class="yr" data-key="gal_6_yr" data-editable="true">2025</span>
-            <div class="lbl" data-key="gal_6_lbl" data-editable="true">Night Before Nationals</div>
-          </figcaption>
-          <div class="htile-art" data-key="gal_6_img" data-editable-img="true" style="background:radial-gradient(circle at 30% 25%, #d7c9a040, transparent 60%), linear-gradient(155deg, #18150f, #18150f 80%);"></div>
-        </figure>
-      </div>
+      <div class="hgallery-track" id="hgalleryTrack"></div>
     </div>
   </div>
 </section>
@@ -325,33 +282,23 @@
       </div>
       <p class="sec-note">National and international design-build competitions engineering undergrads can enter — no hackathons. Dates roll forward on their own as the year moves.</p>
     </div>
-
     <div class="cc-layout reveal">
       <div class="cc-cal-card">
         <div class="cc-cal-top">
-          <div class="cc-cal-month">
-            <span id="ccMonthName">October</span> <span id="ccYearName" class="cc-year">2026</span>
-          </div>
+          <div class="cc-cal-month"><span id="ccMonthName">October</span> <span id="ccYearName" class="cc-year">2026</span></div>
           <div class="cc-cal-nav">
-            <button id="ccPrev" aria-label="Previous month">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-            </button>
+            <button id="ccPrev" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
             <button id="ccToday">Today</button>
-            <button id="ccNext" aria-label="Next month">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
+            <button id="ccNext" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
           </div>
         </div>
-        <div class="cc-weekdays">
-          <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-        </div>
+        <div class="cc-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
         <div class="cc-grid" id="ccGrid"></div>
         <div class="cc-legend">
           <span><i class="cc-dot cc-dot-india"></i>India</span>
           <span><i class="cc-dot cc-dot-intl"></i>International</span>
         </div>
       </div>
-
       <div class="cc-list-card">
         <div class="cc-list-head">Coming up</div>
         <div class="cc-list" id="ccList"></div>
@@ -369,14 +316,11 @@
         <h2 class="sec-title">Help & <span class="accent">how to join</span></h2>
       </div>
     </div>
-
     <div class="help-layout">
       <div class="reveal" id="faqList"></div>
-
       <div class="contact-card reveal">
         <h4>Talk to the core team</h4>
         <p>For build help, sponsorship, or anything the FAQ doesn't cover.</p>
-
         <div class="contact-row">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z" opacity="0"/><path d="M4 6l8 7 8-7M4 6v12h16V6"/></svg>
           <div><div class="label">Email</div><a class="value" href="mailto:ats@pec.edu.in">ats@pec.edu.in</a></div>
@@ -394,14 +338,8 @@
   </div>
 </section>
 
-<!-- ============ CLOSING STATEMENT ============ -->
-<section class="closing">
-  <div class="wrap">
-    <h2>Always building <span class="accent">forward.</span></h2>
-  </div>
-</section>
+<section class="closing"><div class="wrap"><h2>Always building <span class="accent">forward.</span></h2></div></section>
 
-<!-- ============ FOOTER ============ -->
 <footer>
   <div class="wrap">
     <div class="footer-top">
@@ -426,244 +364,801 @@
           <a href="mailto:ats@pec.edu.in">ats@pec.edu.in</a>
           <a href="#">@ats.pec</a>
         </div>
+        <div class="footer-col">
+          <h5>Manage</h5>
+          <a href="admin.html">Admin panel</a>
+        </div>
       </div>
     </div>
     <div class="footer-bottom">
       <p>© <span id="year"></span> Aerospace Technical Society, PEC. Built by the society, for the society.</p>
-      <a href="#" id="adminLoginTrigger" style="font-size:11px; color:var(--text-dim2); opacity:0.5; margin-left: 16px;">Admin</a>
     </div>
   </div>
 </footer>
-
-<!-- ============ ADMIN MODAL ============ -->
-<div id="adminLoginModal" class="admin-modal">
-  <div class="admin-modal-content">
-    <h3>🔒 Admin Login</h3>
-    <input type="text" id="adminId" placeholder="Admin ID">
-    <input type="password" id="adminPass" placeholder="Password">
-    <button id="adminLoginBtn">Access Dashboard</button>
-    <p id="adminLoginError" class="err"></p>
-  </div>
-</div>
-
-<!-- ============ ADMIN TOOLBAR ============ -->
-<div id="adminToolbar" class="admin-toolbar">
-  <span>🔧 Admin Mode</span>
-  <button id="toggleEditBtn">Enable Editing</button>
-  <button id="changeCredsBtn">Change Credentials</button>
-  <button id="saveChangesBtn" class="primary">💾 Save All Changes</button>
-  <button id="exportDataBtn">📥 Export Backup</button>
-  <button id="logoutBtn" class="danger">Logout</button>
-</div>
 
 <script src="config.js"></script>
 <script>
 (function(){
   "use strict";
+
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  /* ---------- NAV & SCROLL REVEAL & ALTIMETER & HERO 3D & CALENDAR & FAQ & PROPOSE FORM ---------- */
-  /* (Keeping all your original, excellent logic intact here for brevity. 
-     The original JS for nav, reveal, altimeter, radar, 3d holo, board rendering, 
-     archive rendering, calendar, gallery pinning, faq, and propose form remains exactly as provided.) */
-  
-  // ... [ALL ORIGINAL JS LOGIC FOR NAV, SCROLL, 3D, BOARD, CALENDAR, GALLERY, FAQ, PROPOSE GOES HERE] ...
-  // For the sake of the file limit, I am injecting the critical parts that interact with the new Admin system below.
-  // In your actual file, keep your original JS blocks, and just ADD the Admin System block at the very end.
+  /* ============================================================
+     STORAGE HELPERS — mirror the ones in admin.js
+  ============================================================ */
+  const KEYS = {
+    session: 'ats_session',
+    projects:'ats_projects',
+    gallery: 'ats_gallery',
+    archive: 'ats_archive',
+    faq:     'ats_faq',
+    calendar:'ats_calendar'
+  };
+  function load(key, fallback){
+    try{ const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }
+    catch(e){ return fallback; }
+  }
 
-  /* ---------- ADMIN SYSTEM ---------- */
+  /* ============================================================
+     HARDCODED FALLBACKS — used if localStorage is empty (first visit)
+  ============================================================ */
+  const FALLBACKS = {
+    projects: [
+      { id:'uav-nav', type:'project', status:'active', title:'Autonomous UAV Navigation Rig', desc:'Building a GPS-denied indoor navigation stack for a quadrotor — visual-inertial odometry feeding a live occupancy map.', tags:['Avionics','Drones'], deadline:'Ongoing · builds Tue/Thu' },
+      { id:'nanosat', type:'project', status:'active', title:'Nano-Satellite Simulator Bench', desc:'A frictionless air-bearing puck for testing relative-navigation and attitude-control algorithms on the ground.', tags:['Astronautics','Controls'], deadline:'Ongoing · lab access weekly' },
+      { id:'ppt', type:'project', status:'recruiting', title:'Pulsed Plasma Thruster Test Stand', desc:'Designing and instrumenting a thrust stand for a lab-scale pulsed plasma thruster — vacuum, electronics and diagnostics all needed.', tags:['Propulsion','Electronics'], deadline:'Recruiting through September' },
+      { id:'gokart', type:'project', status:'active', title:'Campus Go-Kart Build', desc:'Chassis geometry, suspension tuning and drivetrain layout for a kart aimed at Kari Motor Speedway.', tags:['Vehicle Design','Structures'], deadline:'Ongoing · workshop Sat' },
+      { id:'sae-aero', type:'competition', status:'upcoming', title:'SAE Aero Design Challenge', desc:'Regular-class fixed-wing competition — payload-optimised airframe, built and flight-tested as a team.', tags:['Fixed-Wing','Competition'], deadline:'Registration closes', deadlineDate:'2026-10-15' },
+      { id:'dbf', type:'competition', status:'upcoming', title:'AIAA Design-Build-Fly', desc:'A full design-build-fly cycle against a fresh mission spec — structures, aero and manufacturing in one team.', tags:['Fixed-Wing','Competition'], deadline:'Team formation closes', deadlineDate:'2026-11-02' }
+    ],
+    gallery: [
+      { kind:'photo', size:'xl', valign:'bottom', cap:'SAE Aero, Fabrication Bay', yr:'2025', c1:'#e2531c', c2:'#2a2620', off:0 },
+      { kind:'photo', size:'sm', valign:'top',    cap:'First Static Fire',         yr:'2024', c1:'#b5502a', c2:'#20221f', off:0 },
+      { kind:'note',  quote:'BUILD. FLY. BREAK. REBUILD.', by:'Build log, PPT bay' },
+      { kind:'photo', size:'md', valign:'bottom', cap:'Kari Speedway Trials',      yr:'2025', c1:'#3a5f8a', c2:'#18150f', off:0 },
+      { kind:'photo', size:'sm', valign:'top',    cap:'Wind Tunnel Session',       yr:'2024', c1:'#7f8a5a', c2:'#20221c', off:36 },
+      { kind:'photo', size:'lg', valign:'mid',    cap:'Night Before Nationals',    yr:'2025', c1:'#d7c9a0', c2:'#18150f', off:0 },
+      { kind:'note',  quote:'It doesn\u2019t fly until it flies on the bench first.', by:'Workshop rule #1' },
+      { kind:'photo', size:'md', valign:'bottom', cap:'Payload Integration',       yr:'2024', c1:'#e2531c', c2:'#20221f', off:0 },
+      { kind:'photo', size:'sm', valign:'top',    cap:'Team Debrief',              yr:'2025', c1:'#3a5f8a', c2:'#231f18', off:0 },
+      { kind:'photo', size:'md', valign:'bottom', cap:'Workshop Floor',            yr:'2023', c1:'#b5502a', c2:'#18150f', off:0 }
+    ],
+    archive: [
+      { title:'Mini Jet Engine Build', year:'2024', cat:'Propulsion', note:'A working small-scale turbojet, built and bench-tested end to end.', c1:'#e2531c', c2:'#2a2620', h1:'#ff9a5c', h2:'#1c1a15' },
+      { title:'Autonomous Ground Rover', year:'2024', cat:'Robotics', note:'ESP32-based rover for autonomous sample collection.', c1:'#3a5f8a', c2:'#20221f', h1:'#7ea3c9', h2:'#1c1a15' },
+      { title:'Campus Drone Fleet', year:'2023', cat:'UAV', note:'A self-built multirotor platform for aerial mapping runs.', c1:'#c9b98a', c2:'#232019', h1:'#e2531c', h2:'#1c1a15' },
+      { title:'Kinematic Sculpture', year:'2023', cat:'Structures', note:'A wind-driven kinetic installation exploring mechanism design.', c1:'#7f8a5a', c2:'#20221c', h1:'#a7b57e', h2:'#1c1a15' },
+      { title:'Shock Tube Demonstrator', year:'2023', cat:'Fluids', note:'A benchtop shock tube built to visualise compressible flow.', c1:'#b5502a', c2:'#241f19', h1:'#e2531c', h2:'#1c1a15' },
+      { title:'Weather Balloon Payload', year:'2022', cat:'Astronautics', note:'Instrumented near-space payload recovered after ascent.', c1:'#d7c9a0', c2:'#211f18', h1:'#c9b98a', h2:'#1c1a15' }
+    ],
+    faq: [
+      { q:'Who can join ATS?', a:'Any PEC undergrad, any branch, any year. Aerospace helps but isn\'t required — most builds need electronics, mechanical and software hands too.' },
+      { q:'Do I need prior project experience?', a:'No. First-years join builds every semester and pick things up alongside the team.' },
+      { q:'How do I propose a project or competition?', a:'Use the "Propose" section above — it goes straight to the core team\'s review list.' },
+      { q:'Where and when does the society meet?', a:'Workshop sessions run out of the Aerospace Department — check the mission board for which builds are meeting this week.' },
+      { q:'I\'m stuck on a build — who do I ask?', a:'Email the core team or drop by a workshop slot — most active projects have someone around during their listed hours.' }
+    ],
+    calendar: [
+      { name:'SUPRA SAEINDIA 2026', org:'SAEINDIA', loc:'Buddh International Circuit, Greater Noida', type:'india', cat:'Formula-style race car design & build', start:'2026-09-02', end:'2026-09-05' },
+      { name:'SAE Aero Design Challenge', org:'SAE International', loc:'USA', type:'intl', cat:'Fixed-wing payload aircraft — registration deadline', start:'2026-10-15', end:'2026-10-15' },
+      { name:'AIAA Design-Build-Fly', org:'AIAA / Cessna / Textron', loc:'Wichita, Kansas, USA', type:'intl', cat:'Design-build-fly RC aircraft — team formation deadline', start:'2026-11-02', end:'2026-11-02' },
+      { name:'Formula Bharat 2027', org:'SAEINDIA-affiliated', loc:'Kari Motor Speedway, Coimbatore', type:'india', cat:'Formula-style race car', start:'2027-01-19', end:'2027-01-24' },
+      { name:'Go-Kart Design Challenge (GKDC)', org:'ISNEE', loc:'Coimbatore', type:'india', cat:'Go-kart design & fabrication', start:'2027-02-17', end:'2027-02-21' }
+    ]
+  };
+
+  /* ============================================================
+     ADMIN SESSION DETECTION
+  ============================================================ */
+  function isAdmin(){
+    const s = load(KEYS.session, null);
+    return !!(s && s.loggedIn && (Date.now() - s.ts < 7 * 24 * 60 * 60 * 1000));
+  }
+  if(isAdmin()){
+    document.getElementById('adminBanner').style.display = 'flex';
+  }
+  document.getElementById('adminLogoutBtn').addEventListener('click', function(){
+    localStorage.removeItem(KEYS.session);
+    document.getElementById('adminBanner').style.display = 'none';
+  });
+
+  /* ============================================================
+     DATA READERS (admin-managed, with hardcoded fallback)
+  ============================================================ */
+  function getProjects(){ return load(KEYS.projects, FALLBACKS.projects); }
+  function getGallery(){  return load(KEYS.gallery,  FALLBACKS.gallery); }
+  function getArchive(){  return load(KEYS.archive,  FALLBACKS.archive); }
+  function getFaq(){      return load(KEYS.faq,      FALLBACKS.faq); }
+  function getCalendar(){ return load(KEYS.calendar, FALLBACKS.calendar); }
+
+  /* ---------- NAV ---------- */
+  var header = document.getElementById('siteHeader');
+  var burger = document.getElementById('burgerBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  var ticking = false;
+  function onScroll(){
+    if(!ticking){ requestAnimationFrame(function(){ header.classList.toggle('scrolled', window.scrollY > 30); ticking = false; }); ticking = true; }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  burger.addEventListener('click', function(){ mobileMenu.classList.toggle('open'); });
+  mobileMenu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ mobileMenu.classList.remove('open'); }); });
+
+  var navLinks = document.querySelectorAll('.nav-links a');
+  var sectionsForNav = ['projects','propose','gallery','archive','help'].map(function(id){ return document.getElementById(id); });
+  var navObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        var id = entry.target.id;
+        navLinks.forEach(function(l){ l.classList.toggle('active', l.getAttribute('href') === '#' + id); });
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px'});
+  sectionsForNav.forEach(function(s){ if(s) navObserver.observe(s); });
+
+  /* ---------- SCROLL REVEAL ---------- */
+  var revealTargets = document.querySelectorAll('.reveal, .reveal-stagger');
+  var revealObserver = new IntersectionObserver(function(entries, obs){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){ entry.target.classList.add('in'); obs.unobserve(entry.target); }
+    });
+  }, {threshold:0.12});
+  revealTargets.forEach(function(t){ revealObserver.observe(t); });
+
+  /* ---------- ALTIMETER ---------- */
   (function(){
-    const DEFAULT_CREDS = { id: 'ATSwebsite', pass: 'Plane@bombing' };
-    function getCreds() { return JSON.parse(localStorage.getItem('ats_admin_creds')) || DEFAULT_CREDS; }
-    
-    const modal = document.getElementById('adminLoginModal');
-    const toolbar = document.getElementById('adminToolbar');
-    const loginBtn = document.getElementById('adminLoginTrigger');
-    const loginSubmit = document.getElementById('adminLoginBtn');
-    const loginError = document.getElementById('adminLoginError');
-    const toggleEditBtn = document.getElementById('toggleEditBtn');
-    const saveBtn = document.getElementById('saveChangesBtn');
-    const changeCredsBtn = document.getElementById('changeCredsBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const exportBtn = document.getElementById('exportDataBtn');
-
-    let isEditing = false;
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file'; fileInput.accept = 'image/*'; fileInput.style.display = 'none';
-    document.body.appendChild(fileInput);
-    let currentImgTarget = null;
-
-    if (localStorage.getItem('ats_admin_logged_in') === 'true') {
-      toolbar.classList.add('active');
-      loadSavedData();
-    }
-
-    if(loginBtn) {
-      loginBtn.addEventListener('click', (e) => { e.preventDefault(); modal.classList.add('active'); });
-    }
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
-
-    loginSubmit.addEventListener('click', () => {
-      const id = document.getElementById('adminId').value.trim();
-      const pass = document.getElementById('adminPass').value.trim();
-      const creds = getCreds();
-      if (id === creds.id && pass === creds.pass) {
-        localStorage.setItem('ats_admin_logged_in', 'true');
-        modal.classList.remove('active');
-        toolbar.classList.add('active');
-        loadSavedData();
-        document.getElementById('adminId').value = '';
-        document.getElementById('adminPass').value = '';
-        loginError.style.display = 'none';
-      } else {
-        loginError.textContent = 'Invalid ID or Password.';
-        loginError.style.display = 'block';
+    var altimeterEl = document.getElementById('altimeter');
+    var altTrack = document.getElementById('altimeterTrack');
+    var altMarker = document.getElementById('altimeterMarker');
+    var altPct = document.getElementById('altimeterPct');
+    if(!altimeterEl || !altTrack || !altMarker || !altPct) return;
+    var altQuery = window.matchMedia('(min-width: 1100px)');
+    var altActive = false, altTicking = false, ticksBuilt = false;
+    function buildTicks(){
+      if(ticksBuilt) return; ticksBuilt = true;
+      var frag = document.createDocumentFragment();
+      for(var i = 0; i <= 20; i++){
+        var pct = i * 5;
+        var tick = document.createElement('span');
+        tick.className = 'alt-tick' + (pct % 25 === 0 ? ' major' : '');
+        tick.style.bottom = pct + '%';
+        frag.appendChild(tick);
       }
-    });
+      altTrack.appendChild(frag);
+    }
+    function updateAltimeter(){
+      altTicking = false;
+      var doc = document.documentElement;
+      var scrollTop = window.scrollY || doc.scrollTop || 0;
+      var scrollHeight = doc.scrollHeight - doc.clientHeight;
+      var pct = scrollHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / scrollHeight) * 100)) : 0;
+      altMarker.style.bottom = pct + '%';
+      altPct.textContent = (Math.round(pct) < 10 ? '0' : '') + Math.round(pct);
+      altimeterEl.classList.toggle('visible', scrollTop > 40);
+    }
+    function scheduleAltUpdate(){ if(!altActive) return; if(!altTicking){ altTicking = true; requestAnimationFrame(updateAltimeter); } }
+    function enableAltimeter(){ if(altActive) return; altActive = true; buildTicks(); window.addEventListener('scroll', scheduleAltUpdate, {passive:true}); window.addEventListener('resize', scheduleAltUpdate); updateAltimeter(); }
+    function disableAltimeter(){ if(!altActive) return; altActive = false; window.removeEventListener('scroll', scheduleAltUpdate); window.removeEventListener('resize', scheduleAltUpdate); altimeterEl.classList.remove('visible'); }
+    function syncAltimeter(){ if(altQuery.matches){ enableAltimeter(); } else { disableAltimeter(); } }
+    if(altQuery.addEventListener){ altQuery.addEventListener('change', syncAltimeter); }
+    else if(altQuery.addListener){ altQuery.addListener(syncAltimeter); }
+    window.addEventListener('load', syncAltimeter); setTimeout(syncAltimeter, 50);
+  })();
 
-    toggleEditBtn.addEventListener('click', () => {
-      isEditing = !isEditing;
-      document.body.classList.toggle('admin-editing', isEditing);
-      toggleEditBtn.textContent = isEditing ? 'Disable Editing' : 'Enable Editing';
-      toggleEditBtn.style.background = isEditing ? 'var(--ok)' : '';
-      document.querySelectorAll('[data-editable="true"]').forEach(el => { el.contentEditable = isEditing; });
+  /* ---------- HERO 3D ENGINE (unchanged) ---------- */
+  const HOLO_USEG = 15, HOLO_VSEG = 22;
+  function chassisProfile(u){ var body = Math.pow(Math.sin(Math.PI * u), 0.28); var collarA = Math.exp(-Math.pow((u - 0.26) / 0.05, 2)) * 0.35; var collarB = Math.exp(-Math.pow((u - 0.74) / 0.05, 2)) * 0.35; return Math.min(1, body + collarA + collarB); }
+  function balloonProfile(u){ return Math.sqrt(Math.max(0, Math.sin(Math.PI * Math.pow(u, 0.62)))); }
+  function aeroProfile(u){ return 0.62 + 0.38 * Math.abs(Math.cos(Math.PI * u)); }
+  const HOLO_STATES = {
+    chassis: { title:"TUBULAR CHASSIS KINEMATICS", desc:"Structural analysis of bent-pipe chassis geometry. Evaluates torsional stiffness across axles, integrating custom negative caster angles and optimized tracking width ratios for high-grip track environments.", profile:chassisProfile, length:210, maxR:20,
+      buildExtras: function(length, maxR){ var shaftR = maxR * 2.3; var xa = -length / 2 + length * 0.26; var xb = -length / 2 + length * 0.74; return { lines:[ [[xa,-shaftR,0],[xa,shaftR,0]], [[xb,-shaftR,0],[xb,shaftR,0]] ], fins:[] }; } },
+    balloon: { title:"HIGH-ALTITUDE RECOVERY", desc:"Autonomous telemetry unit engineered for sounding balloon deployment. Simulates structural re-entry loads and glide slope navigation algorithms under severe high-altitude constraints.", profile:balloonProfile, length:240, maxR:46,
+      buildExtras: function(length, maxR){ var fins = []; [0, 120, 240].forEach(function(deg){ var a = deg * Math.PI / 180; var xNear = length / 2 - length * 0.14, xTip = length / 2 - length * 0.02; var rBase = maxR * 0.5, rTip = maxR * 0.2, rOuterFar = maxR * 1.85, rOuterNear = maxR * 1.3; fins.push([[xNear,rBase*Math.cos(a),rBase*Math.sin(a)],[xTip,rTip*Math.cos(a),rTip*Math.sin(a)],[xTip,rOuterFar*Math.cos(a),rOuterFar*Math.sin(a)],[xNear,rOuterNear*Math.cos(a),rOuterNear*Math.sin(a)]]); }); return { lines:[], fins:fins }; } },
+    aero: { title:"ELECTRIC CARGO PROPULSION", desc:"Distributed electric propulsion node targeting regional aviation lift. Computes computational fluid dynamics (CFD) layers to optimize nacelle aerodynamics and thermal shedding across the airframe.", profile:aeroProfile, length:190, maxR:40,
+      buildExtras: function(length, maxR){ return { lines:[[[-length / 2, 0, 0], [length / 2, 0, 0]], [[-length * 0.12, -maxR * 1.9, 0], [-length * 0.12, -maxR * 0.7, 0]]], fins:[] }; } }
+  };
+  function buildBodyMesh(radiusFn, uSeg, vSeg, length, maxR){
+    var rings = [];
+    for (var ui = 0; ui <= uSeg; ui++){
+      var u = ui / uSeg; var r = radiusFn(u) * maxR; var x = (u - 0.5) * length;
+      var ring = [];
+      for (var vi = 0; vi <= vSeg; vi++){ var theta = (vi / vSeg) * Math.PI * 2; ring.push([x, r * Math.cos(theta), r * Math.sin(theta)]); }
+      rings.push(ring);
+    }
+    return rings;
+  }
+  function rotateProject(p, angleY, angleX, cx, cy, focal, camDist){
+    var x = p[0], y = p[1], z = p[2];
+    var x1 = x * Math.cos(angleY) + z * Math.sin(angleY);
+    var z1 = -x * Math.sin(angleY) + z * Math.cos(angleY);
+    var y2 = y * Math.cos(angleX) - z1 * Math.sin(angleX);
+    var z2 = y * Math.sin(angleX) + z1 * Math.cos(angleX);
+    var zz = z2 + camDist; var scale = focal / zz;
+    return [cx + x1 * scale, cy + y2 * scale];
+  }
+  function hexToRgba(hex, alpha){
+    hex = (hex || '#e2531c').trim().replace('#', '');
+    if (hex.length === 3){ hex = hex.split('').map(function(c){ return c + c; }).join(''); }
+    var r = parseInt(hex.substring(0, 2), 16);
+    var g = parseInt(hex.substring(2, 4), 16);
+    var b = parseInt(hex.substring(4, 6), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  }
+  const holoCanvas = document.getElementById('holoCanvas');
+  const holoCtx = holoCanvas.getContext('2d');
+  const holoAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#e2531c';
+  var holoW = 0, holoH = 0;
+  var holoDPR = Math.min(window.devicePixelRatio || 1, 2);
+  function resizeHoloCanvas(){
+    var rect = holoCanvas.getBoundingClientRect();
+    holoW = rect.width; holoH = rect.height;
+    holoCanvas.width = Math.max(1, Math.round(holoW * holoDPR));
+    holoCanvas.height = Math.max(1, Math.round(holoH * holoDPR));
+    holoCtx.setTransform(holoDPR, 0, 0, holoDPR, 0, 0);
+  }
+  resizeHoloCanvas();
+  window.addEventListener('resize', resizeHoloCanvas);
+  var holoStateKeys = ['chassis', 'balloon', 'aero'];
+  var holoIndex = 1;
+  var holoTo = HOLO_STATES[holoStateKeys[0]];
+  var holoFrom = null;
+  var holoTransitionStart = 0;
+  var HOLO_TRANSITION_MS = 1100;
+  var holoAngleY = 0.6;
+  const titleElement = document.getElementById('holoTargetName');
+  const descElement = document.getElementById('holoDescription');
+  titleElement.textContent = holoTo.title;
+  descElement.textContent = holoTo.desc;
+  function updateHoloDisplay(){
+    var next = HOLO_STATES[holoStateKeys[holoIndex % holoStateKeys.length]];
+    holoIndex++;
+    descElement.style.opacity = 0;
+    setTimeout(function(){ titleElement.textContent = next.title; descElement.textContent = next.desc; descElement.style.opacity = 1; }, 400);
+    holoFrom = holoTo; holoTo = next; holoTransitionStart = performance.now();
+  }
+  setInterval(updateHoloDisplay, 8000);
+  function currentGeometry(now){
+    if (!holoFrom){ return { length: holoTo.length, maxR: holoTo.maxR, radiusFn: holoTo.profile, extrasA: holoTo.buildExtras(holoTo.length, holoTo.maxR), opacityA: 1, extrasB: null, opacityB: 0 }; }
+    var t = Math.min(1, (now - holoTransitionStart) / HOLO_TRANSITION_MS);
+    var te = t * t * (3 - 2 * t);
+    return { length: holoFrom.length + (holoTo.length - holoFrom.length) * te, maxR: holoFrom.maxR + (holoTo.maxR - holoFrom.maxR) * te,
+      radiusFn: function(u){ return holoFrom.profile(u) + (holoTo.profile(u) - holoFrom.profile(u)) * te; },
+      extrasA: holoFrom.buildExtras(holoFrom.length, holoFrom.maxR), opacityA: 1 - te,
+      extrasB: holoTo.buildExtras(holoTo.length, holoTo.maxR), opacityB: te };
+  }
+  function drawHoloExtras(extras, opacity, angleY, angleX, cx, cy, focal, camDist){
+    if (!extras || opacity <= 0.01) return;
+    holoCtx.strokeStyle = hexToRgba(holoAccent, 0.9 * opacity);
+    (extras.lines || []).forEach(function(line){
+      var a = rotateProject(line[0], angleY, angleX, cx, cy, focal, camDist);
+      var b = rotateProject(line[1], angleY, angleX, cx, cy, focal, camDist);
+      holoCtx.beginPath(); holoCtx.moveTo(a[0], a[1]); holoCtx.lineTo(b[0], b[1]); holoCtx.stroke();
     });
-
-    document.addEventListener('click', (e) => {
-      if (!isEditing) return;
-      const imgEl = e.target.closest('[data-editable-img="true"]');
-      if (imgEl) { e.preventDefault(); currentImgTarget = imgEl; fileInput.click(); }
+    (extras.fins || []).forEach(function(fin){
+      var pts = fin.map(function(p){ return rotateProject(p, angleY, angleX, cx, cy, focal, camDist); });
+      holoCtx.beginPath();
+      pts.forEach(function(p, i){ if (i === 0) holoCtx.moveTo(p[0], p[1]); else holoCtx.lineTo(p[0], p[1]); });
+      holoCtx.closePath();
+      holoCtx.fillStyle = hexToRgba(holoAccent, 0.16 * opacity);
+      holoCtx.fill();
+      holoCtx.strokeStyle = hexToRgba(holoAccent, 0.85 * opacity);
+      holoCtx.stroke();
     });
-
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files && fileInput.files[0] && currentImgTarget) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          if (currentImgTarget.tagName === 'IMG') currentImgTarget.src = e.target.result;
-          else currentImgTarget.style.background = `url(${e.target.result}) center/cover no-repeat`;
-        };
-        reader.readAsDataURL(fileInput.files[0]);
+  }
+  function renderHolo(ts){
+    requestAnimationFrame(renderHolo);
+    if (!holoW || !holoH) return;
+    var now = ts || performance.now();
+    holoAngleY += 0.0032;
+    var angleX = -0.52;
+    var geo = currentGeometry(now);
+    var cx = holoW / 2, cy = holoH / 2 + Math.min(holoH, holoW) * 0.02;
+    var fit = Math.min(holoW, holoH) / 340;
+    var focal = 480 * fit, camDist = 640 * fit;
+    holoCtx.clearRect(0, 0, holoW, holoH);
+    var rings = buildBodyMesh(geo.radiusFn, HOLO_USEG, HOLO_VSEG, geo.length, geo.maxR);
+    var projected = rings.map(function(ring){ return ring.map(function(p){ return rotateProject(p, holoAngleY, angleX, cx, cy, focal, camDist); }); });
+    holoCtx.lineWidth = 1;
+    holoCtx.strokeStyle = hexToRgba(holoAccent, 0.82);
+    for (var vi = 0; vi <= HOLO_VSEG; vi++){
+      holoCtx.beginPath();
+      for (var ui = 0; ui <= HOLO_USEG; ui++){
+        var p = projected[ui][vi];
+        if (ui === 0) holoCtx.moveTo(p[0], p[1]); else holoCtx.lineTo(p[0], p[1]);
       }
-    });
+      holoCtx.stroke();
+    }
+    for (var ui2 = 0; ui2 <= HOLO_USEG; ui2++){
+      holoCtx.beginPath();
+      for (var vi2 = 0; vi2 <= HOLO_VSEG; vi2++){
+        var p2 = projected[ui2][vi2];
+        if (vi2 === 0) holoCtx.moveTo(p2[0], p2[1]); else holoCtx.lineTo(p2[0], p2[1]);
+      }
+      holoCtx.closePath();
+      holoCtx.stroke();
+    }
+    drawHoloExtras(geo.extrasA, geo.opacityA, holoAngleY, angleX, cx, cy, focal, camDist);
+    drawHoloExtras(geo.extrasB, geo.opacityB, holoAngleY, angleX, cx, cy, focal, camDist);
+  }
+  requestAnimationFrame(renderHolo);
 
-    saveBtn.addEventListener('click', () => {
-      const data = {};
-      document.querySelectorAll('[data-key]').forEach(el => {
-        if (el.tagName === 'IMG') data[el.dataset.key] = el.src;
-        else if (el.classList.contains('htile-art') || el.classList.contains('a-art-base') || el.classList.contains('a-art-hover')) data[el.dataset.key] = el.style.background;
-        else data[el.dataset.key] = el.innerHTML;
+  /* ============================================================
+     PROJECTS BOARD (now reads from localStorage)
+  ============================================================ */
+  var items = getProjects();
+  function daysLeft(dateStr){
+    var target = new Date(dateStr + 'T23:59:59');
+    var diff = Math.ceil((target - new Date()) / 86400000);
+    if(diff < 0) return 'closed';
+    if(diff === 0) return 'today';
+    return diff + ' day' + (diff === 1 ? '' : 's') + ' left';
+  }
+  var statusLabel = {active:'Active', recruiting:'Recruiting', upcoming:'Upcoming'};
+  var boardGrid = document.getElementById('boardGrid');
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+  function renderBoard(list){
+    boardGrid.innerHTML = list.map(function(it){
+      var deadlineText = it.deadlineDate ? (it.deadline + ' — <b>' + daysLeft(it.deadlineDate) + '</b>') : it.deadline;
+      var editBtn = isAdmin() ? '<a class="admin-edit-link" href="admin.html">✎ Edit</a>' : '';
+      return (
+        '<div class="card" data-type="'+escapeHtml(it.type)+'" data-status="'+escapeHtml(it.status)+'">' +
+          '<div class="card-top">' +
+            '<span class="status '+escapeHtml(it.status)+'">'+statusLabel[it.status]+'</span>' +
+            '<span class="card-type">'+escapeHtml(it.type)+'</span>' +
+          '</div>' +
+          '<h3>'+escapeHtml(it.title)+'</h3>' +
+          '<p>'+escapeHtml(it.desc)+'</p>' +
+          '<div class="tag-row">'+(it.tags||[]).map(function(t){return '<span class="tag">'+escapeHtml(t)+'</span>';}).join('')+'</div>' +
+          '<div class="card-foot">' +
+            '<span class="deadline">'+deadlineText+'</span>' +
+            (isAdmin() ? editBtn : '<button class="interest-btn" data-title="'+escapeHtml(it.title)+'">I\'m interested</button>') +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+    boardGrid.querySelectorAll('.interest-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var titleField = document.getElementById('pTitle');
+        titleField.value = btn.getAttribute('data-title');
+        document.getElementById('propose').scrollIntoView({behavior:'smooth'});
+        setTimeout(function(){ document.getElementById('pName').focus(); }, 500);
       });
-      data['boardGrid'] = document.getElementById('boardGrid').innerHTML;
-      data['archiveGrid'] = document.getElementById('archiveGrid').innerHTML;
-      data['hgalleryTrack'] = document.getElementById('hgalleryTrack').innerHTML;
-      data['faqList'] = document.getElementById('faqList').innerHTML;
-      localStorage.setItem('ats_site_data', JSON.stringify(data));
-      alert('✅ All changes saved successfully! They will persist on this browser.');
     });
+  }
+  renderBoard(items);
+  boardGrid.classList.add('in');
 
-    changeCredsBtn.addEventListener('click', () => {
-      const newId = prompt('Enter new Admin ID:', getCreds().id);
-      if (!newId) return;
-      const newPass = prompt('Enter new Password:', getCreds().pass);
-      if (!newPass) return;
-      localStorage.setItem('ats_admin_creds', JSON.stringify({ id: newId, pass: newPass }));
-      alert('Credentials updated!');
+  document.getElementById('statActive').textContent = items.filter(function(i){return i.status==='active';}).length;
+  document.getElementById('statOpen').textContent = items.filter(function(i){return i.type==='competition' && i.status!=='closed';}).length;
+  document.getElementById('statArchive').textContent = getArchive().length;
+
+  var tickerBits = items.map(function(it){
+    var suffix = it.deadlineDate ? ' — ' + daysLeft(it.deadlineDate) : ' — ' + statusLabel[it.status];
+    return it.title + suffix;
+  });
+  var tickerHTML = tickerBits.map(function(t){ return '<span>'+escapeHtml(t)+'</span>'; }).join('');
+  document.getElementById('tickerTrack').innerHTML = tickerHTML + tickerHTML;
+
+  var chips = document.querySelectorAll('.chip');
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      var f = chip.getAttribute('data-filter');
+      var filtered = items.filter(function(it){
+        if(f === 'all') return true;
+        if(f === 'project' || f === 'competition') return it.type === f;
+        return it.status === f;
+      });
+      renderBoard(filtered);
     });
+  });
 
-    exportBtn.addEventListener('click', () => {
-      const data = localStorage.getItem('ats_site_data') || '{}';
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'ats-website-backup.json'; a.click();
-      URL.revokeObjectURL(url);
+  /* ============================================================
+     GALLERY (reads from localStorage, supports imageUrl)
+  ============================================================ */
+  var moments = getGallery();
+  var hgTrack = document.getElementById('hgalleryTrack');
+  hgTrack.innerHTML = moments.map(function(m){
+    if(m.kind === 'note'){
+      return '<figure class="htile-note"><blockquote>\u201c'+escapeHtml(m.quote)+'\u201d<cite>'+escapeHtml(m.by || '')+'</cite></blockquote></figure>';
+    }
+    var artStyle = 'background:radial-gradient(circle at 30% 25%, '+(m.c1||'#e2531c')+'40, transparent 60%), linear-gradient(155deg, '+(m.c2||'#2a2620')+', #18150f 80%);';
+    if(m.imageUrl){
+      artStyle = 'background:url(\''+m.imageUrl.replace(/'/g, "\\'")+'\') center/cover no-repeat, ' + artStyle;
+    }
+    return (
+      '<figure class="htile htile-'+escapeHtml(m.size||'md')+'" data-valign="'+escapeHtml(m.valign||'bottom')+'" style="--off:'+(m.off||0)+'">' +
+        '<figcaption class="htile-cap"><span class="yr">'+escapeHtml(m.yr||'')+'</span><div class="lbl">'+escapeHtml(m.cap||'')+'</div></figcaption>' +
+        '<div class="htile-art" style="'+artStyle+'"></div>' +
+      '</figure>'
+    );
+  }).join('');
+
+  /* ============================================================
+     ARCHIVE (reads from localStorage, supports imageUrl)
+  ============================================================ */
+  var pastProjects = getArchive();
+  var archiveGrid = document.getElementById('archiveGrid');
+  archiveGrid.innerHTML = pastProjects.map(function(p){
+    var baseStyle = 'background:radial-gradient(circle at 25% 20%, '+(p.c1||'#e2531c')+'55, transparent 55%), linear-gradient(155deg, '+(p.c2||'#2a2620')+', #18150f 80%);';
+    var hoverStyle = 'background:radial-gradient(circle at 70% 70%, '+(p.h1||'#ff9a5c')+'55, transparent 55%), linear-gradient(335deg, '+(p.h2||'#1c1a15')+', #18150f 80%);';
+    if(p.imageUrl){
+      var imgLayer = 'url(\''+p.imageUrl.replace(/'/g, "\\'")+'\') center/cover, ';
+      baseStyle = 'background:'+imgLayer+baseStyle;
+      hoverStyle = 'background:'+imgLayer+hoverStyle;
+    }
+    return (
+      '<div class="a-tile">' +
+        '<div class="a-art a-art-base" style="'+baseStyle+'"></div>' +
+        '<div class="a-art a-art-hover" style="'+hoverStyle+'"></div>' +
+        '<div class="a-overlay"></div>' +
+        '<div class="a-info">' +
+          '<div class="a-year">'+escapeHtml(p.year||'')+' · '+escapeHtml(p.cat||'')+'</div>' +
+          '<h4>'+escapeHtml(p.title||'')+'</h4>' +
+          '<p>'+escapeHtml(p.note||'')+'</p>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+
+  /* ============================================================
+     COMPETITION CALENDAR (reads from localStorage)
+  ============================================================ */
+  (function(){
+    var MS_DAY = 86400000;
+    function dOnly(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+    function parseISO(s){ if(!s) return new Date(); var p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+    function fmtRange(start, end){
+      var opts = {month:'short', day:'numeric'};
+      var sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+      var s = start.toLocaleDateString(undefined, opts);
+      var e = end.toLocaleDateString(undefined, sameMonth ? {day:'numeric'} : opts);
+      var yr = end.getFullYear();
+      return (start.getTime() === end.getTime() ? s : s + ' \u2013 ' + e) + ', ' + yr;
+    }
+    var allEvents = getCalendar().map(function(e){
+      return { name:e.name, org:e.org||'', loc:e.loc||'', type:e.type||'india', cat:e.cat||'', start:parseISO(e.start), end:parseISO(e.end), approx:false };
     });
+    allEvents.sort(function(a, b){ return a.start - b.start; });
+    var today = dOnly(new Date());
+    var viewYear = today.getFullYear();
+    var viewMonth = today.getMonth();
+    var monthNameEl = document.getElementById('ccMonthName');
+    var yearNameEl = document.getElementById('ccYearName');
+    var gridEl = document.getElementById('ccGrid');
+    var listEl = document.getElementById('ccList');
+    var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    function eventsOnDay(date){ return allEvents.filter(function(e){ return date >= e.start && date <= e.end; }); }
+    function renderCalendar(){
+      monthNameEl.textContent = monthNames[viewMonth];
+      yearNameEl.textContent = viewYear;
+      var firstOfMonth = new Date(viewYear, viewMonth, 1);
+      var startWeekday = firstOfMonth.getDay();
+      var daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      var prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
+      var cells = [];
+      for(var i = startWeekday - 1; i >= 0; i--){ cells.push({ day: prevMonthDays - i, pad:true }); }
+      for(var d = 1; d <= daysInMonth; d++){ cells.push({ day:d, pad:false, date:new Date(viewYear, viewMonth, d) }); }
+      while(cells.length % 7 !== 0){ cells.push({ day: cells.length - (startWeekday + daysInMonth) + 1, pad:true }); }
+      gridEl.innerHTML = cells.map(function(c){
+        if(c.pad){ return '<div class="cc-day cc-pad">'+c.day+'</div>'; }
+        var evs = eventsOnDay(c.date);
+        var isToday = c.date.getTime() === today.getTime();
+        var cls = 'cc-day' + (isToday ? ' cc-today' : '') + (evs.length ? ' cc-active' : '');
+        var dots = evs.length ? '<span class="cc-day-dots">' + evs.map(function(e){ return '<i style="background:'+(e.type === 'india' ? 'var(--accent)' : 'var(--new)')+'"></i>'; }).join('') + '</span>' : '';
+        var titleAttr = evs.length ? ' title="'+evs.map(function(e){return escapeHtml(e.name);}).join(', ')+'"' : '';
+        return '<div class="'+cls+'"'+titleAttr+'>'+c.day+dots+'</div>';
+      }).join('');
+    }
+    function renderList(){
+      var upcoming = allEvents.filter(function(e){ return e.end >= today; }).slice(0, 6);
+      if(!upcoming.length){ listEl.innerHTML = '<p class="cc-list-empty">Nothing on the calendar right now — check back soon.</p>'; return; }
+      listEl.innerHTML = upcoming.map(function(e){
+        var tagClass = e.type === 'india' ? 'india' : 'intl';
+        var tagLabel = e.type === 'india' ? 'India' : 'Intl';
+        return (
+          '<div class="cc-item">' +
+            '<div class="cc-item-top">' +
+              '<span class="cc-item-tag '+tagClass+'">'+tagLabel+'</span>' +
+              '<span class="cc-item-when">'+fmtRange(e.start, e.end)+'</span>' +
+            '</div>' +
+            '<h5>'+escapeHtml(e.name)+'</h5>' +
+            '<p>'+escapeHtml(e.cat)+' — '+escapeHtml(e.loc)+'</p>' +
+          '</div>'
+        );
+      }).join('');
+    }
+    document.getElementById('ccPrev').addEventListener('click', function(){ viewMonth--; if(viewMonth < 0){ viewMonth = 11; viewYear--; } renderCalendar(); });
+    document.getElementById('ccNext').addEventListener('click', function(){ viewMonth++; if(viewMonth > 11){ viewMonth = 0; viewYear++; } renderCalendar(); });
+    document.getElementById('ccToday').addEventListener('click', function(){ viewYear = today.getFullYear(); viewMonth = today.getMonth(); renderCalendar(); });
+    renderCalendar();
+    renderList();
+  })();
 
-    const resetBtn = document.createElement('button');
-    resetBtn.className = 'danger'; resetBtn.textContent = '🔄 Reset All';
-    resetBtn.addEventListener('click', () => {
-      if (confirm('Are you sure? This will delete all custom changes and restore the original website data.')) {
-        localStorage.removeItem('ats_site_data');
-        location.reload();
-      }
-    });
-    toolbar.appendChild(resetBtn);
+  /* ============================================================
+     PINNED GALLERY SCROLL
+  ============================================================ */
+  var hgPin = document.getElementById('hgalleryPin');
+  var hgViewport = document.getElementById('hgalleryViewport');
+  var pinQuery = window.matchMedia('(min-width: 900px) and (hover: hover) and (pointer: fine)');
+  var hgActive = false, hgTicking = false;
+  function layoutPinnedGallery(){
+    var viewportH = hgViewport.clientHeight;
+    var scrollDistance = Math.max(hgTrack.scrollWidth - hgViewport.clientWidth, 0);
+    hgPin.style.height = (viewportH + scrollDistance) + 'px';
+  }
+  function updatePinnedGallery(){
+    var rect = hgPin.getBoundingClientRect();
+    var viewportH = hgViewport.clientHeight;
+    var scrollable = hgPin.offsetHeight - viewportH;
+    var progress = scrollable > 0 ? (-rect.top) / scrollable : 0;
+    progress = Math.min(1, Math.max(0, progress));
+    var maxTranslate = Math.max(hgTrack.scrollWidth - hgViewport.clientWidth, 0);
+    hgTrack.style.transform = 'translateX(' + (-progress * maxTranslate) + 'px)';
+  }
+  function onHgScroll(){ if(!hgActive) return; if(!hgTicking){ requestAnimationFrame(function(){ updatePinnedGallery(); hgTicking = false; }); hgTicking = true; } }
+  function enablePinMode(){ if(hgActive) return; hgActive = true; hgPin.classList.add('pin-mode'); hgTrack.style.transform = 'translateX(0px)'; layoutPinnedGallery(); updatePinnedGallery(); }
+  function disablePinMode(){ if(!hgActive) return; hgActive = false; hgPin.classList.remove('pin-mode'); hgPin.style.height = ''; hgTrack.style.transform = ''; }
+  function syncPinMode(){ if(pinQuery.matches){ enablePinMode(); } else { disablePinMode(); } }
+  window.addEventListener('scroll', onHgScroll, {passive:true});
+  window.addEventListener('resize', function(){ if(hgActive) layoutPinnedGallery(); });
+  if(pinQuery.addEventListener){ pinQuery.addEventListener('change', syncPinMode); }
+  else if(pinQuery.addListener){ pinQuery.addListener(syncPinMode); }
+  window.addEventListener('load', syncPinMode); setTimeout(syncPinMode, 50);
 
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('ats_admin_logged_in');
-      toolbar.classList.remove('active');
-      if (isEditing) toggleEditBtn.click();
-      location.reload();
-    });
+  /* ============================================================
+     FAQ (reads from localStorage)
+  ============================================================ */
+  var faqs = getFaq();
+  var faqList = document.getElementById('faqList');
+  faqList.innerHTML = faqs.map(function(f, i){
+    return (
+      '<div class="faq-item" data-i="'+i+'">' +
+        '<button class="faq-q"><span>'+escapeHtml(f.q)+'</span><span class="plus">+</span></button>' +
+        '<div class="faq-a"><p style="margin:0;">'+escapeHtml(f.a)+'</p></div>' +
+      '</div>'
+    );
+  }).join('');
+  faqList.querySelectorAll('.faq-q').forEach(function(btn){
+    btn.addEventListener('click', function(){ btn.parentElement.classList.toggle('open'); });
+  });
 
-    function loadSavedData() {
-      const saved = localStorage.getItem('ats_site_data');
-      if (!saved) return;
-      const data = JSON.parse(saved);
-      
-      Object.keys(data).forEach(key => {
-        if (['boardGrid', 'archiveGrid', 'hgalleryTrack', 'faqList'].includes(key)) return;
-        const el = document.querySelector(`[data-key="${key}"]`);
-        if (el) {
-          if (el.tagName === 'IMG') el.src = data[key];
-          else if (el.classList.contains('htile-art') || el.classList.contains('a-art-base') || el.classList.contains('a-art-hover')) el.style.background = data[key];
-          else el.innerHTML = data[key];
+  /* ============================================================
+     PROPOSE FORM (unchanged)
+  ============================================================ */
+  var recentList = document.getElementById('recentList');
+  var formStatus = document.getElementById('formStatus');
+  function renderProposals(list){
+    if(!list || list.length === 0){ recentList.innerHTML = '<p class="recent-empty">No proposals yet — be the first to pitch something.</p>'; return; }
+    recentList.innerHTML = list.slice().reverse().slice(0, 6).map(function(p){
+      var when = '';
+      try{ when = new Date(p.timestamp).toLocaleDateString(undefined,{month:'short',day:'numeric'}); }catch(e){ when=''; }
+      return (
+        '<div class="recent-item">' +
+          '<div class="recent-item-top"><strong>'+escapeHtml(p.title)+'</strong><span>'+escapeHtml(p.type||'Project')+' · '+when+'</span></div>' +
+          (p.note ? '<p>'+escapeHtml(p.note)+'</p>' : '') +
+          '<span class="by">— '+escapeHtml(p.name)+(p.branch ? ', '+escapeHtml(p.branch) : '')+'</span>' +
+        '</div>'
+      );
+    }).join('') + '<div style="padding-top:14px;"><a href="ideas.html" class="btn" style="width:100%;justify-content:center;">See all proposed ideas →</a></div>';
+  }
+  function isScriptConfigured(){ return typeof ATS_SCRIPT_URL === 'string' && ATS_SCRIPT_URL.indexOf('http') === 0; }
+  async function loadProposals(){
+    if(!isScriptConfigured()){ recentList.innerHTML = '<p class="recent-empty">Backend not connected yet — see SETUP.md.</p>'; return; }
+    try{ var res = await fetch(ATS_SCRIPT_URL); var data = await res.json(); renderProposals(data.items || []); }
+    catch(err){ recentList.innerHTML = '<p class="recent-empty">Couldn\'t load proposals right now.</p>'; }
+  }
+  loadProposals();
+  document.getElementById('proposeForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var name = document.getElementById('pName').value.trim();
+    var branch = document.getElementById('pBranch').value.trim();
+    var type = document.getElementById('pType').value;
+    var title = document.getElementById('pTitle').value.trim();
+    var note = document.getElementById('pNote').value.trim();
+    if(!name || !title){ formStatus.textContent = 'Please add your name and a project/competition name.'; formStatus.className = 'form-status err'; return; }
+    if(!isScriptConfigured()){ formStatus.textContent = 'Form backend isn\'t connected yet — see SETUP.md.'; formStatus.className = 'form-status err'; return; }
+    var entry = {name:name, branch:branch, type:type, title:title, note:note};
+    formStatus.textContent = 'Submitting…'; formStatus.className = 'form-status';
+    try{
+      var res = await fetch(ATS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(entry) });
+      var result = await res.json();
+      if(!result || !result.ok){ throw new Error('save failed'); }
+      formStatus.textContent = 'Thanks — your idea is on the board and the team\'s been emailed.';
+      formStatus.className = 'form-status ok';
+      this.reset();
+      loadProposals();
+    }catch(err){
+      formStatus.textContent = 'Couldn\'t save that just now — try again in a moment.';
+      formStatus.className = 'form-status err';
+    }
+  });
+
+  /* ============================================================
+     CURSOR-AVOIDING TEXT (unchanged)
+  ============================================================ */
+  (function(){
+    var dodgeQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
+    var DODGE_RADIUS = 74; var DODGE_MAX_OFFSET = 12;
+    var DODGE_EXCLUDE = '.marquee, .marquee *, script, style, noscript, input, textarea, select, option, svg, canvas, .contour-bg, .dw, .dwi, .dark-spot, .admin-banner';
+    var dodgeActive = false; var dodgeWords = []; var mouseX = -9999, mouseY = -9999;
+    var rafPending = false; var dodgeObserver = null;
+    function isExcluded(el){ while(el && el !== document.body){ if(el.nodeType === 1 && el.matches && el.matches(DODGE_EXCLUDE)) return true; el = el.parentNode; } return false; }
+    function wrapTextNode(node){
+      var text = node.nodeValue; if(!text || !/\S/.test(text)) return;
+      var frag = document.createDocumentFragment();
+      var parts = text.split(/(\s+)/);
+      parts.forEach(function(part){
+        if(part === '') return;
+        if(/^\s+$/.test(part)){ frag.appendChild(document.createTextNode(part)); }
+        else {
+          var outer = document.createElement('span'); outer.className = 'dw';
+          var inner = document.createElement('span'); inner.className = 'dwi';
+          inner.textContent = part; outer.appendChild(inner); frag.appendChild(outer);
         }
       });
-      
-      if (data.boardGrid) {
-        document.getElementById('boardGrid').innerHTML = data.boardGrid;
-        document.getElementById('boardGrid').querySelectorAll('.interest-btn').forEach(btn => {
-          btn.addEventListener('click', function(){
-            document.getElementById('pTitle').value = btn.getAttribute('data-title');
-            document.getElementById('propose').scrollIntoView({behavior:'smooth'});
-            setTimeout(() => document.getElementById('pName').focus(), 500);
-          });
-        });
-        const cards = document.getElementById('boardGrid').querySelectorAll('.card');
-        let activeCount = 0, openCount = 0;
-        cards.forEach(card => {
-          const status = card.querySelector('.status');
-          const type = card.querySelector('.card-type');
-          if (status && status.textContent.trim().toLowerCase() === 'active') activeCount++;
-          if (type && type.textContent.trim().toLowerCase() === 'competition') openCount++;
-        });
-        document.getElementById('statActive').textContent = activeCount;
-        document.getElementById('statOpen').textContent = openCount;
-      }
-      if (data.archiveGrid) document.getElementById('archiveGrid').innerHTML = data.archiveGrid;
-      if (data.hgalleryTrack) document.getElementById('hgalleryTrack').innerHTML = data.hgalleryTrack;
-      if (data.faqList) {
-        document.getElementById('faqList').innerHTML = data.faqList;
-        document.getElementById('faqList').querySelectorAll('.faq-q').forEach(btn => {
-          btn.addEventListener('click', function(){ this.parentElement.classList.toggle('open'); });
-        });
+      node.parentNode.replaceChild(frag, node);
+    }
+    function collectTextNodes(root){
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode: function(node){
+          if(!node.nodeValue || !/\S/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+          if(isExcluded(node.parentNode)) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      var nodes = []; var n; while((n = walker.nextNode())) nodes.push(n);
+      return nodes;
+    }
+    function wrapAll(root){ collectTextNodes(root).forEach(wrapTextNode); }
+    function measureRects(){ dodgeWords.forEach(function(w){ var r = w.el.parentElement.getBoundingClientRect(); w.cx = r.left + r.width / 2; w.cy = r.top + r.height / 2; }); }
+    function refreshWordList(){ dodgeWords = Array.prototype.slice.call(document.querySelectorAll('.dwi')).map(function(el){ return { el: el, cx: 0, cy: 0 }; }); measureRects(); }
+    function onMouseMove(e){ mouseX = e.clientX; mouseY = e.clientY; scheduleFrame(); }
+    function onMouseLeave(){ mouseX = -9999; mouseY = -9999; scheduleFrame(); }
+    function scheduleFrame(){ if(rafPending) return; rafPending = true; requestAnimationFrame(applyDodge); }
+    function applyDodge(){
+      rafPending = false; if(!dodgeActive) return;
+      for(var i = 0; i < dodgeWords.length; i++){
+        var w = dodgeWords[i];
+        var dx = w.cx - mouseX, dy = w.cy - mouseY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if(dist < DODGE_RADIUS && dist > 0.01){
+          var force = 1 - dist / DODGE_RADIUS;
+          var ox = (dx / dist) * force * DODGE_MAX_OFFSET;
+          var oy = (dy / dist) * force * DODGE_MAX_OFFSET;
+          w.el.style.transform = 'translate(' + ox.toFixed(1) + 'px,' + oy.toFixed(1) + 'px)';
+        } else if(w.el.style.transform){ w.el.style.transform = ''; }
       }
     }
-
-    // Inject Add Buttons for Edit Mode
-    const addProjectBtn = document.createElement('button');
-    addProjectBtn.className = 'admin-add-btn';
-    addProjectBtn.innerHTML = '➕ Add New Project / Competition Card';
-    document.getElementById('boardGrid').parentNode.insertBefore(addProjectBtn, document.getElementById('boardGrid').nextSibling);
-    addProjectBtn.addEventListener('click', () => {
-      const newCard = document.createElement('div');
-      newCard.className = 'card';
-      newCard.innerHTML = `<div class="card-top"><span class="status active" contenteditable="true">Active</span><span class="card-type" contenteditable="true">Project</span></div><h3 contenteditable="true">New Project Title</h3><p contenteditable="true">Description goes here. Click to edit.</p><div class="tag-row"><span class="tag" contenteditable="true">Tag</span></div><div class="card-foot"><span class="deadline" contenteditable="true">Ongoing</span><button class="admin-delete-btn" onclick="this.closest('.card').remove()">🗑️ Delete</button></div>`;
-      document.getElementById('boardGrid').appendChild(newCard);
-    });
-
-    const addGalleryBtn = document.createElement('button');
-    addGalleryBtn.className = 'admin-add-btn';
-    addGalleryBtn.innerHTML = '➕ Add New Gallery Item';
-    document.getElementById('hgalleryTrack').parentNode.insertBefore(addGalleryBtn, document.getElementById('hgalleryTrack').nextSibling);
-    addGalleryBtn.addEventListener('click', () => {
-      const newFig = document.createElement('figure');
-      newFig.className = 'htile htile-md'; newFig.setAttribute('data-valign', 'mid');
-      newFig.innerHTML = `<figcaption class="htile-cap"><span class="yr" contenteditable="true">2026</span><div class="lbl" contenteditable="true">New Gallery Item</div></figcaption><div class="htile-art" data-editable-img="true" style="background: linear-gradient(155deg, #3a5f8a, #18150f 80%);"></div><button class="admin-delete-btn" style="position:absolute; top:10px; right:10px; z-index:20;" onclick="this.closest('figure').remove()">🗑️</button>`;
-      document.getElementById('hgalleryTrack').appendChild(newFig);
-    });
-
+    function wrapAllQuiet(){ if(dodgeObserver) dodgeObserver.disconnect(); wrapAll(document.body); refreshWordList(); if(dodgeObserver) dodgeObserver.observe(document.body, {childList:true, subtree:true}); }
+    function enableDodge(){
+      if(dodgeActive) return; dodgeActive = true;
+      if(!dodgeObserver){ dodgeObserver = new MutationObserver(function(){ wrapAllQuiet(); }); }
+      wrapAllQuiet();
+      window.addEventListener('mousemove', onMouseMove, {passive:true});
+      window.addEventListener('mouseleave', onMouseLeave, {passive:true});
+      window.addEventListener('scroll', measureRects, {passive:true});
+      window.addEventListener('resize', measureRects);
+    }
+    function disableDodge(){
+      if(!dodgeActive) return; dodgeActive = false;
+      if(dodgeObserver) dodgeObserver.disconnect();
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseleave', onMouseLeave);
+      window.removeEventListener('scroll', measureRects);
+      window.removeEventListener('resize', measureRects);
+      dodgeWords.forEach(function(w){ w.el.style.transform = ''; });
+    }
+    function syncDodge(){ if(dodgeQuery.matches){ enableDodge(); } else { disableDodge(); } }
+    if(dodgeQuery.addEventListener){ dodgeQuery.addEventListener('change', syncDodge); }
+    else if(dodgeQuery.addListener){ dodgeQuery.addListener(syncDodge); }
+    window.addEventListener('load', syncDodge); setTimeout(syncDodge, 80);
   })();
+
+  /* ---------- DARK-MODE CURSOR REVEAL (unchanged) ---------- */
+  (function(){
+    var spot = document.getElementById('darkSpot'); if(!spot) return;
+    var EXCLUDE_SELECTOR = '#propose, #help, .admin-banner';
+    var spotQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)');
+    var spotEnabled = false;
+    var SMOOTHING = 0.14, RADIUS_SMOOTHING = 0.13;
+    var MIN_RADIUS_ACTIVE = 55, MAX_RADIUS_ACTIVE = 205, SPEED_REF = 1.5, SPEED_SMOOTHING = 0.35;
+    var IDLE_SHRINK_MS = 420, WOBBLE_AMOUNT = 0.3, SWIRL_SPEED = 0.8, STREAK_FORWARD = 1.15, STREAK_BACK = 0.4, POINTS = 14;
+    var TWO_PI = Math.PI * 2;
+    var tx = 0, ty = 0, sx = 0, sy = 0, targetR = 0, curR = 0;
+    var velAngle = 0, speedPxPerMs = 0, lastRawX = 0, lastRawY = 0, lastRawT = 0, lastMoveAt = 0;
+    var rafId = null, primed = false, startTime = performance.now();
+    function isOverExcluded(target){ return !!(target && target.closest && target.closest(EXCLUDE_SELECTOR)); }
+    function noiseAt(angle, t){ var a = angle + t * SWIRL_SPEED; return Math.sin(a * 2 + t * 0.9) * 0.5 + Math.sin(a * 3 - t * 1.3) * 0.3 + Math.sin(a * 5 + t * 0.6) * 0.2; }
+    function buildBlobPath(cx, cy, baseR, t, speedNorm){
+      var pts = [];
+      for(var i = 0; i < POINTS; i++){
+        var angle = (i / POINTS) * TWO_PI; var n = noiseAt(angle, t);
+        var c = Math.cos(angle - velAngle); var forward = Math.max(0, c); var backward = Math.max(0, -c);
+        var streak = 1 + STREAK_FORWARD * speedNorm * Math.pow(forward, 1.4) - STREAK_BACK * speedNorm * Math.pow(backward, 1.4);
+        var r = Math.max(2, baseR * (1 + WOBBLE_AMOUNT * n) * streak);
+        pts.push([ cx + r * Math.cos(angle), cy + r * Math.sin(angle) ]);
+      }
+      var mids = [];
+      for(var j = 0; j < POINTS; j++){ var a = pts[j], b = pts[(j + 1) % POINTS]; mids.push([ (a[0] + b[0]) / 2, (a[1] + b[1]) / 2 ]); }
+      var last = mids[POINTS - 1];
+      var d = 'M ' + last[0].toFixed(1) + ' ' + last[1].toFixed(1) + ' ';
+      for(var k = 0; k < POINTS; k++){ d += 'Q ' + pts[k][0].toFixed(1) + ' ' + pts[k][1].toFixed(1) + ' ' + mids[k][0].toFixed(1) + ' ' + mids[k][1].toFixed(1) + ' '; }
+      return d + 'Z';
+    }
+    function tick(){
+      rafId = null; var now = performance.now();
+      if(now - lastMoveAt > IDLE_SHRINK_MS){ targetR = 0; speedPxPerMs *= 0.9; }
+      sx += (tx - sx) * SMOOTHING; sy += (ty - sy) * SMOOTHING; curR += (targetR - curR) * RADIUS_SMOOTHING;
+      if(curR < 1.5 && targetR === 0){ curR = 0; spot.classList.remove('active'); }
+      else {
+        var t = (now - startTime) / 1000;
+        var speedNorm = Math.min(1, speedPxPerMs / SPEED_REF);
+        var d = buildBlobPath(sx, sy, curR, t, speedNorm);
+        var clip = 'path("' + d + '")';
+        spot.style.clipPath = clip; spot.style.webkitClipPath = clip;
+        spot.classList.add('active');
+      }
+      if(curR > 1.5 || targetR > 0){ rafId = requestAnimationFrame(tick); }
+    }
+    function ensureLoop(){ if(rafId === null){ rafId = requestAnimationFrame(tick); } }
+    function onMove(e){
+      var now = performance.now(); tx = e.clientX; ty = e.clientY; lastMoveAt = now;
+      if(!primed){ sx = tx; sy = ty; lastRawX = tx; lastRawY = ty; lastRawT = now; primed = true; }
+      var dt = now - lastRawT;
+      if(dt > 0){
+        var dx = tx - lastRawX, dy = ty - lastRawY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if(dist > 1){ velAngle = Math.atan2(dy, dx); }
+        var instSpeed = dist / dt;
+        speedPxPerMs += (instSpeed - speedPxPerMs) * SPEED_SMOOTHING;
+      }
+      lastRawX = tx; lastRawY = ty; lastRawT = now;
+      if(isOverExcluded(e.target)){ targetR = 0; }
+      else {
+        var speedNorm = Math.min(1, speedPxPerMs / SPEED_REF);
+        targetR = MIN_RADIUS_ACTIVE + (MAX_RADIUS_ACTIVE - MIN_RADIUS_ACTIVE) * speedNorm;
+      }
+      ensureLoop();
+    }
+    function onLeaveWindow(){ targetR = 0; }
+    function enableSpot(){ if(spotEnabled) return; spotEnabled = true; window.addEventListener('mousemove', onMove, {passive:true}); window.addEventListener('mouseleave', onLeaveWindow, {passive:true}); }
+    function disableSpot(){ if(!spotEnabled) return; spotEnabled = false; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseleave', onLeaveWindow); if(rafId !== null){ cancelAnimationFrame(rafId); rafId = null; } targetR = 0; curR = 0; speedPxPerMs = 0; primed = false; spot.classList.remove('active'); }
+    function syncSpot(){ if(spotQuery.matches){ enableSpot(); } else { disableSpot(); } }
+    if(spotQuery.addEventListener){ spotQuery.addEventListener('change', syncSpot); }
+    else if(spotQuery.addListener){ spotQuery.addListener(syncSpot); }
+    window.addEventListener('load', syncSpot); setTimeout(syncSpot, 50);
+  })();
+
+  /* ---------- IDLE RADAR PING (unchanged) ---------- */
+  (function(){
+    var scope = document.querySelector('.viewport-chrome'); if(!scope) return;
+    var radarQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+    var IDLE_DELAY = 2000, PULSE_EVERY = 1300;
+    var idleTimer = null, pulseInterval = null, lastX = 0, lastY = 0, radarEnabled = false;
+    function spawnRing(x, y){
+      var ring = document.createElement('span'); ring.className = 'radar-ring';
+      ring.style.left = x + 'px'; ring.style.top = y + 'px'; scope.appendChild(ring);
+      ring.addEventListener('animationend', function(){ if(ring.parentNode) ring.parentNode.removeChild(ring); });
+    }
+    function stopPulsing(){ if(pulseInterval){ clearInterval(pulseInterval); pulseInterval = null; } }
+    function startPulsing(){ stopPulsing(); spawnRing(lastX, lastY); pulseInterval = setInterval(function(){ spawnRing(lastX, lastY); }, PULSE_EVERY); }
+    function resetIdle(){ clearTimeout(idleTimer); stopPulsing(); idleTimer = setTimeout(startPulsing, IDLE_DELAY); }
+    function onMove(e){ if(!radarEnabled) return; var rect = scope.getBoundingClientRect(); lastX = e.clientX - rect.left; lastY = e.clientY - rect.top; resetIdle(); }
+    function onLeave(){ clearTimeout(idleTimer); stopPulsing(); }
+    function enableRadar(){ if(radarEnabled) return; radarEnabled = true; scope.addEventListener('mousemove', onMove); scope.addEventListener('mouseenter', onMove); scope.addEventListener('mouseleave', onLeave); }
+    function disableRadar(){ if(!radarEnabled) return; radarEnabled = false; scope.removeEventListener('mousemove', onMove); scope.removeEventListener('mouseenter', onMove); scope.removeEventListener('mouseleave', onLeave); clearTimeout(idleTimer); stopPulsing(); }
+    function syncRadar(){ if(radarQuery.matches){ enableRadar(); } else { disableRadar(); } }
+    if(radarQuery.addEventListener){ radarQuery.addEventListener('change', syncRadar); }
+    else if(radarQuery.addListener){ radarQuery.addListener(syncRadar); }
+    window.addEventListener('load', syncRadar); setTimeout(syncRadar, 50);
+  })();
+
 })();
 </script>
 </body>
